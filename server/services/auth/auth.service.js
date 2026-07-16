@@ -6,6 +6,7 @@ import { AUTH_MESSAGES } from '../../constants/messages/auth.message.js';
 import { hashPassword, comparePassword } from '../../helpers/password.helper.js';
 import { generateToken } from '../../helpers/jwt.helper.js';
 import * as authRepository from '../../repositories/auth/auth.repository.js';
+import { DEFAULT_ROLE_PERMISSIONS, normalizePermissions } from '../../helpers/auth/permission.helper.js';
 
 
 export const seedAdministrator = async () => {
@@ -44,9 +45,12 @@ export const login = async ({ email, password }) => {
     authRepository.updateLastLogin(user.id);
 
     // Step 5: Generate JWT token
-    const token = generateToken({ userId: user.id, email: user.email, role: user.role_name });
+    const permissions = normalizePermissions(
+        DEFAULT_ROLE_PERMISSIONS[user.role_name] || []
+    );
+    const token = generateToken({ userId: user.id, email: user.email, role: user.role_name, permissions });
     
-    return { token, user: authRepository.sensitizeUser(user) };
+    return { token, user: { ...authRepository.sensitizeUser(user), permissions } };
 }
 
 export const logout = async (userId) => {

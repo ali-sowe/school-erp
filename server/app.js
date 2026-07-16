@@ -6,8 +6,9 @@ import cookieParser from 'cookie-parser';
 
 import healthRoutes from './routes/health.routes.js';
 import authRoutes from './routes/auth/auth.routes.js';
-
 import academicYearRoutes from './routes/academic-year/academic-year.routes.js';
+import userRoutes from './routes/user/user.routes.js';
+import roleRoutes from './routes/role/role.routes.js';
 
 import { notFound } from './middleware/error/not-found.js';
 import { errorHandler } from './middleware/error/error-handler.js';
@@ -24,7 +25,9 @@ app.use(express.json()); // Parse JSON bodies
 // Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/academic-years', academicYearRoutes)
+app.use('/api/academic-years', academicYearRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/roles', roleRoutes);
 
 // Root route
 app.get('/', (req, res) => {

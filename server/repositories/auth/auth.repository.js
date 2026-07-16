@@ -1,6 +1,6 @@
 import { query } from "../../database/query.js";
 import { AppError } from "../../helpers/app-error.helper.js";
-import { HTTP_STATUS } from "../../constants/httpStatus.js";
+import { HTTP_STATUS } from '../../constants/httpstatus.js';
 import { AUTH_MESSAGES } from "../../constants/messages/auth.message.js";
 
 // Find user 
