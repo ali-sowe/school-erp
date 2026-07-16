@@ -2,7 +2,25 @@ import { query } from "../../database/query.js";
 import { transaction } from "../../database/transaction.js";
 
 export async function create(data) {
-    const results = await query(`INSERT INTO academic_years (name, start_date, end_date) VALUES (?,?,?)`, [data.name, data.start_date, data.end_date]);
+
+    const results = await query(
+        `
+        INSERT INTO academic_years
+        (
+            name,
+            start_date,
+            end_date,
+            status
+        )
+        VALUES (?, ?, ?, ?)
+        `,
+        [
+            data.name,
+            data.start_date,
+            data.end_date,
+            "SCHEDULED"
+        ]
+    );
 
     return results.insertId;
 }
@@ -26,26 +44,109 @@ export async function findAll() {
 }
 
 export async function update(id, data) {
-    await query(`UPDATE academic_years SET name = ?, start_date = ?, end_date = ? WHERE id = ?`, [data.name, data.start_date, data.end_date, id]);
+    const fields = [];
+    const values = [];
 
-    // Returns nothing because the service already returns the updated object
+    if (data.name !== undefined) {
+        fields.push('name = ?');
+        values.push(data.name);
+    }
+
+    if (data.start_date !== undefined) {
+        fields.push('start_date = ?');
+        values.push(data.start_date);
+    }
+
+    if (data.end_date !== undefined) {
+        fields.push('end_date = ?');
+        values.push(data.end_date);
+    }
+
+    if (fields.length === 0) {
+        return;
+    }
+
+    values.push(id);
+
+    await query(`UPDATE academic_years SET ${fields.join(', ')} WHERE id = ?`, values);
 }
 
 
-export async function findActive() {}
+export async function findActive() {
+
+    const rows = await query(
+        `
+        SELECT *
+        FROM academic_years
+        WHERE status = 'ACTIVE'
+        LIMIT 1
+        `
+    );
+
+    return rows[0] || null;
+}
 
 export async function activate(id) {
+
     await transaction(async (connection) => {
-        // Deactivate THE CURRENT ACTIVE academic year
-        await connection.query(`UPDATE academic_years SET status = 'DRAFT' WHERE status = 'ACTIVE'`);
+
+        // Move current active year back? 
+        // NO.
         
-        // Activate the specified academic year
-        await connection.query(`UPDATE academic_years SET status = 'ACTIVE' WHERE id = ?`, [id]);
+        await connection.query(
+            `
+            UPDATE academic_years
+            SET status = 'COMPLETED'
+            WHERE status = 'ACTIVE'
+            `
+        );
+
+
+        await connection.query(
+            `
+            UPDATE academic_years
+            SET status = 'ACTIVE'
+            WHERE id = ?
+            `,
+            [id]
+        );
 
     });
 }
 
+export async function complete(id) {
+    await query(`UPDATE academic_years SET status = 'COMPLETED' WHERE id = ?`, [id]);
+}
 
-export async function close(id) {
-    await query(`UPDATE academic_years SET status = 'CLOSED' WHERE id = ?`, [id]);
+
+export async function findScheduled(){
+
+    return await query(
+        `
+        SELECT *
+        FROM academic_years
+        WHERE status = 'SCHEDULED'
+        `
+    );
+
+}
+
+
+export async function updateLifecycle(id, data) {
+    const fields = ['status = ?'];
+    const values = [data.status];
+
+    if (data.actual_start_date !== undefined) {
+        fields.push('actual_start_date = ?');
+        values.push(data.actual_start_date);
+    }
+
+    if (data.actual_end_date !== undefined) {
+        fields.push('actual_end_date = ?');
+        values.push(data.actual_end_date);
+    }
+
+    values.push(id);
+
+    await query(`UPDATE academic_years SET ${fields.join(', ')} WHERE id = ?`, values);
 }

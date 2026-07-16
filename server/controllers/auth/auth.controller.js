@@ -8,6 +8,7 @@ export const login = async (req, res) => {
 }
 
 export const me = async (req, res) => {
+    // console.log('req.user', req.user.userId);
     return sendSuccess(res, { message: AUTH_MESSAGES.ME_SUCCESS, data: req.user });
 }
 

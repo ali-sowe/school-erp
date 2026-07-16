@@ -50,5 +50,9 @@ export const login = async ({ email, password }) => {
 }
 
 export const logout = async (userId) => {
-    return;
+    if (!userId) {
+        return { message: AUTH_MESSAGES.LOGOUT_SUCCESS };
+    }
+
+    return { message: AUTH_MESSAGES.LOGOUT_SUCCESS };
 }

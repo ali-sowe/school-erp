@@ -7,9 +7,9 @@ Content-Type: application/json
     "password": "Admin@123"
 }
 
-###
+### ME
 GET http://localhost:5000/api/auth/me HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiYWRtaW5Ac2Nob29sZXJwLmNvbSIsInJvbGUiOiJBZG1pbmlzdHJhdG9yIiwiaWF0IjoxNzgzOTQ2NTY5LCJleHAiOjE3ODM5NTAxNjl9.giqbyMJGtNDMQxBFDZ2fcWgT4EHEkOIF0ELdd3c-EyQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiYWRtaW5Ac2Nob29sZXJwLmNvbSIsInJvbGUiOiJBZG1pbmlzdHJhdG9yIiwiaWF0IjoxNzg0MTc0MzIzLCJleHAiOjE3ODQxNzc5MjN9.fURW44LJAS2mmtjXwO300iMg0-VXI9vAeurjBz9FxrM
 
 ### logout
 POST http://localhost:5000/api/auth/logout HTTP/1.1
@@ -20,28 +20,33 @@ POST http://localhost:5000/api/academic-years HTTP/1.1
 Content-Type: application/json
 
 {
-    "name": "2026/2027",
-    "start_date": "2026-09-01",
-    "end_date": "2027-06-30"
+    "name": "2028/2029",
+    "start_date": "2028-09-01",
+    "end_date": "2029-06-30"
 }
 ### Activate academic year
 patch http://localhost:5000/api/academic-years/2/activate HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiYWRtaW5Ac2Nob29sZXJwLmNvbSIsInJvbGUiOiJBZG1pbmlzdHJhdG9yIiwiaWF0IjoxNzg0MTI1OTYzLCJleHAiOjE3ODQxMjk1NjN9.BzsdgV5-2DtuJTnuLCX76BvzzbChIRatIPt17_ItUZQ
 
-### Close academic year
-patch http://localhost:5000/api/academic-years/2/close HTTP/1.1
+### complete academic year
+patch http://localhost:5000/api/academic-years/3/complete HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiYWRtaW5Ac2Nob29sZXJwLmNvbSIsInJvbGUiOiJBZG1pbmlzdHJhdG9yIiwiaWF0IjoxNzg0MTI1OTYzLCJleHAiOjE3ODQxMjk1NjN9.BzsdgV5-2DtuJTnuLCX76BvzzbChIRatIPt17_ItUZQ
 
 ### update academic year
-patch http://localhost:5000/api/academic-years/2 HTTP/1.1
+patch http://localhost:5000/api/academic-years/3 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiYWRtaW5Ac2Nob29sZXJwLmNvbSIsInJvbGUiOiJBZG1pbmlzdHJhdG9yIiwiaWF0IjoxNzg0MTI1OTYzLCJleHAiOjE3ODQxMjk1NjN9.BzsdgV5-2DtuJTnuLCX76BvzzbChIRatIPt17_ItUZQ
 Content-Type: application/json
 
 {
-    "name": "2026/2027 Updated",
-    "start_date": "2026-09-01",
+    "name": "2026/2027",
+    "start_date": "2026-09-02",
     "end_date": "2027-06-30"
 }
 
 ### get all academic years
 GET http://localhost:5000/api/academic-years HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiYWRtaW5Ac2Nob29sZXJwLmNvbSIsInJvbGUiOiJBZG1pbmlzdHJhdG9yIiwiaWF0IjoxNzg0MTI1OTYzLCJleHAiOjE3ODQxMjk1NjN9.BzsdgV5-2DtuJTnuLCX76BvzzbChIRatIPt17_ItUZQ
 
 ### get academic year by id
 GET http://localhost:5000/api/academic-years/3 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiYWRtaW5Ac2Nob29sZXJwLmNvbSIsInJvbGUiOiJBZG1pbmlzdHJhdG9yIiwiaWF0IjoxNzg0MTI1OTYzLCJleHAiOjE3ODQxMjk1NjN9.BzsdgV5-2DtuJTnuLCX76BvzzbChIRatIPt17_ItUZQ

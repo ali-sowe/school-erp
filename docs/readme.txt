@@ -165,3 +165,37 @@ From the very beginning use Git properly
     }
 
     Whether it's authntication, attendance, or finanace, React will always know what to expect.
+\
+------------------------------------------------------------------------------------------------------------------------
+
+    We had just finished the Academic Year module, then had a deep design discussion and realized something important:
+
+    We're not building a CRUD application. We're building a school operating system.
+
+    Some of the core principles we discovered:
+
+    ✅ Remove friction from school administration.
+    ✅ Design for human reality, not perfect scenarios.
+    ✅ Separate planned events from actual events.
+    ✅ Preserve history instead of silently overwriting it.
+    ✅ Use approvals and workflows to support teamwork.
+    ✅ Automate predictable processes, but allow controlled overrides.
+
+    Those principles will guide every module we build.
+
+
+    What I think we should do next
+
+    Before jumping into Terms, I'd like us to spend a little time redesigning the Academic Year module based on our new understanding.
+
+    Not rewriting everything—just improving the design while it's still small.
+
+    I suggest this order:
+
+    ✅ Redesign the academic_years table (planned vs. actual dates, lifecycle).
+    ✅ Update the service/repository to match.
+    ✅ Then build the Terms module on top of that improved foundation.
+
+    Why?
+
+    Because Terms depends on Academic Year. If the foundation changes later, Terms will also need changes.

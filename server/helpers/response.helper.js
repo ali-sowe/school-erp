@@ -1,6 +1,6 @@
 export const sendSuccess = (res, {
     status = 200,
-    message = 'Success',
+    message = 'Request completed successfully.',
     meta = null,
     /*
         meta = {
@@ -25,7 +25,7 @@ export const sendSuccess = (res, {
 
 export const sendError = (res, {
     status = 500,
-    message = 'Internal Server Error',
+    message = 'An unexpected error occurred.',
     errors = null,
 } = {}) => {
     return res.status(status).json({

@@ -1,7 +1,6 @@
 import * as academicYearService from "../../services/academic-year/academic-year.service.js";
 import { asyncHandler } from "../../helpers/async-handler.helper.js";
 import { HTTP_STATUS } from "../../constants/httpstatus.js";
-import { AUTH_MESSAGES } from "../../constants/messages/auth.message.js";
 import { ACADEMIC_YEAR_MESSAGES } from "../../constants/messages/academic-year/academic-year.message.js";
 
 export const createAcademicYear = asyncHandler(
@@ -54,8 +53,14 @@ export const updateAcademicYear = asyncHandler(
 
 export const activateAcademicYear = asyncHandler(
     async (req, res) => {
-        const academicYear = await academicYearService.activateAcademicYear(req.params.id);
-        
+        console.log('req.user:', req.user);
+
+        const academicYear =
+            await academicYearService.activateAcademicYear(
+                req.params.id,
+                req.user.userId
+            );
+
         res.status(HTTP_STATUS.OK).json({
             success: true,
             message: ACADEMIC_YEAR_MESSAGES.ACTIVATED,
@@ -64,13 +69,13 @@ export const activateAcademicYear = asyncHandler(
     }
 );
 
-export const closeAcademicYear = asyncHandler(
+export const completeAcademicYear = asyncHandler(
     async (req, res) => {
-        const academicYear = await academicYearService.closeAcademicYear(req.params.id);
+        const academicYear = await academicYearService.completeAcademicYear(req.params.id, req.user.userId);
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
-            message: ACADEMIC_YEAR_MESSAGES.CLOSED,
+            message: ACADEMIC_YEAR_MESSAGES.COMPLETED,
             data: academicYear
         });
     }
