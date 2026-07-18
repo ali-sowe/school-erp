@@ -2,6 +2,7 @@ import { Router } from 'express';
 import * as studentController from '../../controllers/student/student.controller.js';
 import * as guardianController from '../../controllers/student/guardian.controller.js';
 import * as enrollmentController from '../../controllers/student/enrollment.controller.js';
+import * as attendanceController from '../../controllers/attendance/attendance.controller.js';
 import { asyncHandler } from '../../helpers/async-handler.helper.js';
 import { authenticate } from '../../middleware/auth/auth.middleware.js';
 import { authorize } from '../../middleware/auth/authorize.middleware.js';
@@ -30,5 +31,9 @@ router.post('/:id/enrollments', authenticate, authorize(['students.write']), val
 router.patch('/:id/enrollments/:enrollmentId/transfer', authenticate, authorize(['students.write']), validate(transferStudentSchema), asyncHandler(enrollmentController.transferStudent));
 router.patch('/:id/enrollments/:enrollmentId/withdraw', authenticate, authorize(['students.write']), validate(withdrawStudentSchema), asyncHandler(enrollmentController.withdrawStudent));
 router.patch('/:id/enrollments/:enrollmentId/complete', authenticate, authorize(['students.write']), asyncHandler(enrollmentController.completeEnrollment));
+
+// Attendance history: every day this student's attendance has been
+// recorded, across whichever classes/years they were in at the time.
+router.get('/:id/attendance', authenticate, authorize(['attendance.read']), asyncHandler(attendanceController.getStudentAttendanceHistory));
 
 export default router;

@@ -9,14 +9,18 @@ import { AppError } from "../../helpers/app-error.helper.js";
 import { HTTP_STATUS } from "../../constants/httpStatus.js";
 import { SCHOOL_MESSAGES } from "../../constants/messages/school/school.message.js";
 import { USER_MESSAGES } from "../../constants/messages/user.message.js";
+import { DEFAULT_ROLE_PERMISSIONS } from "../../helpers/auth/permission.helper.js";
 
-// Every school starts with these. Schools can rename/add roles later
-// (ADR-005: Configuration Over Hardcoding) — this is just the day-one set.
+// Every school starts with these. Schools can rename/add roles, and edit
+// permissions, later (ADR-005: Configuration Over Hardcoding) — this is
+// just the day-one set, seeded with sensible starting permissions so the
+// role record itself is the source of truth from the start (login no
+// longer derives permissions from role_name).
 const DEFAULT_SCHOOL_ROLES = [
-    { role_name: 'Administrator', description: 'Full administrative access within this school.' },
-    { role_name: 'Teacher', description: 'Teaching staff.' },
-    { role_name: 'Student', description: 'Enrolled student.' },
-    { role_name: 'Parent', description: 'Parent or guardian of an enrolled student.' }
+    { role_name: 'Administrator', description: 'Full administrative access within this school.', permissions: DEFAULT_ROLE_PERMISSIONS.Administrator },
+    { role_name: 'Teacher', description: 'Teaching staff.', permissions: DEFAULT_ROLE_PERMISSIONS.Teacher },
+    { role_name: 'Student', description: 'Enrolled student.', permissions: DEFAULT_ROLE_PERMISSIONS.Student },
+    { role_name: 'Parent', description: 'Parent or guardian of an enrolled student.', permissions: DEFAULT_ROLE_PERMISSIONS.Parent }
 ];
 
 async function ensureUniqueNameAndSlug(name, slug) {

@@ -30,7 +30,8 @@ export const seedPlatformAdministrator = async () => {
         const roleId = await roleRepository.create({
             school_id: null,
             role_name: PLATFORM_ADMIN_ROLE_NAME,
-            description: 'Manages schools on the platform. Not tied to any single school.'
+            description: 'Manages schools on the platform. Not tied to any single school.',
+            permissions: DEFAULT_ROLE_PERMISSIONS[PLATFORM_ADMIN_ROLE_NAME]
         });
         role = await roleRepository.findById(roleId);
     }
@@ -66,11 +67,21 @@ export const login = async ({ email, password }) => {
     }
 
     // step 4: Update last login timestamp
-    authRepository.updateLastLogin(user.id);
+    // Awaited and isolated: a failure here (e.g. a transient DB hiccup)
+    // shouldn't fail the login itself, but an unawaited rejection would
+    // otherwise become an unhandled promise rejection.
+    try {
+        await authRepository.updateLastLogin(user.id);
+    } catch (error) {
+        console.error('Failed to update last_login timestamp:', error);
+    }
 
     // Step 5: Generate JWT token
+    // Permissions are read from the role's own DB record (configurable per
+    // school/role, per ADR-005) with the legacy hardcoded map only as a
+    // fallback for roles created before permissions existed.
     const permissions = normalizePermissions(
-        DEFAULT_ROLE_PERMISSIONS[user.role_name] || []
+        user.permissions ?? DEFAULT_ROLE_PERMISSIONS[user.role_name] ?? []
     );
     const token = generateToken({
         userId: user.id,
@@ -91,7 +102,7 @@ export const getCurrentUser = async (userId) => {
     authRepository.validateUser(user);
 
     const permissions = normalizePermissions(
-        DEFAULT_ROLE_PERMISSIONS[user.role_name] || []
+        user.permissions ?? DEFAULT_ROLE_PERMISSIONS[user.role_name] ?? []
     );
 
     return { ...authRepository.sensitizeUser(user), permissions };

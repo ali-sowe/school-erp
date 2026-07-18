@@ -29,8 +29,13 @@ export async function findByName(schoolId, roleName) {
 // Accepts an optional transaction connection so school onboarding can create
 // its default roles atomically with the school row — see school.service.js.
 export async function create(data, connection = null) {
-    const sql = `INSERT INTO roles (school_id, role_name, description) VALUES (?, ?, ?)`;
-    const params = [data.school_id ?? null, data.role_name, data.description || ''];
+    const sql = `INSERT INTO roles (school_id, role_name, description, permissions) VALUES (?, ?, ?, ?)`;
+    const params = [
+        data.school_id ?? null,
+        data.role_name,
+        data.description || '',
+        JSON.stringify(data.permissions ?? [])
+    ];
 
     if (connection) {
         const [result] = await connection.query(sql, params);
@@ -53,6 +58,11 @@ export async function update(id, data) {
     if (data.description !== undefined) {
         fields.push('description = ?');
         values.push(data.description);
+    }
+
+    if (data.permissions !== undefined) {
+        fields.push('permissions = ?');
+        values.push(JSON.stringify(data.permissions));
     }
 
     if (fields.length === 0) {

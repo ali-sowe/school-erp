@@ -102,10 +102,18 @@ export async function activate(id) {
     // Only ever touches the requested row. Blocking a second concurrent
     // ACTIVE year (ADR-002/003: no silent, unaudited side effects on other
     // records) is a business rule and belongs in the service layer, not here.
+    //
+    // actual_start_date is stamped here (if not already set) alongside the
+    // status. The lifecycle job recomputes status from
+    // actual_start_date/actual_end_date, falling back to the *planned*
+    // start_date/end_date only when the actual_* column is still NULL — so
+    // leaving actual_start_date unset here would let the next lifecycle run
+    // recalculate from the plan and silently flip status back.
     await query(
         `
         UPDATE academic_years
-        SET status = 'ACTIVE'
+        SET status = 'ACTIVE',
+            actual_start_date = COALESCE(actual_start_date, CURDATE())
         WHERE id = ?
         `,
         [id]
@@ -113,7 +121,19 @@ export async function activate(id) {
 }
 
 export async function complete(id) {
-    await query(`UPDATE academic_years SET status = 'COMPLETED' WHERE id = ?`, [id]);
+    // See activate() above: actual_end_date must be stamped here too, or an
+    // early manual completion (e.g. emergency closure) gets reverted back to
+    // ACTIVE the next time the lifecycle job runs and falls back to the
+    // still-future planned end_date.
+    await query(
+        `
+        UPDATE academic_years
+        SET status = 'COMPLETED',
+            actual_end_date = COALESCE(actual_end_date, CURDATE())
+        WHERE id = ?
+        `,
+        [id]
+    );
 }
 
 

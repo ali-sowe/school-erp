@@ -1,6 +1,7 @@
 import { AppError } from '../../helpers/app-error.helper.js';
 import { HTTP_STATUS } from '../../constants/httpStatus.js';
 import * as roleRepository from '../../repositories/role/role.repository.js';
+import { normalizePermissions } from '../../helpers/auth/permission.helper.js';
 
 export async function getRoles(schoolId) {
     return await roleRepository.findAll(schoolId);
@@ -23,14 +24,23 @@ export async function createRole(data, schoolId) {
         throw new AppError(HTTP_STATUS.CONFLICT, 'Role already exists.');
     }
 
-    const id = await roleRepository.create({ ...data, school_id: schoolId });
+    const id = await roleRepository.create({
+        ...data,
+        school_id: schoolId,
+        permissions: normalizePermissions(data.permissions)
+    });
     return await roleRepository.findById(id);
 }
 
 export async function updateRole(id, data, schoolId) {
     const role = await getRoleById(id, schoolId);
 
-    await roleRepository.update(role.id, data);
+    const updateData = { ...data };
+    if (data.permissions !== undefined) {
+        updateData.permissions = normalizePermissions(data.permissions);
+    }
+
+    await roleRepository.update(role.id, updateData);
     return await roleRepository.findById(role.id);
 }
 

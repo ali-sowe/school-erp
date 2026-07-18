@@ -14,7 +14,8 @@ export const findUserByEmail = async (email) => {
         u.email,
         u.password,
         u.status,
-        r.role_name
+        r.role_name,
+        r.permissions
         FROM users u
         INNER JOIN roles r ON u.role_id = r.id
         WHERE u.email = ?
@@ -38,7 +39,8 @@ export const findUserById = async (id) => {
         u.email,
         u.password,
         u.status,
-        r.role_name
+        r.role_name,
+        r.permissions
         FROM users u
         INNER JOIN roles r ON u.role_id = r.id
         WHERE u.id = ?

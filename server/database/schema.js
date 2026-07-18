@@ -38,12 +38,20 @@ export const ensureCoreTables = async () => {
             school_id INT NULL,
             role_name VARCHAR(100) NOT NULL,
             description VARCHAR(255) DEFAULT '',
+            permissions JSON NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             CONSTRAINT fk_roles_school FOREIGN KEY (school_id) REFERENCES schools(id),
             CONSTRAINT uq_roles_school_name UNIQUE (school_id, role_name)
         )
     `);
+
+    // Existing installs created the roles table before `permissions` existed —
+    // add it if missing so upgrades don't require a manual migration step.
+    await alterIfNeeded(
+        `ALTER TABLE roles ADD COLUMN permissions JSON NULL AFTER description`,
+        ['ER_DUP_FIELDNAME']
+    );
 
     await pool.query(`
         CREATE TABLE IF NOT EXISTS users (
@@ -384,6 +392,43 @@ export const ensureCoreTables = async () => {
 
     await pool.query(`
         CREATE INDEX idx_student_enrollments_class ON student_enrollments (class_id, academic_year_id)
+    `).catch((error) => {
+        if (error.code !== 'ER_DUP_KEYNAME') throw error;
+    });
+
+    // --- Attendance ---
+    // One row per student per calendar day. class_id and academic_year_id
+    // are snapshotted at the time attendance is taken (resolved from the
+    // student's enrollment for that class) rather than looked up live from
+    // student_enrollments — a later mid-year transfer updates the
+    // enrollment's class_id in place (see student_enrollments above), and
+    // attendance history must keep showing the class the student was
+    // actually marked in that day, not wherever they sit today (ADR-002:
+    // never confuse planned/current state with what actually happened).
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS attendance_records (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            school_id INT NOT NULL,
+            student_id INT NOT NULL,
+            class_id INT NOT NULL,
+            academic_year_id INT NOT NULL,
+            attendance_date DATE NOT NULL,
+            status VARCHAR(20) NOT NULL DEFAULT 'PRESENT',
+            remarks VARCHAR(255) NULL,
+            recorded_by INT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            CONSTRAINT fk_attendance_school FOREIGN KEY (school_id) REFERENCES schools(id),
+            CONSTRAINT fk_attendance_student FOREIGN KEY (student_id) REFERENCES students(id),
+            CONSTRAINT fk_attendance_class FOREIGN KEY (class_id) REFERENCES classes(id),
+            CONSTRAINT fk_attendance_academic_year FOREIGN KEY (academic_year_id) REFERENCES academic_years(id),
+            CONSTRAINT fk_attendance_recorded_by FOREIGN KEY (recorded_by) REFERENCES users(id),
+            CONSTRAINT uq_attendance_student_date UNIQUE (student_id, attendance_date)
+        )
+    `);
+
+    await pool.query(`
+        CREATE INDEX idx_attendance_class_date ON attendance_records (class_id, attendance_date)
     `).catch((error) => {
         if (error.code !== 'ER_DUP_KEYNAME') throw error;
     });

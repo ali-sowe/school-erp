@@ -9,12 +9,14 @@ export const DEFAULT_ROLE_PERMISSIONS = {
         'subjects.read', 'subjects.write',
         'classes.read', 'classes.write',
         'students.read', 'students.write',
-        'guardians.read', 'guardians.write'
+        'guardians.read', 'guardians.write',
+        'attendance.read', 'attendance.write'
     ],
     Teacher: [
         'academic-years.read', 'terms.read',
         'grade-levels.read', 'subjects.read', 'classes.read',
-        'students.read', 'guardians.read'
+        'students.read', 'guardians.read',
+        'attendance.read', 'attendance.write'
     ],
     Student: [],
     Parent: []

@@ -115,11 +115,32 @@ export async function activate(id) {
     // Only ever touches the requested row — the "only one active term per
     // year" rule is a business rule and belongs in the service layer, so it
     // can be blocked with a clear, audited error instead of a silent side effect.
-    await query(`UPDATE terms SET status = 'ACTIVE' WHERE id = ?`, [id]);
+    //
+    // actual_start_date is stamped here (if not already set), same reasoning
+    // as academic-year.repository.js#activate: the lifecycle job falls back
+    // to the planned start_date/end_date whenever actual_* is still NULL, so
+    // leaving it unset would let a later lifecycle run recompute status from
+    // the plan and undo this.
+    await query(
+        `UPDATE terms
+         SET status = 'ACTIVE',
+             actual_start_date = COALESCE(actual_start_date, CURDATE())
+         WHERE id = ?`,
+        [id]
+    );
 }
 
 export async function complete(id) {
-    await query(`UPDATE terms SET status = 'COMPLETED' WHERE id = ?`, [id]);
+    // See activate() above — an early manual completion needs actual_end_date
+    // stamped too, or the lifecycle job reverts it back to ACTIVE the next
+    // time it runs and falls back to the still-future planned end_date.
+    await query(
+        `UPDATE terms
+         SET status = 'COMPLETED',
+             actual_end_date = COALESCE(actual_end_date, CURDATE())
+         WHERE id = ?`,
+        [id]
+    );
 }
 
 export async function findScheduled() {

@@ -17,6 +17,7 @@ import subjectRoutes from './routes/subject/subject.routes.js';
 import classRoutes from './routes/class/class.routes.js';
 import studentRoutes from './routes/student/student.routes.js';
 import guardianRoutes from './routes/guardian/guardian.routes.js';
+import attendanceRoutes from './routes/attendance/attendance.routes.js';
 
 import { notFound } from './middleware/error/not-found.js';
 import { errorHandler } from './middleware/error/error-handler.js';
@@ -43,6 +44,7 @@ app.use('/api/subjects', subjectRoutes);
 app.use('/api/classes', classRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/guardians', guardianRoutes);
+app.use('/api/attendance', attendanceRoutes);
 
 // Root route
 app.get('/', (req, res) => {

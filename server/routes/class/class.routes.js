@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import * as classController from '../../controllers/class/class.controller.js';
 import * as enrollmentController from '../../controllers/student/enrollment.controller.js';
+import * as attendanceController from '../../controllers/attendance/attendance.controller.js';
 import { asyncHandler } from '../../helpers/async-handler.helper.js';
 import { authenticate } from '../../middleware/auth/auth.middleware.js';
 import { authorize } from '../../middleware/auth/authorize.middleware.js';
 import { validate } from '../../middleware/validation/validate.middleware.js';
 import { createClassSchema, updateClassSchema, assignSubjectSchema } from '../../validations/class/class.validation.js';
+import { markAttendanceSchema } from '../../validations/attendance/attendance.validation.js';
 
 const router = Router();
 
@@ -24,5 +26,13 @@ router.delete('/:id/subjects/:subjectId', authenticate, authorize(['classes.writ
 // year (defaults to the active year). Lives in the Students/Enrollment
 // module since roster history is owned there — see schema.js.
 router.get('/:id/roster', authenticate, authorize(['classes.read']), asyncHandler(enrollmentController.getRoster));
+
+// Attendance: marking a whole day's roster, and reading it back. Lives here
+// (rather than a top-level /api/attendance) since both are always scoped to
+// one class — correcting a single already-recorded entry is the one
+// exception and lives at PATCH /api/attendance/:id (attendance.routes.js).
+router.post('/:id/attendance', authenticate, authorize(['attendance.write']), validate(markAttendanceSchema), asyncHandler(attendanceController.markAttendance));
+router.get('/:id/attendance', authenticate, authorize(['attendance.read']), asyncHandler(attendanceController.getClassAttendanceForDate));
+router.get('/:id/attendance/summary', authenticate, authorize(['attendance.read']), asyncHandler(attendanceController.getClassAttendanceSummary));
 
 export default router;
