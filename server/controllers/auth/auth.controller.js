@@ -20,7 +20,8 @@ export const login = async (req, res) => {
 }
 
 export const me = async (req, res) => {
-    return sendSuccess(res, { message: AUTH_MESSAGES.ME_SUCCESS, data: req.user });
+    const user = await authService.getCurrentUser(req.user.userId);
+    return sendSuccess(res, { message: AUTH_MESSAGES.ME_SUCCESS, data: user });
 }
 
 export const logout = async (req, res) => {

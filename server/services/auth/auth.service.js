@@ -83,6 +83,20 @@ export const login = async ({ email, password }) => {
     return { token, user: { ...authRepository.sensitizeUser(user), permissions } };
 }
 
+// req.user is only the decoded JWT payload (userId, schoolId, email, role,
+// permissions) — it does not carry first_name/last_name/role_name, so
+// GET /auth/me looks the user back up rather than echoing the token as-is.
+export const getCurrentUser = async (userId) => {
+    const user = await authRepository.findUserById(userId);
+    authRepository.validateUser(user);
+
+    const permissions = normalizePermissions(
+        DEFAULT_ROLE_PERMISSIONS[user.role_name] || []
+    );
+
+    return { ...authRepository.sensitizeUser(user), permissions };
+}
+
 export const logout = async (userId) => {
     if (!userId) {
         return { message: AUTH_MESSAGES.LOGOUT_SUCCESS };

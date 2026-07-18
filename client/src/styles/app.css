@@ -128,3 +128,242 @@ button.danger {
   display: flex;
   gap: 0.5rem;
 }
+
+/* --- Authenticated app shell (sidebar nav + content) --- */
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  background: #f4f7fb;
+}
+
+.app-nav {
+  background: #10223f;
+  color: white;
+  padding: 1.5rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.app-nav .eyebrow {
+  color: #93b4ff;
+}
+
+.app-nav nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.app-nav-link {
+  color: #dbe4ff;
+  text-decoration: none;
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.6rem;
+  font-weight: 600;
+}
+
+.app-nav-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.app-nav-link.active {
+  background: #4b6ef5;
+  color: white;
+}
+
+.app-nav-link.disabled {
+  color: #5b6d8f;
+  cursor: default;
+  padding: 0.55rem 0.75rem;
+}
+
+.app-nav-footer {
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 1rem;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.app-nav-user {
+  margin: 0;
+  font-weight: 700;
+}
+
+.app-nav-role {
+  margin: 0 0 0.5rem;
+  color: #93b4ff;
+  font-size: 0.85rem;
+}
+
+.app-content {
+  min-width: 0;
+}
+
+/* --- Login page --- */
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+}
+
+.auth-card {
+  width: min(400px, 90vw);
+}
+
+/* --- Toolbars / search rows --- */
+.toolbar-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.toolbar-row input {
+  flex: 1;
+  min-width: 200px;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  font: inherit;
+}
+
+.toolbar-row select {
+  border: 1px solid #cbd5e1;
+  border-radius: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  font: inherit;
+}
+
+/* --- Record lists (students, guardians, enrollments) --- */
+.record-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.record-item {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 0.9rem 1rem;
+}
+
+.record-item a {
+  color: #10223f;
+  text-decoration: none;
+}
+
+.record-item a:hover {
+  text-decoration: underline;
+}
+
+.record-meta {
+  margin: 0.2rem 0 0;
+  color: #64748b;
+  font-size: 0.88rem;
+}
+
+.status-badge {
+  display: inline-block;
+  margin-left: 0.6rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.status-active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-archived,
+.status-withdrawn {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-completed {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.nested-panel {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px dashed #cbd5e1;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.enrollment-actions {
+  gap: 0.75rem;
+}
+
+.chip-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip-list li {
+  background: #eef2ff;
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+}
+
+/* --- Detail page --- */
+.back-link {
+  color: #4b6ef5;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.detail-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  margin: 1rem 0 0;
+}
+
+.detail-grid dt {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin-bottom: 0.2rem;
+}
+
+.detail-grid dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.checkbox-label {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.feature-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.feature-card-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(16, 34, 63, 0.12);
+}
