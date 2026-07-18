@@ -8,7 +8,8 @@ import { transaction } from "../../database/transaction.js";
 import {
     findOwnedAttendanceRecordOrThrow,
     validateAttendanceDate,
-    validateDateRange
+    validateDateRange,
+    validateNoDuplicateEntries
 } from "../../helpers/attendance/attendance.helper.js";
 import { findOwnedStudentOrThrow } from "../../helpers/student/student.helper.js";
 import {
@@ -30,6 +31,7 @@ export async function markAttendance(classId, data, schoolId, userId = null) {
     }
 
     validateAttendanceDate(data.date);
+    validateNoDuplicateEntries(data.entries);
 
     const academicYearId = await resolveAcademicYearId(data.academic_year_id, schoolId);
 

@@ -5,11 +5,13 @@ import { useAuth } from '../../context/AuthContext';
 import StudentForm from '../../components/students/StudentForm';
 import GuardianLinkPanel from '../../components/students/GuardianLinkPanel';
 import EnrollmentPanel from '../../components/students/EnrollmentPanel';
+import StudentAttendancePanel from '../../components/attendance/StudentAttendancePanel';
 
 function StudentDetailPage() {
   const { id } = useParams();
   const { hasPermission } = useAuth();
   const canWrite = hasPermission('students.write');
+  const canViewAttendance = hasPermission('attendance.read');
 
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -100,6 +102,7 @@ function StudentDetailPage() {
 
       <GuardianLinkPanel studentId={student.id} canWrite={canWrite} />
       <EnrollmentPanel studentId={student.id} canWrite={canWrite} />
+      {canViewAttendance ? <StudentAttendancePanel studentId={student.id} /> : null}
     </main>
   );
 }

@@ -37,3 +37,28 @@ export function validateDateRange(from, to) {
         throw new AppError(HTTP_STATUS.BAD_REQUEST, ATTENDANCE_MESSAGES.INVALID_DATE_RANGE);
     }
 }
+
+// markAttendance processes data.entries one at a time inside the
+// transaction, so two entries for the same student would silently run as
+// two sequential updates (the second just overwriting the first) rather
+// than failing loudly — that's a client bug (duplicate rows in the
+// roster payload) worth rejecting up front instead of masking it.
+export function validateNoDuplicateEntries(entries) {
+    const seen = new Set();
+    const duplicates = new Set();
+
+    for (const entry of entries) {
+        if (seen.has(entry.student_id)) {
+            duplicates.add(entry.student_id);
+        }
+        seen.add(entry.student_id);
+    }
+
+    if (duplicates.size > 0) {
+        throw new AppError(
+            HTTP_STATUS.BAD_REQUEST,
+            ATTENDANCE_MESSAGES.DUPLICATE_STUDENT_ENTRIES,
+            [...duplicates].map((studentId) => `Student ${studentId} appears more than once in the entries list.`)
+        );
+    }
+}

@@ -13,5 +13,6 @@ export const ATTENDANCE_MESSAGES = {
 
     FUTURE_DATE_NOT_ALLOWED: 'Attendance cannot be recorded for a future date.',
     STUDENTS_NOT_ENROLLED: 'One or more students are not enrolled in this class for the resolved academic year.',
-    INVALID_DATE_RANGE: 'The "from" date must be on or before the "to" date.'
+    INVALID_DATE_RANGE: 'The "from" date must be on or before the "to" date.',
+    DUPLICATE_STUDENT_ENTRIES: 'The same student appears more than once in the entries list.'
 };

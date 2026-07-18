@@ -11,7 +11,7 @@ const NAV_ITEMS = [
   { label: 'Classes', to: '/classes', permission: 'classes.read', ready: false },
   { label: 'Subjects', to: '/subjects', permission: 'subjects.read', ready: false },
   { label: 'Teachers', to: '/teachers', permission: null, ready: false },
-  { label: 'Attendance', to: '/attendance', permission: null, ready: false },
+  { label: 'Attendance', to: '/attendance', permission: 'attendance.read', ready: true },
   { label: 'Exams', to: '/exams', permission: null, ready: false },
   { label: 'Finance', to: '/finance', permission: null, ready: false },
   { label: 'Users & Roles', to: '/admin', permission: 'users.read', ready: true }

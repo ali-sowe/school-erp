@@ -8,6 +8,7 @@ import AdminDashboard from '../pages/AdminDashboard';
 import StudentsListPage from '../pages/students/StudentsListPage';
 import StudentDetailPage from '../pages/students/StudentDetailPage';
 import GuardiansListPage from '../pages/guardians/GuardiansListPage';
+import AttendancePage from '../pages/attendance/AttendancePage';
 
 function AppRoutes() {
   return (
@@ -46,6 +47,14 @@ function AppRoutes() {
               element={
                 <ProtectedRoute permission="guardians.read">
                   <GuardiansListPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/attendance"
+              element={
+                <ProtectedRoute permission="attendance.read">
+                  <AttendancePage />
                 </ProtectedRoute>
               }
             />
