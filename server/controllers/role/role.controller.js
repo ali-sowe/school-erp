@@ -1,6 +1,6 @@
 import * as roleService from '../../services/role/role.service.js';
 import { asyncHandler } from '../../helpers/async-handler.helper.js';
-import { HTTP_STATUS } from '../../constants/httpstatus.js';
+import { HTTP_STATUS } from '../../constants/httpStatus.js';
 
 export const createRole = asyncHandler(async (req, res) => {
     const role = await roleService.createRole(req.body);

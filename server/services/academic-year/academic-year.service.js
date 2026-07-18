@@ -2,16 +2,16 @@ import { ensureAcademicYearDoesNotExist, validateAcademicYearDates } from "../..
 import * as academicYearRepository from "../../repositories/academic-year/academic-year.repository.js";
 import { AppError } from "../../helpers/app-error.helper.js";
 import { ACADEMIC_YEAR_MESSAGES } from "../../constants/messages/academic-year/academic-year.message.js";
-import { HTTP_STATUS } from "../../constants/httpstatus.js";
+import { HTTP_STATUS } from "../../constants/httpStatus.js";
 import * as auditRepository from "../../repositories/audit/audit.repository.js";
 import { getChangedFields } from "../../helpers/audit/audit.helper.js";
 
-export async function createAcademicYear(data) {
+export async function createAcademicYear(data, userId = null) {
     validateAcademicYearDates(data.start_date, data.end_date);
 
     await ensureAcademicYearDoesNotExist(data.name);
 
-    const id = await academicYearRepository.create(data);
+    const id = await academicYearRepository.create(data, userId);
 
     return await academicYearRepository.findById(id);
 }
@@ -85,6 +85,16 @@ export async function activateAcademicYear(id, userId = null) {
 
     if (academicYear.status === "ACTIVE") {
         return academicYear;
+    }
+
+    const currentlyActive = await academicYearRepository.findActive();
+    if (currentlyActive && currentlyActive.id !== academicYear.id) {
+        throw new AppError(HTTP_STATUS.CONFLICT, ACADEMIC_YEAR_MESSAGES.ONLY_ONE_ACTIVE);
+    }
+
+    const today = new Date();
+    if (new Date(academicYear.start_date) > today) {
+        throw new AppError(HTTP_STATUS.BAD_REQUEST, ACADEMIC_YEAR_MESSAGES.CANNOT_ACTIVATE_FUTURE);
     }
 
     await academicYearRepository.activate(id);

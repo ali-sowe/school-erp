@@ -1,11 +1,11 @@
 import * as academicYearService from "../../services/academic-year/academic-year.service.js";
 import { asyncHandler } from "../../helpers/async-handler.helper.js";
-import { HTTP_STATUS } from "../../constants/httpstatus.js";
+import { HTTP_STATUS } from "../../constants/httpStatus.js";
 import { ACADEMIC_YEAR_MESSAGES } from "../../constants/messages/academic-year/academic-year.message.js";
 
 export const createAcademicYear = asyncHandler(
     async (req, res) => {
-        const academicYear = await academicYearService.createAcademicYear(req.body);
+        const academicYear = await academicYearService.createAcademicYear(req.body, req.user.userId);
 
         res.status(HTTP_STATUS.CREATED).json({
             success: true,
@@ -53,8 +53,6 @@ export const updateAcademicYear = asyncHandler(
 
 export const activateAcademicYear = asyncHandler(
     async (req, res) => {
-        console.log('req.user:', req.user);
-
         const academicYear =
             await academicYearService.activateAcademicYear(
                 req.params.id,

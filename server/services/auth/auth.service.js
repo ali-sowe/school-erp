@@ -1,7 +1,7 @@
 import { query } from '../../database/query.js';
 import { AppError } from '../../helpers/app-error.helper.js';
 import { generateCode } from '../../helpers/code-generator.helper.js';
-import { HTTP_STATUS } from '../../constants/httpstatus.js';
+import { HTTP_STATUS } from '../../constants/httpStatus.js';
 import { AUTH_MESSAGES } from '../../constants/messages/auth.message.js';
 import { hashPassword, comparePassword } from '../../helpers/password.helper.js';
 import { generateToken } from '../../helpers/jwt.helper.js';

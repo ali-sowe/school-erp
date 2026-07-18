@@ -1,5 +1,5 @@
 import { AppError } from '../../helpers/app-error.helper.js';
-import { HTTP_STATUS } from '../../constants/httpstatus.js';
+import { HTTP_STATUS } from '../../constants/httpStatus.js';
 import * as roleRepository from '../../repositories/role/role.repository.js';
 
 export async function getRoles() {

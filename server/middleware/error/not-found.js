@@ -1,4 +1,4 @@
-import { HTTP_STATUS } from '../../constants/httpstatus.js';
+import { HTTP_STATUS } from '../../constants/httpStatus.js';
 import { sendError } from "../../helpers/response.helper.js";
 
 export const notFound = (req, res, next) => {

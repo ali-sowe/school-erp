@@ -1,5 +1,5 @@
 import { AppError } from '../../helpers/app-error.helper.js';
-import { HTTP_STATUS } from '../../constants/httpstatus.js';
+import { HTTP_STATUS } from '../../constants/httpStatus.js';
 import { USER_MESSAGES } from '../../constants/messages/user.message.js';
 import * as userRepository from '../../repositories/user/user.repository.js';
 import { hashPassword } from '../../helpers/password.helper.js';

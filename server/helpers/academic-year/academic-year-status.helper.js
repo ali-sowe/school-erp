@@ -1,23 +1,7 @@
+import { determineLifecycleStatus } from "../lifecycle/lifecycle-status.helper.js";
+
+// Thin, module-named wrapper around the shared lifecycle calculator, kept so
+// call sites read clearly (and so existing imports/tests don't need to change).
 export function determineAcademicYearStatus(today, academicYear) {
-
-    // Realty takes precedence over planned dates, so we check for actual dates first.
-    const startDate = new Date(
-        academicYear.actual_start_date ?? academicYear.start_date
-    );
-
-    const endDate = new Date(
-        academicYear.actual_end_date ?? academicYear.end_date
-    );
-
-    const currentDate = new Date(today);
-
-    if (currentDate < startDate) {
-        return "SCHEDULED";
-    }
-
-    if (currentDate <= endDate) {
-        return "ACTIVE";
-    }
-
-    return "COMPLETED";
+    return determineLifecycleStatus(today, academicYear);
 }

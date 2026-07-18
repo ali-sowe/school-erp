@@ -4,7 +4,7 @@ import { validateUser } from '../repositories/auth/auth.repository.js';
 import { logout } from '../services/auth/auth.service.js';
 import { AppError } from '../helpers/app-error.helper.js';
 import { AUTH_MESSAGES } from '../constants/messages/auth.message.js';
-import { HTTP_STATUS } from '../constants/httpstatus.js';
+import { HTTP_STATUS } from '../constants/httpStatus.js';
 
 test('validateUser throws AppError for missing user', () => {
   assert.throws(() => validateUser(null), (error) => {

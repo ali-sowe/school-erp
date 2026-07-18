@@ -1,7 +1,6 @@
 import { query } from "../../database/query.js";
-import { transaction } from "../../database/transaction.js";
 
-export async function create(data) {
+export async function create(data, createdBy = null) {
 
     const results = await query(
         `
@@ -10,15 +9,17 @@ export async function create(data) {
             name,
             start_date,
             end_date,
-            status
+            status,
+            created_by
         )
-        VALUES (?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?)
         `,
         [
             data.name,
             data.start_date,
             data.end_date,
-            "SCHEDULED"
+            "SCHEDULED",
+            createdBy
         ]
     );
 
@@ -87,31 +88,17 @@ export async function findActive() {
 }
 
 export async function activate(id) {
-
-    await transaction(async (connection) => {
-
-        // Move current active year back? 
-        // NO.
-        
-        await connection.query(
-            `
-            UPDATE academic_years
-            SET status = 'COMPLETED'
-            WHERE status = 'ACTIVE'
-            `
-        );
-
-
-        await connection.query(
-            `
-            UPDATE academic_years
-            SET status = 'ACTIVE'
-            WHERE id = ?
-            `,
-            [id]
-        );
-
-    });
+    // Only ever touches the requested row. Blocking a second concurrent
+    // ACTIVE year (ADR-002/003: no silent, unaudited side effects on other
+    // records) is a business rule and belongs in the service layer, not here.
+    await query(
+        `
+        UPDATE academic_years
+        SET status = 'ACTIVE'
+        WHERE id = ?
+        `,
+        [id]
+    );
 }
 
 export async function complete(id) {

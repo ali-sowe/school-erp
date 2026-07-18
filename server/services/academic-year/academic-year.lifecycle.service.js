@@ -1,3 +1,6 @@
+import * as academicYearRepository from "../../repositories/academic-year/academic-year.repository.js";
+import { determineAcademicYearStatus } from "../../helpers/academic-year/academic-year-status.helper.js";
+
 export async function processAcademicYearLifecycle() {
 
     const today = new Date().toISOString().split("T")[0];

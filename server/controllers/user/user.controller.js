@@ -1,6 +1,6 @@
 import * as userService from '../../services/user/user.service.js';
 import { asyncHandler } from '../../helpers/async-handler.helper.js';
-import { HTTP_STATUS } from '../../constants/httpstatus.js';
+import { HTTP_STATUS } from '../../constants/httpStatus.js';
 import { USER_MESSAGES } from '../../constants/messages/user.message.js';
 
 export const createUser = asyncHandler(async (req, res) => {

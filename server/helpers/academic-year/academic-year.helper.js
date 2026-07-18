@@ -1,4 +1,4 @@
-import { HTTP_STATUS } from "../../constants/httpstatus.js";
+import { HTTP_STATUS } from "../../constants/httpStatus.js";
 import { ACADEMIC_YEAR_MESSAGES } from "../../constants/messages/academic-year/academic-year.message.js";
 import { AppError } from "../app-error.helper.js";
 import * as academicYearRepository from "../../repositories/academic-year/academic-year.repository.js";
