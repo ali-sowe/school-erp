@@ -5,7 +5,7 @@ import { TERM_MESSAGES } from "../../constants/messages/term/term.message.js";
 
 export const createTerm = asyncHandler(
     async (req, res) => {
-        const term = await termService.createTerm(req.body, req.user.userId);
+        const term = await termService.createTerm(req.body, req.user.schoolId, req.user.userId);
 
         res.status(HTTP_STATUS.CREATED).json({
             success: true,
@@ -17,7 +17,7 @@ export const createTerm = asyncHandler(
 
 export const getTerms = asyncHandler(
     async (req, res) => {
-        const terms = await termService.getTerms(req.query.academic_year_id || null);
+        const terms = await termService.getTerms(req.user.schoolId, req.query.academic_year_id || null);
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
@@ -29,7 +29,7 @@ export const getTerms = asyncHandler(
 
 export const getTermById = asyncHandler(
     async (req, res) => {
-        const term = await termService.getTermById(req.params.id);
+        const term = await termService.getTermById(req.params.id, req.user.schoolId);
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
@@ -41,7 +41,7 @@ export const getTermById = asyncHandler(
 
 export const updateTerm = asyncHandler(
     async (req, res) => {
-        const term = await termService.updateTerm(req.params.id, req.body, req.user.userId);
+        const term = await termService.updateTerm(req.params.id, req.body, req.user.schoolId, req.user.userId);
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
@@ -53,7 +53,7 @@ export const updateTerm = asyncHandler(
 
 export const activateTerm = asyncHandler(
     async (req, res) => {
-        const term = await termService.activateTerm(req.params.id, req.user.userId);
+        const term = await termService.activateTerm(req.params.id, req.user.schoolId, req.user.userId);
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
@@ -65,7 +65,7 @@ export const activateTerm = asyncHandler(
 
 export const completeTerm = asyncHandler(
     async (req, res) => {
-        const term = await termService.completeTerm(req.params.id, req.user.userId);
+        const term = await termService.completeTerm(req.params.id, req.user.schoolId, req.user.userId);
 
         res.status(HTTP_STATUS.OK).json({
             success: true,

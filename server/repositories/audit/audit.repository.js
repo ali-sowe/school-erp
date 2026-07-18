@@ -1,6 +1,7 @@
 import { query } from "../../database/query.js";
 
 export const createAuditLog = async ({
+    schoolId = null,
     entityType,
     entityId,
     action,
@@ -12,6 +13,7 @@ export const createAuditLog = async ({
 
     const sql = `
         INSERT INTO audit_logs (
+            school_id,
             entity_type,
             entity_id,
             action,
@@ -20,10 +22,11 @@ export const createAuditLog = async ({
             reason,
             performed_by
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const values = [
+        schoolId,
         entityType,
         entityId,
         action,

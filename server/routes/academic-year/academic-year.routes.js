@@ -14,5 +14,6 @@ router.get('/:id', authenticate, authorize(['academic-years.read']), asyncHandle
 router.patch('/:id', authenticate, authorize(['academic-years.write']), validate(updateAcademicYearSchema), asyncHandler(academicYearController.updateAcademicYear));
 router.patch('/:id/activate', authenticate, authorize(['academic-years.write']), asyncHandler(academicYearController.activateAcademicYear));
 router.patch('/:id/complete', authenticate, authorize(['academic-years.write']), asyncHandler(academicYearController.completeAcademicYear));
+router.patch('/:id/override', authenticate, authorize(['academic-years.write']), asyncHandler(academicYearController.overrideAcademicYear));
 
 export default router;

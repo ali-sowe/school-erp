@@ -5,7 +5,7 @@ import { ACADEMIC_YEAR_MESSAGES } from "../../constants/messages/academic-year/a
 
 export const createAcademicYear = asyncHandler(
     async (req, res) => {
-        const academicYear = await academicYearService.createAcademicYear(req.body, req.user.userId);
+        const academicYear = await academicYearService.createAcademicYear(req.body, req.user.schoolId, req.user.userId);
 
         res.status(HTTP_STATUS.CREATED).json({
             success: true,
@@ -17,7 +17,7 @@ export const createAcademicYear = asyncHandler(
 
 export const getAcademicYears = asyncHandler(
     async (req, res) => {
-        const academicYears = await academicYearService.getAcademicYears();
+        const academicYears = await academicYearService.getAcademicYears(req.user.schoolId);
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
@@ -29,7 +29,7 @@ export const getAcademicYears = asyncHandler(
 
 export const getAcademicYearById = asyncHandler(
     async (req, res) => {
-        const academicYear = await academicYearService.getAcademicYearById(req.params.id);
+        const academicYear = await academicYearService.getAcademicYearById(req.params.id, req.user.schoolId);
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
@@ -41,7 +41,7 @@ export const getAcademicYearById = asyncHandler(
 
 export const updateAcademicYear = asyncHandler(
     async (req, res) => {
-        const academicYear = await academicYearService.updateAcademicYear(req.params.id, req.body);
+        const academicYear = await academicYearService.updateAcademicYear(req.params.id, req.body, req.user.schoolId, req.user.userId);
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
@@ -56,6 +56,7 @@ export const activateAcademicYear = asyncHandler(
         const academicYear =
             await academicYearService.activateAcademicYear(
                 req.params.id,
+                req.user.schoolId,
                 req.user.userId
             );
 
@@ -69,11 +70,23 @@ export const activateAcademicYear = asyncHandler(
 
 export const completeAcademicYear = asyncHandler(
     async (req, res) => {
-        const academicYear = await academicYearService.completeAcademicYear(req.params.id, req.user.userId);
+        const academicYear = await academicYearService.completeAcademicYear(req.params.id, req.user.schoolId, req.user.userId);
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
             message: ACADEMIC_YEAR_MESSAGES.COMPLETED,
+            data: academicYear
+        });
+    }
+);
+
+export const overrideAcademicYear = asyncHandler(
+    async (req, res) => {
+        const academicYear = await academicYearService.overrideAcademicYear(req.params.id, req.body, req.user.schoolId, req.user.userId);
+
+        res.status(HTTP_STATUS.OK).json({
+            success: true,
+            message: ACADEMIC_YEAR_MESSAGES.OVERRIDE_SUCCESS,
             data: academicYear
         });
     }

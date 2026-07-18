@@ -1,7 +1,16 @@
 import { query } from '../../database/query.js';
 
-export async function findAll() {
-    return await query(`SELECT * FROM roles ORDER BY role_name ASC`);
+// schoolId is required for normal school-scoped roles; pass null explicitly
+// to read/write platform-level roles (e.g. "Super Administrator").
+export async function findAll(schoolId) {
+    if (schoolId === undefined) {
+        return await query(`SELECT * FROM roles ORDER BY role_name ASC`);
+    }
+
+    return await query(
+        `SELECT * FROM roles WHERE school_id ${schoolId === null ? 'IS NULL' : '= ?'} ORDER BY role_name ASC`,
+        schoolId === null ? [] : [schoolId]
+    );
 }
 
 export async function findById(id) {
@@ -9,16 +18,26 @@ export async function findById(id) {
     return rows[0] || null;
 }
 
-export async function findByName(roleName) {
-    const rows = await query(`SELECT * FROM roles WHERE role_name = ? LIMIT 1`, [roleName]);
+export async function findByName(schoolId, roleName) {
+    const rows = await query(
+        `SELECT * FROM roles WHERE school_id ${schoolId === null ? 'IS NULL' : '= ?'} AND role_name = ? LIMIT 1`,
+        schoolId === null ? [roleName] : [schoolId, roleName]
+    );
     return rows[0] || null;
 }
 
-export async function create(data) {
-    const result = await query(
-        `INSERT INTO roles (role_name, description) VALUES (?, ?)`,
-        [data.role_name, data.description || '']
-    );
+// Accepts an optional transaction connection so school onboarding can create
+// its default roles atomically with the school row — see school.service.js.
+export async function create(data, connection = null) {
+    const sql = `INSERT INTO roles (school_id, role_name, description) VALUES (?, ?, ?)`;
+    const params = [data.school_id ?? null, data.role_name, data.description || ''];
+
+    if (connection) {
+        const [result] = await connection.query(sql, params);
+        return result.insertId;
+    }
+
+    const result = await query(sql, params);
     return result.insertId;
 }
 

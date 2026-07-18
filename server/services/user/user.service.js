@@ -5,7 +5,7 @@ import * as userRepository from '../../repositories/user/user.repository.js';
 import { hashPassword } from '../../helpers/password.helper.js';
 import { generateCode } from '../../helpers/code-generator.helper.js';
 
-export async function createUser(data) {
+export async function createUser(data, schoolId) {
     const existingUser = await userRepository.findByEmail(data.email);
 
     if (existingUser) {
@@ -16,6 +16,7 @@ export async function createUser(data) {
 
     const id = await userRepository.create({
         ...data,
+        school_id: schoolId,
         password: passwordHash,
         user_code: data.user_code || generateCode('USR', Date.now()),
         status: data.status || 'active'
@@ -24,42 +25,34 @@ export async function createUser(data) {
     return await userRepository.findById(id);
 }
 
-export async function getUsers() {
-    return await userRepository.findAll();
+export async function getUsers(schoolId) {
+    return await userRepository.findAll(schoolId);
 }
 
-export async function getUserById(id) {
+export async function getUserById(id, schoolId) {
     const user = await userRepository.findById(id);
 
-    if (!user) {
+    if (!user || user.school_id !== schoolId) {
         throw new AppError(HTTP_STATUS.NOT_FOUND, USER_MESSAGES.NOT_FOUND);
     }
 
     return user;
 }
 
-export async function updateUser(id, data) {
-    const user = await userRepository.findById(id);
-
-    if (!user) {
-        throw new AppError(HTTP_STATUS.NOT_FOUND, USER_MESSAGES.NOT_FOUND);
-    }
+export async function updateUser(id, data, schoolId) {
+    const user = await getUserById(id, schoolId);
 
     if (data.password) {
         data.password = await hashPassword(data.password);
     }
 
-    await userRepository.update(id, data);
-    return await userRepository.findById(id);
+    await userRepository.update(user.id, data);
+    return await userRepository.findById(user.id);
 }
 
-export async function deleteUser(id) {
-    const user = await userRepository.findById(id);
+export async function deleteUser(id, schoolId) {
+    const user = await getUserById(id, schoolId);
 
-    if (!user) {
-        throw new AppError(HTTP_STATUS.NOT_FOUND, USER_MESSAGES.NOT_FOUND);
-    }
-
-    await userRepository.remove(id);
-    return { id };
+    await userRepository.remove(user.id);
+    return { id: user.id };
 }

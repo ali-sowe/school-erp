@@ -1,6 +1,21 @@
 export const DEFAULT_ROLE_PERMISSIONS = {
-    Administrator: ['users.read', 'users.write', 'roles.read', 'roles.write', 'academic-years.read', 'academic-years.write', 'terms.read', 'terms.write'],
-    Teacher: ['academic-years.read', 'terms.read'],
+    'Platform Administrator': ['schools.read', 'schools.write'],
+    Administrator: [
+        'users.read', 'users.write',
+        'roles.read', 'roles.write',
+        'academic-years.read', 'academic-years.write',
+        'terms.read', 'terms.write',
+        'grade-levels.read', 'grade-levels.write',
+        'subjects.read', 'subjects.write',
+        'classes.read', 'classes.write',
+        'students.read', 'students.write',
+        'guardians.read', 'guardians.write'
+    ],
+    Teacher: [
+        'academic-years.read', 'terms.read',
+        'grade-levels.read', 'subjects.read', 'classes.read',
+        'students.read', 'guardians.read'
+    ],
     Student: [],
     Parent: []
 };

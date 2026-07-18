@@ -2,49 +2,41 @@ import { AppError } from '../../helpers/app-error.helper.js';
 import { HTTP_STATUS } from '../../constants/httpStatus.js';
 import * as roleRepository from '../../repositories/role/role.repository.js';
 
-export async function getRoles() {
-    return await roleRepository.findAll();
+export async function getRoles(schoolId) {
+    return await roleRepository.findAll(schoolId);
 }
 
-export async function getRoleById(id) {
+export async function getRoleById(id, schoolId) {
     const role = await roleRepository.findById(id);
 
-    if (!role) {
+    if (!role || role.school_id !== schoolId) {
         throw new AppError(HTTP_STATUS.NOT_FOUND, 'Role not found.');
     }
 
     return role;
 }
 
-export async function createRole(data) {
-    const existing = await roleRepository.findByName(data.role_name);
+export async function createRole(data, schoolId) {
+    const existing = await roleRepository.findByName(schoolId, data.role_name);
 
     if (existing) {
         throw new AppError(HTTP_STATUS.CONFLICT, 'Role already exists.');
     }
 
-    const id = await roleRepository.create(data);
+    const id = await roleRepository.create({ ...data, school_id: schoolId });
     return await roleRepository.findById(id);
 }
 
-export async function updateRole(id, data) {
-    const role = await roleRepository.findById(id);
+export async function updateRole(id, data, schoolId) {
+    const role = await getRoleById(id, schoolId);
 
-    if (!role) {
-        throw new AppError(HTTP_STATUS.NOT_FOUND, 'Role not found.');
-    }
-
-    await roleRepository.update(id, data);
-    return await roleRepository.findById(id);
+    await roleRepository.update(role.id, data);
+    return await roleRepository.findById(role.id);
 }
 
-export async function deleteRole(id) {
-    const role = await roleRepository.findById(id);
+export async function deleteRole(id, schoolId) {
+    const role = await getRoleById(id, schoolId);
 
-    if (!role) {
-        throw new AppError(HTTP_STATUS.NOT_FOUND, 'Role not found.');
-    }
-
-    await roleRepository.remove(id);
-    return { id };
+    await roleRepository.remove(role.id);
+    return { id: role.id };
 }

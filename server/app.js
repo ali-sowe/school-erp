@@ -9,8 +9,14 @@ import healthRoutes from './routes/health.routes.js';
 import authRoutes from './routes/auth/auth.routes.js';
 import academicYearRoutes from './routes/academic-year/academic-year.routes.js';
 import termRoutes from './routes/term/term.routes.js';
+import schoolRoutes from './routes/school/school.routes.js';
 import userRoutes from './routes/user/user.routes.js';
 import roleRoutes from './routes/role/role.routes.js';
+import gradeLevelRoutes from './routes/grade-level/grade-level.routes.js';
+import subjectRoutes from './routes/subject/subject.routes.js';
+import classRoutes from './routes/class/class.routes.js';
+import studentRoutes from './routes/student/student.routes.js';
+import guardianRoutes from './routes/guardian/guardian.routes.js';
 
 import { notFound } from './middleware/error/not-found.js';
 import { errorHandler } from './middleware/error/error-handler.js';
@@ -29,8 +35,14 @@ app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/academic-years', academicYearRoutes);
 app.use('/api/terms', termRoutes);
+app.use('/api/schools', schoolRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/roles', roleRoutes);
+app.use('/api/grade-levels', gradeLevelRoutes);
+app.use('/api/subjects', subjectRoutes);
+app.use('/api/classes', classRoutes);
+app.use('/api/students', studentRoutes);
+app.use('/api/guardians', guardianRoutes);
 
 // Root route
 app.get('/', (req, res) => {

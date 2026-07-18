@@ -2,7 +2,7 @@ import {
     ensureTermDoesNotExist,
     validateTermDates,
     ensureTermFitsWithinAcademicYear,
-    findAcademicYearOrThrow
+    findOwnedAcademicYearOrThrow
 } from "../../helpers/term/term.helper.js";
 import * as termRepository from "../../repositories/term/term.repository.js";
 import { AppError } from "../../helpers/app-error.helper.js";
@@ -11,8 +11,8 @@ import { HTTP_STATUS } from "../../constants/httpStatus.js";
 import * as auditRepository from "../../repositories/audit/audit.repository.js";
 import { getChangedFields } from "../../helpers/audit/audit.helper.js";
 
-export async function createTerm(data, userId = null) {
-    const academicYear = await findAcademicYearOrThrow(data.academic_year_id);
+export async function createTerm(data, schoolId, userId = null) {
+    const academicYear = await findOwnedAcademicYearOrThrow(data.academic_year_id, schoolId);
 
     if (academicYear.status === "COMPLETED") {
         throw new AppError(HTTP_STATUS.BAD_REQUEST, TERM_MESSAGES.ACADEMIC_YEAR_COMPLETED);
@@ -20,33 +20,35 @@ export async function createTerm(data, userId = null) {
 
     validateTermDates(data.start_date, data.end_date);
     await ensureTermFitsWithinAcademicYear(academicYear, data.start_date, data.end_date);
-    await ensureTermDoesNotExist(data.academic_year_id, data.name);
+    await ensureTermDoesNotExist(schoolId, data.academic_year_id, data.name);
 
-    const id = await termRepository.create(data, userId);
+    const id = await termRepository.create({ ...data, school_id: schoolId }, userId);
 
     return await termRepository.findById(id);
 }
 
-export async function getTerms(academicYearId = null) {
-    return await termRepository.findAll(academicYearId);
+export async function getTerms(schoolId, academicYearId = null) {
+    return await termRepository.findAll(schoolId, academicYearId);
 }
 
-export async function getTermById(id) {
+// Every read of a specific term is tenant-checked here, so no caller can
+// accidentally leak another school's record just by guessing an id.
+async function findOwnedTermOrThrow(id, schoolId) {
     const term = await termRepository.findById(id);
 
-    if (!term) {
+    if (!term || term.school_id !== schoolId) {
         throw new AppError(HTTP_STATUS.NOT_FOUND, TERM_MESSAGES.NOT_FOUND);
     }
 
     return term;
 }
 
-export async function updateTerm(id, data, userId = null) {
-    const term = await termRepository.findById(id);
+export async function getTermById(id, schoolId) {
+    return await findOwnedTermOrThrow(id, schoolId);
+}
 
-    if (!term) {
-        throw new AppError(HTTP_STATUS.NOT_FOUND, TERM_MESSAGES.NOT_FOUND);
-    }
+export async function updateTerm(id, data, schoolId, userId = null) {
+    const term = await findOwnedTermOrThrow(id, schoolId);
 
     if (term.status === "COMPLETED") {
         throw new AppError(HTTP_STATUS.BAD_REQUEST, TERM_MESSAGES.CANNOT_EDIT_COMPLETED);
@@ -56,13 +58,13 @@ export async function updateTerm(id, data, userId = null) {
     const newEndDate = data.end_date ?? term.end_date;
 
     if (data.start_date || data.end_date) {
-        const academicYear = await findAcademicYearOrThrow(term.academic_year_id);
+        const academicYear = await findOwnedAcademicYearOrThrow(term.academic_year_id, schoolId);
         validateTermDates(newStartDate, newEndDate);
         await ensureTermFitsWithinAcademicYear(academicYear, newStartDate, newEndDate);
     }
 
     if (data.name && data.name !== term.name) {
-        await ensureTermDoesNotExist(term.academic_year_id, data.name);
+        await ensureTermDoesNotExist(schoolId, term.academic_year_id, data.name);
     }
 
     await termRepository.update(id, data);
@@ -72,6 +74,7 @@ export async function updateTerm(id, data, userId = null) {
 
     if (Object.keys(changes.oldValues).length > 0) {
         await auditRepository.createAuditLog({
+            schoolId,
             entityType: "Term",
             entityId: id,
             action: "UPDATED",
@@ -85,12 +88,8 @@ export async function updateTerm(id, data, userId = null) {
     return updatedTerm;
 }
 
-export async function activateTerm(id, userId = null) {
-    const term = await termRepository.findById(id);
-
-    if (!term) {
-        throw new AppError(HTTP_STATUS.NOT_FOUND, TERM_MESSAGES.NOT_FOUND);
-    }
+export async function activateTerm(id, schoolId, userId = null) {
+    const term = await findOwnedTermOrThrow(id, schoolId);
 
     if (term.status === "COMPLETED") {
         throw new AppError(HTTP_STATUS.BAD_REQUEST, TERM_MESSAGES.CANNOT_ACTIVATE_COMPLETED);
@@ -102,12 +101,12 @@ export async function activateTerm(id, userId = null) {
 
     // A term can't run ahead of its own academic year — the year has to be
     // the live one before any of its terms can be.
-    const academicYear = await findAcademicYearOrThrow(term.academic_year_id);
+    const academicYear = await findOwnedAcademicYearOrThrow(term.academic_year_id, schoolId);
     if (academicYear.status !== "ACTIVE") {
         throw new AppError(HTTP_STATUS.BAD_REQUEST, TERM_MESSAGES.ACADEMIC_YEAR_NOT_ACTIVE);
     }
 
-    const currentlyActive = await termRepository.findActiveInYear(term.academic_year_id);
+    const currentlyActive = await termRepository.findActiveInYear(schoolId, term.academic_year_id);
     if (currentlyActive && currentlyActive.id !== term.id) {
         throw new AppError(HTTP_STATUS.CONFLICT, TERM_MESSAGES.ONLY_ONE_ACTIVE_PER_YEAR);
     }
@@ -122,6 +121,7 @@ export async function activateTerm(id, userId = null) {
     const updatedTerm = await termRepository.findById(id);
 
     await auditRepository.createAuditLog({
+        schoolId,
         entityType: "Term",
         entityId: id,
         action: "ACTIVATED",
@@ -134,12 +134,8 @@ export async function activateTerm(id, userId = null) {
     return updatedTerm;
 }
 
-export async function completeTerm(id, userId = null) {
-    const term = await termRepository.findById(id);
-
-    if (!term) {
-        throw new AppError(HTTP_STATUS.NOT_FOUND, TERM_MESSAGES.NOT_FOUND);
-    }
+export async function completeTerm(id, schoolId, userId = null) {
+    const term = await findOwnedTermOrThrow(id, schoolId);
 
     if (term.status !== "ACTIVE") {
         throw new AppError(HTTP_STATUS.BAD_REQUEST, TERM_MESSAGES.CANNOT_COMPLETE_INACTIVE);
@@ -150,6 +146,7 @@ export async function completeTerm(id, userId = null) {
     const completedTerm = await termRepository.findById(id);
 
     await auditRepository.createAuditLog({
+        schoolId,
         entityType: "Term",
         entityId: id,
         action: "COMPLETED",

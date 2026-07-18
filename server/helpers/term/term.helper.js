@@ -4,8 +4,8 @@ import { AppError } from "../app-error.helper.js";
 import * as termRepository from "../../repositories/term/term.repository.js";
 import * as academicYearRepository from "../../repositories/academic-year/academic-year.repository.js";
 
-export async function ensureTermDoesNotExist(academicYearId, name) {
-    const existing = await termRepository.findByNameInYear(academicYearId, name);
+export async function ensureTermDoesNotExist(schoolId, academicYearId, name) {
+    const existing = await termRepository.findByNameInYear(schoolId, academicYearId, name);
 
     if (existing) {
         throw new AppError(HTTP_STATUS.CONFLICT, TERM_MESSAGES.DUPLICATE_NAME);
@@ -32,10 +32,14 @@ export async function ensureTermFitsWithinAcademicYear(academicYear, startDate, 
     }
 }
 
-export async function findAcademicYearOrThrow(academicYearId) {
+// Verifies the academic year exists AND belongs to the requesting school —
+// same tenant-ownership check as academic-year.service.js's
+// findOwnedAcademicYearOrThrow, so a term can never be attached to (or leak
+// the existence of) another school's academic year.
+export async function findOwnedAcademicYearOrThrow(academicYearId, schoolId) {
     const academicYear = await academicYearRepository.findById(academicYearId);
 
-    if (!academicYear) {
+    if (!academicYear || academicYear.school_id !== schoolId) {
         throw new AppError(HTTP_STATUS.NOT_FOUND, TERM_MESSAGES.ACADEMIC_YEAR_NOT_FOUND);
     }
 

@@ -6,36 +6,38 @@ import { HTTP_STATUS } from "../../constants/httpStatus.js";
 import * as auditRepository from "../../repositories/audit/audit.repository.js";
 import { getChangedFields } from "../../helpers/audit/audit.helper.js";
 
-export async function createAcademicYear(data, userId = null) {
+export async function createAcademicYear(data, schoolId, userId = null) {
     validateAcademicYearDates(data.start_date, data.end_date);
 
-    await ensureAcademicYearDoesNotExist(data.name);
+    await ensureAcademicYearDoesNotExist(schoolId, data.name);
 
-    const id = await academicYearRepository.create(data, userId);
+    const id = await academicYearRepository.create({ ...data, school_id: schoolId }, userId);
 
     return await academicYearRepository.findById(id);
 }
 
-export async function getAcademicYears() {
-    return await academicYearRepository.findAll();
+export async function getAcademicYears(schoolId) {
+    return await academicYearRepository.findAll(schoolId);
 }
 
-export async function getAcademicYearById(id) {
+// Every read of a specific academic year is tenant-checked here, so no
+// caller can accidentally leak another school's record just by guessing an id.
+async function findOwnedAcademicYearOrThrow(id, schoolId) {
     const academicYear = await academicYearRepository.findById(id);
 
-    if (!academicYear) {
+    if (!academicYear || academicYear.school_id !== schoolId) {
         throw new AppError(HTTP_STATUS.NOT_FOUND, ACADEMIC_YEAR_MESSAGES.NOT_FOUND);
     }
 
     return academicYear;
 }
 
-export async function updateAcademicYear(id, data, userId = null) {
-    const academicYear = await academicYearRepository.findById(id);
+export async function getAcademicYearById(id, schoolId) {
+    return await findOwnedAcademicYearOrThrow(id, schoolId);
+}
 
-    if (!academicYear) {
-        throw new AppError(HTTP_STATUS.NOT_FOUND, ACADEMIC_YEAR_MESSAGES.NOT_FOUND);
-    }
+export async function updateAcademicYear(id, data, schoolId, userId = null) {
+    const academicYear = await findOwnedAcademicYearOrThrow(id, schoolId);
 
     if (academicYear.status === "COMPLETED") {
         throw new AppError(HTTP_STATUS.BAD_REQUEST, ACADEMIC_YEAR_MESSAGES.CANNOT_EDIT_COMPLETED);
@@ -46,8 +48,8 @@ export async function updateAcademicYear(id, data, userId = null) {
     }
 
     if (data.name && data.name !== academicYear.name) {
-        const existingAcademicYear = await academicYearRepository.findByName(data.name);
-        if (existingAcademicYear && existingAcademicYear.id !== id) {
+        const existingAcademicYear = await academicYearRepository.findByName(schoolId, data.name);
+        if (existingAcademicYear && existingAcademicYear.id !== academicYear.id) {
             throw new AppError(HTTP_STATUS.CONFLICT, ACADEMIC_YEAR_MESSAGES.DUPLICATE_NAME);
         }
     }
@@ -59,6 +61,7 @@ export async function updateAcademicYear(id, data, userId = null) {
 
     if (Object.keys(changes.oldValues).length > 0) {
         await auditRepository.createAuditLog({
+            schoolId,
             entityType: "AcademicYear",
             entityId: id,
             action: "UPDATED",
@@ -72,12 +75,8 @@ export async function updateAcademicYear(id, data, userId = null) {
     return updatedAcademicYear;
 }
 
-export async function activateAcademicYear(id, userId = null) {
-    const academicYear = await academicYearRepository.findById(id);
-
-    if (!academicYear) {
-        throw new AppError(HTTP_STATUS.NOT_FOUND, ACADEMIC_YEAR_MESSAGES.NOT_FOUND);
-    }
+export async function activateAcademicYear(id, schoolId, userId = null) {
+    const academicYear = await findOwnedAcademicYearOrThrow(id, schoolId);
 
     if (academicYear.status === "COMPLETED") {
         throw new AppError(HTTP_STATUS.BAD_REQUEST, ACADEMIC_YEAR_MESSAGES.CANNOT_ACTIVATE_COMPLETED);
@@ -87,7 +86,7 @@ export async function activateAcademicYear(id, userId = null) {
         return academicYear;
     }
 
-    const currentlyActive = await academicYearRepository.findActive();
+    const currentlyActive = await academicYearRepository.findActive(schoolId);
     if (currentlyActive && currentlyActive.id !== academicYear.id) {
         throw new AppError(HTTP_STATUS.CONFLICT, ACADEMIC_YEAR_MESSAGES.ONLY_ONE_ACTIVE);
     }
@@ -102,6 +101,7 @@ export async function activateAcademicYear(id, userId = null) {
     const updatedAcademicYear = await academicYearRepository.findById(id);
 
     await auditRepository.createAuditLog({
+        schoolId,
         entityType: "AcademicYear",
         entityId: id,
         action: "ACTIVATED",
@@ -114,12 +114,8 @@ export async function activateAcademicYear(id, userId = null) {
     return updatedAcademicYear;
 }
 
-export async function completeAcademicYear(id, userId = null) {
-    const academicYear = await academicYearRepository.findById(id);
-
-    if (!academicYear) {
-        throw new AppError(HTTP_STATUS.NOT_FOUND, ACADEMIC_YEAR_MESSAGES.NOT_FOUND);
-    }
+export async function completeAcademicYear(id, schoolId, userId = null) {
+    const academicYear = await findOwnedAcademicYearOrThrow(id, schoolId);
 
     if (academicYear.status !== "ACTIVE") {
         throw new AppError(HTTP_STATUS.BAD_REQUEST, ACADEMIC_YEAR_MESSAGES.CANNOT_COMPLETE_INACTIVE);
@@ -130,6 +126,7 @@ export async function completeAcademicYear(id, userId = null) {
     const completedAcademicYear = await academicYearRepository.findById(id);
 
     await auditRepository.createAuditLog({
+        schoolId,
         entityType: "AcademicYear",
         entityId: id,
         action: "COMPLETED",
@@ -142,12 +139,8 @@ export async function completeAcademicYear(id, userId = null) {
     return completedAcademicYear;
 }
 
-export async function overrideAcademicYear(id, payload, userId = null) {
-    const academicYear = await academicYearRepository.findById(id);
-
-    if (!academicYear) {
-        throw new AppError(HTTP_STATUS.NOT_FOUND, ACADEMIC_YEAR_MESSAGES.NOT_FOUND);
-    }
+export async function overrideAcademicYear(id, payload, schoolId, userId = null) {
+    const academicYear = await findOwnedAcademicYearOrThrow(id, schoolId);
 
     if (academicYear.status === "COMPLETED") {
         throw new AppError(HTTP_STATUS.BAD_REQUEST, ACADEMIC_YEAR_MESSAGES.CANNOT_EDIT_COMPLETED);
@@ -165,6 +158,7 @@ export async function overrideAcademicYear(id, payload, userId = null) {
     const updatedAcademicYear = await academicYearRepository.findById(id);
 
     await auditRepository.createAuditLog({
+        schoolId,
         entityType: "AcademicYear",
         entityId: id,
         action: "OVERRIDDEN",

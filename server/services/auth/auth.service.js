@@ -1,4 +1,3 @@
-import { query } from '../../database/query.js';
 import { AppError } from '../../helpers/app-error.helper.js';
 import { generateCode } from '../../helpers/code-generator.helper.js';
 import { HTTP_STATUS } from '../../constants/httpStatus.js';
@@ -6,26 +5,51 @@ import { AUTH_MESSAGES } from '../../constants/messages/auth.message.js';
 import { hashPassword, comparePassword } from '../../helpers/password.helper.js';
 import { generateToken } from '../../helpers/jwt.helper.js';
 import * as authRepository from '../../repositories/auth/auth.repository.js';
+import * as roleRepository from '../../repositories/role/role.repository.js';
+import * as userRepository from '../../repositories/user/user.repository.js';
 import { DEFAULT_ROLE_PERMISSIONS, normalizePermissions } from '../../helpers/auth/permission.helper.js';
 
+const PLATFORM_ADMIN_ROLE_NAME = 'Platform Administrator';
+const PLATFORM_ADMIN_EMAIL = 'admin@schoolerp.com';
 
-export const seedAdministrator = async () => {
-    // Step 1
-    const existingAdmin = await query(`SELECT id FROM users WHERE role_id = (SELECT id FROM roles WHERE role_name = ?) LIMIT 1`, ['Administrator']);
+// Bootstraps the one account that can create schools in the first place —
+// school_id NULL means "platform level", not "belongs to no school" (see
+// migration 005). Every other Administrator is created per-school, as part
+// of school onboarding (see school.service.js).
+export const seedPlatformAdministrator = async () => {
+    const existingAdmin = await userRepository.findByEmail(PLATFORM_ADMIN_EMAIL);
 
-    if (existingAdmin.length > 0) {
-        console.log('✅ Administrator already exists. Skipping creation.');
+    if (existingAdmin) {
+        console.log('✅ Platform Administrator already exists. Skipping creation.');
         return;
     }
 
-    // Step 2
+    let role = await roleRepository.findByName(null, PLATFORM_ADMIN_ROLE_NAME);
+
+    if (!role) {
+        const roleId = await roleRepository.create({
+            school_id: null,
+            role_name: PLATFORM_ADMIN_ROLE_NAME,
+            description: 'Manages schools on the platform. Not tied to any single school.'
+        });
+        role = await roleRepository.findById(roleId);
+    }
+
     const hashedPassword = await hashPassword('Admin@123');
 
-    // Step 3
-    await query(`INSERT INTO users (user_code, first_name, last_name, email, password, role_id) VALUES (?, ?, ?, ?, ?, (SELECT id FROM roles WHERE role_name = ?))`, [generateCode('USR', 1), 'System', 'Administrator', 'admin@schoolerp.com', hashedPassword, 'Administrator']);
-    console.log('🎉 Administrator created successfully.');
-}
+    await userRepository.create({
+        school_id: null,
+        user_code: generateCode('USR', 1),
+        first_name: 'Platform',
+        last_name: 'Administrator',
+        email: PLATFORM_ADMIN_EMAIL,
+        password: hashedPassword,
+        role_id: role.id,
+        status: 'active'
+    });
 
+    console.log('🎉 Platform Administrator created successfully.');
+}
 
 export const login = async ({ email, password }) => {
     // Step 1: Find user 
@@ -48,7 +72,13 @@ export const login = async ({ email, password }) => {
     const permissions = normalizePermissions(
         DEFAULT_ROLE_PERMISSIONS[user.role_name] || []
     );
-    const token = generateToken({ userId: user.id, email: user.email, role: user.role_name, permissions });
+    const token = generateToken({
+        userId: user.id,
+        schoolId: user.school_id,
+        email: user.email,
+        role: user.role_name,
+        permissions
+    });
     
     return { token, user: { ...authRepository.sensitizeUser(user), permissions } };
 }

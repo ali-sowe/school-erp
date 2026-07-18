@@ -6,15 +6,17 @@ export async function create(data, createdBy = null) {
         `
         INSERT INTO academic_years
         (
+            school_id,
             name,
             start_date,
             end_date,
             status,
             created_by
         )
-        VALUES (?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?)
         `,
         [
+            data.school_id,
             data.name,
             data.start_date,
             data.end_date,
@@ -33,15 +35,22 @@ export async function findById(id) {
 }
 
 
-export async function findByName(name) {
-    const rows = await query(`SELECT * FROM academic_years WHERE name = ?`, [name]);
-    
+export async function findByName(schoolId, name) {
+    const rows = await query(`SELECT * FROM academic_years WHERE school_id = ? AND name = ?`, [schoolId, name]);
+
     return rows[0] || null;
 }
 
 
-export async function findAll() {
-    return await query(`SELECT * FROM academic_years ORDER BY start_date DESC`);
+// schoolId is required for a school-scoped listing; leave it undefined to
+// scan across all schools (used by the lifecycle job, which is a background
+// process, not a tenant-scoped request).
+export async function findAll(schoolId) {
+    if (schoolId === undefined) {
+        return await query(`SELECT * FROM academic_years ORDER BY start_date DESC`);
+    }
+
+    return await query(`SELECT * FROM academic_years WHERE school_id = ? ORDER BY start_date DESC`, [schoolId]);
 }
 
 export async function update(id, data) {
@@ -73,15 +82,17 @@ export async function update(id, data) {
 }
 
 
-export async function findActive() {
+export async function findActive(schoolId) {
 
     const rows = await query(
         `
         SELECT *
         FROM academic_years
-        WHERE status = 'ACTIVE'
+        WHERE school_id = ?
+        AND status = 'ACTIVE'
         LIMIT 1
-        `
+        `,
+        [schoolId]
     );
 
     return rows[0] || null;

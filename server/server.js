@@ -3,7 +3,7 @@ import app from './app.js';
 import env from './config/env.js';
 import { testConnection } from './database/test-connection.js';
 import { ensureCoreTables } from './database/schema.js';
-import { seedAdministrator } from './services/auth/auth.service.js';
+import { seedPlatformAdministrator } from './services/auth/auth.service.js';
 
 const PORT = env.port;
 
@@ -11,7 +11,7 @@ const startServer = async () => {
     try {
         await testConnection();
         await ensureCoreTables();
-        await seedAdministrator();
+        await seedPlatformAdministrator();
 
         const server = http.createServer(app);
         server.listen(PORT, () => {

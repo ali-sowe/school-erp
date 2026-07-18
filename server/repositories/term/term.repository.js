@@ -6,6 +6,7 @@ export async function create(data, createdBy = null) {
         `
         INSERT INTO terms
         (
+            school_id,
             academic_year_id,
             name,
             start_date,
@@ -13,9 +14,10 @@ export async function create(data, createdBy = null) {
             status,
             created_by
         )
-        VALUES (?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         `,
         [
+            data.school_id,
             data.academic_year_id,
             data.name,
             data.start_date,
@@ -34,36 +36,48 @@ export async function findById(id) {
     return rows[0] || null;
 }
 
-export async function findByNameInYear(academicYearId, name) {
+export async function findByNameInYear(schoolId, academicYearId, name) {
     const rows = await query(
-        `SELECT * FROM terms WHERE academic_year_id = ? AND name = ?`,
-        [academicYearId, name]
+        `SELECT * FROM terms WHERE school_id = ? AND academic_year_id = ? AND name = ?`,
+        [schoolId, academicYearId, name]
     );
 
     return rows[0] || null;
 }
 
-export async function findAll(academicYearId = null) {
-    if (academicYearId) {
-        return await query(
-            `SELECT * FROM terms WHERE academic_year_id = ? ORDER BY start_date ASC`,
-            [academicYearId]
-        );
+// schoolId is required for a school-scoped listing; leave it undefined to
+// scan across all schools (used by the lifecycle job, a background process,
+// not a tenant-scoped request) — mirrors academic-year.repository.js.
+export async function findAll(schoolId, academicYearId = null) {
+    const conditions = [];
+    const params = [];
+
+    if (schoolId !== undefined) {
+        conditions.push('school_id = ?');
+        params.push(schoolId);
     }
 
-    return await query(`SELECT * FROM terms ORDER BY start_date ASC`);
+    if (academicYearId) {
+        conditions.push('academic_year_id = ?');
+        params.push(academicYearId);
+    }
+
+    const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    return await query(`SELECT * FROM terms ${whereClause} ORDER BY start_date ASC`, params);
 }
 
-export async function findActiveInYear(academicYearId) {
+export async function findActiveInYear(schoolId, academicYearId) {
     const rows = await query(
         `
         SELECT *
         FROM terms
-        WHERE academic_year_id = ?
+        WHERE school_id = ?
+        AND academic_year_id = ?
         AND status = 'ACTIVE'
         LIMIT 1
         `,
-        [academicYearId]
+        [schoolId, academicYearId]
     );
 
     return rows[0] || null;

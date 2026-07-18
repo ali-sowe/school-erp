@@ -3,9 +3,9 @@ import { ACADEMIC_YEAR_MESSAGES } from "../../constants/messages/academic-year/a
 import { AppError } from "../app-error.helper.js";
 import * as academicYearRepository from "../../repositories/academic-year/academic-year.repository.js";
 
-export async function ensureAcademicYearDoesNotExist(name) {
+export async function ensureAcademicYearDoesNotExist(schoolId, name) {
     // Query database
-    const existing = await academicYearRepository.findByName(name);
+    const existing = await academicYearRepository.findByName(schoolId, name);
 
     // Throw error if found
     if (existing) {

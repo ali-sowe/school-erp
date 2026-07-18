@@ -7,6 +7,7 @@ import { AUTH_MESSAGES } from "../../constants/messages/auth.message.js";
 export const findUserByEmail = async (email) => {
     const users = await query(`
         SELECT u.id,
+        u.school_id,
         u.user_code,
         u.first_name,
         u.last_name,

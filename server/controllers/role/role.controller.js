@@ -3,7 +3,7 @@ import { asyncHandler } from '../../helpers/async-handler.helper.js';
 import { HTTP_STATUS } from '../../constants/httpStatus.js';
 
 export const createRole = asyncHandler(async (req, res) => {
-    const role = await roleService.createRole(req.body);
+    const role = await roleService.createRole(req.body, req.user.schoolId);
 
     res.status(HTTP_STATUS.CREATED).json({
         success: true,
@@ -13,7 +13,7 @@ export const createRole = asyncHandler(async (req, res) => {
 });
 
 export const getRoles = asyncHandler(async (req, res) => {
-    const roles = await roleService.getRoles();
+    const roles = await roleService.getRoles(req.user.schoolId);
 
     res.status(HTTP_STATUS.OK).json({
         success: true,
@@ -23,7 +23,7 @@ export const getRoles = asyncHandler(async (req, res) => {
 });
 
 export const getRoleById = asyncHandler(async (req, res) => {
-    const role = await roleService.getRoleById(req.params.id);
+    const role = await roleService.getRoleById(req.params.id, req.user.schoolId);
 
     res.status(HTTP_STATUS.OK).json({
         success: true,
@@ -33,7 +33,7 @@ export const getRoleById = asyncHandler(async (req, res) => {
 });
 
 export const updateRole = asyncHandler(async (req, res) => {
-    const role = await roleService.updateRole(req.params.id, req.body);
+    const role = await roleService.updateRole(req.params.id, req.body, req.user.schoolId);
 
     res.status(HTTP_STATUS.OK).json({
         success: true,
@@ -43,7 +43,7 @@ export const updateRole = asyncHandler(async (req, res) => {
 });
 
 export const deleteRole = asyncHandler(async (req, res) => {
-    const result = await roleService.deleteRole(req.params.id);
+    const result = await roleService.deleteRole(req.params.id, req.user.schoolId);
 
     res.status(HTTP_STATUS.OK).json({
         success: true,

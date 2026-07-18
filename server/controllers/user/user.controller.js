@@ -4,7 +4,7 @@ import { HTTP_STATUS } from '../../constants/httpStatus.js';
 import { USER_MESSAGES } from '../../constants/messages/user.message.js';
 
 export const createUser = asyncHandler(async (req, res) => {
-    const user = await userService.createUser(req.body);
+    const user = await userService.createUser(req.body, req.user.schoolId);
 
     res.status(HTTP_STATUS.CREATED).json({
         success: true,
@@ -14,7 +14,7 @@ export const createUser = asyncHandler(async (req, res) => {
 });
 
 export const getUsers = asyncHandler(async (req, res) => {
-    const users = await userService.getUsers();
+    const users = await userService.getUsers(req.user.schoolId);
 
     res.status(HTTP_STATUS.OK).json({
         success: true,
@@ -24,7 +24,7 @@ export const getUsers = asyncHandler(async (req, res) => {
 });
 
 export const getUserById = asyncHandler(async (req, res) => {
-    const user = await userService.getUserById(req.params.id);
+    const user = await userService.getUserById(req.params.id, req.user.schoolId);
 
     res.status(HTTP_STATUS.OK).json({
         success: true,
@@ -34,7 +34,7 @@ export const getUserById = asyncHandler(async (req, res) => {
 });
 
 export const updateUser = asyncHandler(async (req, res) => {
-    const user = await userService.updateUser(req.params.id, req.body);
+    const user = await userService.updateUser(req.params.id, req.body, req.user.schoolId);
 
     res.status(HTTP_STATUS.OK).json({
         success: true,
@@ -44,7 +44,7 @@ export const updateUser = asyncHandler(async (req, res) => {
 });
 
 export const deleteUser = asyncHandler(async (req, res) => {
-    const result = await userService.deleteUser(req.params.id);
+    const result = await userService.deleteUser(req.params.id, req.user.schoolId);
 
     res.status(HTTP_STATUS.OK).json({
         success: true,
