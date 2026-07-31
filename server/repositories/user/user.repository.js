@@ -113,3 +113,30 @@ export async function update(id, data) {
 export async function remove(id) {
     await query(`DELETE FROM users WHERE id = ?`, [id]);
 }
+
+// Used by approval.service.js to resolve "anyone holding this role" steps
+// to actual notifiable users, and to validate an approver_role_name exists
+// in this school before a request is created. Only active users can act as
+// approvers -- a deactivated user's old role assignment shouldn't silently
+// block a workflow from ever completing.
+export async function findByRole(schoolId, roleName) {
+    return await query(
+        `
+        SELECT u.*
+        FROM users u
+        INNER JOIN roles r ON u.role_id = r.id
+        WHERE u.school_id = ? AND r.role_name = ? AND u.status = 'active'
+        `,
+        [schoolId, roleName]
+    );
+}
+
+// Used by role.service.js's deleteRole to block deleting a role that's
+// still assigned to someone — an orphaned role_id on a user row would
+// break every permission check for them the next time they log in.
+// Counts regardless of active/inactive status, unlike findByRole above,
+// since even a deactivated user still holds the assignment.
+export async function countByRoleId(roleId) {
+    const rows = await query(`SELECT COUNT(*) AS total FROM users WHERE role_id = ?`, [roleId]);
+    return Number(rows[0].total);
+}

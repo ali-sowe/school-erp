@@ -1,0 +1,15 @@
+{
+  "greeting": "Welcome back, {{name}}",
+  "subtitle": "Here's what needs your attention today.",
+  "sections": {
+    "pendingApprovals": "Pending approvals",
+    "todayAttendance": "Today's attendance",
+    "feeCollection": "Fee collection",
+    "upcomingExams": "Upcoming exams",
+    "recentActivity": "Recent activity"
+  },
+  "empty": {
+    "pendingApprovals": "Nothing waiting on your decision right now.",
+    "recentActivity": "No recent activity to show yet."
+  }
+}

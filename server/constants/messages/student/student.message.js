@@ -11,5 +11,8 @@ export const STUDENT_MESSAGES = {
 
     ALREADY_ARCHIVED: 'This student has already been archived.',
     ALREADY_ACTIVE: 'This student is already active.',
-    CANNOT_EDIT_ARCHIVED: 'An archived student cannot be modified. Restore it first.'
+    CANNOT_EDIT_ARCHIVED: 'An archived student cannot be modified. Restore it first.',
+
+    PORTAL_ACCOUNT_CREATED: 'Student portal account created successfully.',
+    ALREADY_HAS_PORTAL_ACCOUNT: 'This student already has a portal account.'
 };

@@ -1,184 +1,162 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
-import api from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
-import GuardianForm from '../../components/guardians/GuardianForm';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+import { Plus, UserRound } from 'lucide-react';
+
+import { useAuth } from '@/context/AuthContext';
+import { useGuardians } from '@/hooks/guardians/useGuardians';
+import { useArchiveGuardian, useRestoreGuardian } from '@/hooks/guardians/useGuardianMutations';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DataTable } from '@/components/erp/DataTable';
+import { EmptyState } from '@/components/erp/EmptyState';
+import { StatusBadge } from '@/components/erp/StatusBadge';
+import { ConfirmDialog } from '@/components/erp/ConfirmDialog';
+import GuardianForm from '@/components/guardians/GuardianForm';
 
 function GuardiansListPage() {
+  const { t } = useTranslation('guardians');
   const { hasPermission } = useAuth();
   const canWrite = hasPermission('guardians.write');
 
-  const [guardians, setGuardians] = useState([]);
   const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [activeGuardian, setActiveGuardian] = useState(null);
-  const [showForm, setShowForm] = useState(false);
-  const [expandedId, setExpandedId] = useState(null);
-  const [studentsByGuardian, setStudentsByGuardian] = useState({});
+  const [status, setStatus] = useState('ACTIVE');
+  const { data: guardians, isLoading } = useGuardians({ search: search || undefined, status: status === 'ALL' ? undefined : status });
 
-  const loadGuardians = async () => {
-    setLoading(true);
-    setError('');
+  const [formOpen, setFormOpen] = useState(false);
+  const [confirmTarget, setConfirmTarget] = useState(null); // { id, action: 'archive' | 'restore' }
+
+  const archiveGuardian = useArchiveGuardian();
+  const restoreGuardian = useRestoreGuardian();
+
+  const handleConfirm = async () => {
+    if (!confirmTarget) return;
     try {
-      const params = {};
-      if (search) params.search = search;
-      if (status) params.status = status;
-      const response = await api.get('/guardians', { params });
-      setGuardians(response.data?.data || []);
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Unable to load guardians.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadGuardians();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleSearchSubmit = (event) => {
-    event.preventDefault();
-    loadGuardians();
-  };
-
-  const handleSaved = () => {
-    setShowForm(false);
-    setActiveGuardian(null);
-    loadGuardians();
-  };
-
-  const handleArchive = async (guardian) => {
-    try {
-      await api.patch(`/guardians/${guardian.id}/archive`);
-      loadGuardians();
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Could not archive guardian.');
-    }
-  };
-
-  const handleRestore = async (guardian) => {
-    try {
-      await api.patch(`/guardians/${guardian.id}/restore`);
-      loadGuardians();
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Could not restore guardian.');
-    }
-  };
-
-  const toggleStudents = async (guardian) => {
-    if (expandedId === guardian.id) {
-      setExpandedId(null);
-      return;
-    }
-    setExpandedId(guardian.id);
-    if (!studentsByGuardian[guardian.id]) {
-      try {
-        const response = await api.get(`/guardians/${guardian.id}/students`);
-        setStudentsByGuardian((current) => ({ ...current, [guardian.id]: response.data?.data || [] }));
-      } catch {
-        setStudentsByGuardian((current) => ({ ...current, [guardian.id]: [] }));
+      if (confirmTarget.action === 'archive') {
+        await archiveGuardian.mutateAsync(confirmTarget.id);
+        toast.success(t('list.toasts.archived'));
+      } else {
+        await restoreGuardian.mutateAsync(confirmTarget.id);
+        toast.success(t('list.toasts.restored'));
       }
+    } catch {
+      toast.error(t('list.toasts.error'));
     }
   };
+
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'last_name',
+        header: t('list.columns.name'),
+        cell: ({ row }) => (
+          <Link to={`/guardians/${row.original.id}`} className="font-medium text-primary hover:underline">
+            {row.original.first_name} {row.original.last_name}
+          </Link>
+        ),
+      },
+      {
+        id: 'contact',
+        header: t('list.columns.contact'),
+        cell: ({ row }) => (
+          <span className="text-sm text-muted-foreground">
+            {row.original.phone || t('list.noPhone')} · {row.original.email || t('list.noEmail')}
+          </span>
+        ),
+      },
+      {
+        accessorKey: 'status',
+        header: t('list.columns.status'),
+        cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      },
+      ...(canWrite
+        ? [
+            {
+              id: 'actions',
+              header: t('list.columns.actions'),
+              cell: ({ row }) => {
+                const guardian = row.original;
+                return guardian.status === 'ARCHIVED' ? (
+                  <Button variant="outline" size="sm" onClick={() => setConfirmTarget({ id: guardian.id, action: 'restore' })}>
+                    {t('list.row.restore')}
+                  </Button>
+                ) : (
+                  <Button variant="outline" size="sm" onClick={() => setConfirmTarget({ id: guardian.id, action: 'archive' })}>
+                    {t('list.row.archive')}
+                  </Button>
+                );
+              },
+            },
+          ]
+        : []),
+    ],
+    [canWrite, t]
+  );
 
   return (
-    <main className="erp-shell">
-      <section className="hero-card">
-        <div className="card-header">
-          <div>
-            <p className="eyebrow">Students & Parents</p>
-            <h1>Guardians</h1>
-          </div>
-          {canWrite ? (
-            <button type="button" onClick={() => { setActiveGuardian(null); setShowForm(true); }}>
-              Add guardian
-            </button>
-          ) : null}
+    <div className="space-y-space-6">
+      <div className="flex flex-wrap items-center justify-between gap-space-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">{t('list.title')}</h1>
+          <p className="text-sm text-muted-foreground">{t('list.subtitle')}</p>
         </div>
-
-        <form onSubmit={handleSearchSubmit} className="toolbar-row">
-          <input
-            placeholder="Search by name, phone, or email…"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-          />
-          <select value={status} onChange={(event) => setStatus(event.target.value)}>
-            <option value="">All statuses</option>
-            <option value="ACTIVE">Active</option>
-            <option value="ARCHIVED">Archived</option>
-          </select>
-          <button type="submit" className="secondary">Search</button>
-        </form>
-      </section>
-
-      {error ? <p className="error-text">{error}</p> : null}
-
-      {showForm ? (
-        <section className="hero-card">
-          <GuardianForm guardian={activeGuardian} onSaved={handleSaved} onCancel={() => setShowForm(false)} />
-        </section>
-      ) : null}
-
-      <section className="hero-card">
-        {loading ? (
-          <p>Loading guardians…</p>
-        ) : guardians.length === 0 ? (
-          <p>No guardians found.</p>
-        ) : (
-          <ul className="record-list">
-            {guardians.map((guardian) => (
-              <li key={guardian.id} className="record-item">
-                <div className="list-row">
-                  <div>
-                    <strong>{guardian.first_name} {guardian.last_name}</strong>
-                    <span className={`status-badge status-${guardian.status?.toLowerCase()}`}>{guardian.status}</span>
-                    <p className="record-meta">
-                      {guardian.phone || 'No phone'} · {guardian.email || 'No email'}
-                    </p>
-                  </div>
-                  <div className="actions">
-                    <button type="button" className="secondary" onClick={() => toggleStudents(guardian)}>
-                      {expandedId === guardian.id ? 'Hide students' : 'View students'}
-                    </button>
-                    {canWrite ? (
-                      <button type="button" className="secondary" onClick={() => { setActiveGuardian(guardian); setShowForm(true); }}>
-                        Edit
-                      </button>
-                    ) : null}
-                    {canWrite && guardian.status === 'ACTIVE' ? (
-                      <button type="button" className="danger" onClick={() => handleArchive(guardian)}>Archive</button>
-                    ) : null}
-                    {canWrite && guardian.status === 'ARCHIVED' ? (
-                      <button type="button" onClick={() => handleRestore(guardian)}>Restore</button>
-                    ) : null}
-                  </div>
-                </div>
-                {expandedId === guardian.id ? (
-                  <div className="nested-panel">
-                    {(studentsByGuardian[guardian.id] || []).length === 0 ? (
-                      <p className="record-meta">No linked students.</p>
-                    ) : (
-                      <ul className="chip-list">
-                        {studentsByGuardian[guardian.id].map((student) => (
-                          <li key={student.id}>
-                            <Link to={`/students/${student.id}`}>
-                              {student.first_name} {student.last_name} ({student.admission_number})
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ) : null}
-              </li>
-            ))}
-          </ul>
+        {canWrite && (
+          <Button onClick={() => setFormOpen(true)}>
+            <Plus className="h-4 w-4" />
+            {t('list.actions.addGuardian')}
+          </Button>
         )}
-      </section>
-    </main>
+      </div>
+
+      <div className="flex flex-wrap gap-space-3">
+        <Input
+          placeholder={t('list.searchPlaceholder')}
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          className="max-w-xs"
+        />
+        <Select value={status} onValueChange={setStatus}>
+          <SelectTrigger className="w-48">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ACTIVE">{t('list.statusFilter.active')}</SelectItem>
+            <SelectItem value="ARCHIVED">{t('list.statusFilter.archived')}</SelectItem>
+            <SelectItem value="ALL">{t('list.statusFilter.all')}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <DataTable
+        columns={columns}
+        data={guardians}
+        isLoading={isLoading}
+        emptyState={<EmptyState icon={UserRound} title={t('list.empty.title')} description={t('list.empty.description')} />}
+      />
+
+      <Dialog open={formOpen} onOpenChange={setFormOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('form.createTitle')}</DialogTitle>
+          </DialogHeader>
+          <GuardianForm onSaved={() => setFormOpen(false)} onCancel={() => setFormOpen(false)} />
+        </DialogContent>
+      </Dialog>
+
+      <ConfirmDialog
+        open={Boolean(confirmTarget)}
+        onOpenChange={(open) => !open && setConfirmTarget(null)}
+        title={confirmTarget?.action === 'archive' ? t('list.confirmArchive.title') : t('list.confirmRestore.title')}
+        description={confirmTarget?.action === 'archive' ? t('list.confirmArchive.description') : t('list.confirmRestore.description')}
+        confirmLabel={confirmTarget?.action === 'archive' ? t('list.row.archive') : t('list.row.restore')}
+        destructive={confirmTarget?.action === 'archive'}
+        onConfirm={handleConfirm}
+      />
+    </div>
   );
 }
 

@@ -23,3 +23,10 @@ export const linkGuardianSchema = Joi.object({
     relationship: Joi.string().trim().max(50).required(),
     is_primary_contact: Joi.boolean()
 });
+
+// email is optional here (unlike student's, which has no email on file at
+// all) — the service falls back to the guardian's own email on record.
+export const createGuardianPortalAccountSchema = Joi.object({
+    email: Joi.string().trim().email(),
+    password: Joi.string().min(8).required()
+});

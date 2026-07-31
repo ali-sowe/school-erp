@@ -1,0 +1,43 @@
+{
+  "appName": "School ERP",
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "edit": "Edit",
+    "delete": "Delete",
+    "archive": "Archive",
+    "restore": "Restore",
+    "retry": "Retry",
+    "viewAll": "View all",
+    "logout": "Log out"
+  },
+  "states": {
+    "loading": "Loading…",
+    "errorTitle": "Something went wrong",
+    "errorDescription": "Please try again, or contact support if the problem continues.",
+    "emptyTitle": "Nothing here yet",
+    "accessDeniedTitle": "You don't have permission to view this page",
+    "accessDeniedDescription": "Ask an administrator for access if you believe this is a mistake."
+  },
+  "table": {
+    "pageOf": "Page {{page}} of {{total}}"
+  },
+  "selectors": {
+    "chooseClass": "Choose a class…",
+    "chooseTeacher": "Choose a teacher…",
+    "chooseTerm": "Choose a term…",
+    "useActiveYear": "Use the active academic year"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "students": "Students",
+    "guardians": "Guardians",
+    "classes": "Classes",
+    "teachers": "Teachers",
+    "attendance": "Attendance",
+    "exams": "Exams",
+    "finance": "Finance",
+    "admin": "Administration"
+  }
+}

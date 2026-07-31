@@ -79,6 +79,26 @@ export async function updateClass(id, classId) {
     await query(`UPDATE student_enrollments SET class_id = ? WHERE id = ?`, [classId, id]);
 }
 
+// The student's current enrollment, joined with classes for grade_level_id
+// so callers don't need a second query — used by the portal's "which
+// announcements are relevant to me" lookup (announcement.repository.js's
+// findForAudience), since that depends on knowing the student's *current*
+// class and grade level, not their whole enrollment history.
+export async function findActiveForStudent(studentId) {
+    const rows = await query(
+        `
+        SELECT student_enrollments.*, classes.grade_level_id
+        FROM student_enrollments
+        INNER JOIN classes ON classes.id = student_enrollments.class_id
+        WHERE student_enrollments.student_id = ? AND student_enrollments.status = 'ACTIVE'
+        ORDER BY student_enrollments.academic_year_id DESC
+        LIMIT 1
+        `,
+        [studentId]
+    );
+    return rows[0] || null;
+}
+
 export async function setStatus(id, status, reason = null) {
     await query(`UPDATE student_enrollments SET status = ?, reason = ? WHERE id = ?`, [status, reason, id]);
 }

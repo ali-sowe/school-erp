@@ -3,6 +3,7 @@ export const ENROLLMENT_MESSAGES = {
     FETCHED: 'Enrollment retrieved successfully.',
     FETCHED_ALL: 'Enrollments retrieved successfully.',
     TRANSFERRED: 'Student transferred to new class successfully.',
+    TRANSFER_REQUESTED: 'Transfer request submitted for approval.',
     WITHDRAWN: 'Student withdrawn successfully.',
     COMPLETED: 'Enrollment marked completed successfully.',
 

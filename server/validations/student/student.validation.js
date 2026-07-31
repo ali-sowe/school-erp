@@ -15,3 +15,8 @@ export const updateStudentSchema = Joi.object({
     gender: Joi.string().trim().max(20),
     date_of_birth: Joi.date().iso().max('now')
 }).min(1);
+
+export const createStudentPortalAccountSchema = Joi.object({
+    email: Joi.string().trim().email().required(),
+    password: Joi.string().min(8).required()
+});

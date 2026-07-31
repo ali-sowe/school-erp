@@ -11,7 +11,9 @@ const serviceFunctionsToCheck = [
     [guardianService, 'getGuardians', [1]],
     [guardianService, 'linkGuardianToStudent', [1, 1, { relationship: 'Father' }, 1, 1]],
     [enrollmentService, 'enrollStudent', [1, { class_id: 1 }, 1, 1]],
-    [enrollmentService, 'getRoster', [1, undefined, 1]]
+    [enrollmentService, 'getRoster', [1, undefined, 1]],
+    [enrollmentService, 'transferStudent', [1, 1, 1, 1]],
+    [enrollmentService, 'requestStudentTransfer', [1, 1, 'Redistributing class sizes', 1, 1]]
 ];
 
 test('student, guardian, and enrollment services export the expected functions', () => {

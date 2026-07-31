@@ -4,6 +4,7 @@ import env from './config/env.js';
 import { testConnection } from './database/test-connection.js';
 import { ensureCoreTables } from './database/schema.js';
 import { seedPlatformAdministrator } from './services/auth/auth.service.js';
+import { initializeSocket } from './realtime/socket.js';
 
 const PORT = env.port;
 
@@ -14,6 +15,8 @@ const startServer = async () => {
         await seedPlatformAdministrator();
 
         const server = http.createServer(app);
+        initializeSocket(server);
+
         server.listen(PORT, () => {
             console.log(`🚀 Server is running on http://localhost:${PORT}`);
         });

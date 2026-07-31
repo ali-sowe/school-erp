@@ -19,5 +19,9 @@ export const GUARDIAN_MESSAGES = {
     NOT_LINKED: 'This guardian is not linked to this student.',
     LINKED: 'Guardian linked to student successfully.',
     UNLINKED: 'Guardian unlinked from student successfully.',
-    LINKS_FETCHED: 'Guardians retrieved successfully.'
+    LINKS_FETCHED: 'Guardians retrieved successfully.',
+
+    PORTAL_ACCOUNT_CREATED: 'Parent portal account created successfully.',
+    ALREADY_HAS_PORTAL_ACCOUNT: 'This guardian already has a portal account.',
+    EMAIL_REQUIRED_FOR_PORTAL_ACCOUNT: 'An email address is required to create a portal account — this guardian has none on file.'
 };

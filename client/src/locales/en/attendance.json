@@ -1,0 +1,56 @@
+{
+  "page": {
+    "title": "Daily register",
+    "subtitle": "Mark and review class attendance.",
+    "classLabel": "Class",
+    "dateLabel": "Date",
+    "chooseClassPrompt": "Choose a class to view its roster."
+  },
+  "roster": {
+    "title": "Roster for {{date}}",
+    "markAllPresent": "Mark all present",
+    "columns": {
+      "student": "Student",
+      "admissionNumber": "Admission #",
+      "status": "Status",
+      "remarks": "Remarks"
+    },
+    "remarksPlaceholder": "Optional",
+    "saveButton": "Save attendance",
+    "empty": "No students are actively enrolled in this class for the resolved academic year.",
+    "toasts": {
+      "saved": "Attendance saved.",
+      "error": "Could not save attendance."
+    }
+  },
+  "summary": {
+    "title": "Summary",
+    "fromLabel": "From",
+    "toLabel": "To",
+    "loadButton": "Load summary",
+    "total": "Total",
+    "toasts": {
+      "error": "Unable to load the attendance summary."
+    }
+  },
+  "history": {
+    "title": "Attendance history",
+    "fromLabel": "From",
+    "toLabel": "To",
+    "filterButton": "Filter",
+    "empty": "No attendance recorded yet.",
+    "columns": {
+      "date": "Date",
+      "status": "Status",
+      "remarks": "Remarks",
+      "actions": "Actions"
+    },
+    "editButton": "Edit",
+    "saveButton": "Save",
+    "cancelButton": "Cancel",
+    "toasts": {
+      "updated": "Attendance record updated.",
+      "error": "Unable to load attendance history."
+    }
+  }
+}

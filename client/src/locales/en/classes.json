@@ -1,0 +1,114 @@
+{
+  "page": {
+    "title": "Classes, Grades & Subjects",
+    "subtitle": "Configure your school's grade levels, subjects, and classes."
+  },
+  "gradeLevels": {
+    "sectionTitle": "Grade levels",
+    "addButton": "Add grade level",
+    "columns": {
+      "name": "Name",
+      "educationLevel": "Education level",
+      "sequence": "Sequence",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No grade levels yet",
+      "description": "Add your school's first grade level to get started."
+    },
+    "form": {
+      "createTitle": "Add grade level",
+      "editTitle": "Edit grade level",
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. Grade 7",
+      "educationLevelLabel": "Education level",
+      "educationLevelHint": "Must match one of your school's configured education levels, if any are set.",
+      "sequenceLabel": "Sequence order",
+      "sequenceHint": "Controls display order — lower numbers come first.",
+      "errors": { "nameRequired": "Name is required.", "educationLevelRequired": "Education level is required." },
+      "toasts": { "created": "Grade level created.", "updated": "Grade level updated.", "error": "Could not save grade level." }
+    },
+    "confirmArchive": { "title": "Archive this grade level?", "description": "It will be hidden from new class assignments until restored." },
+    "confirmRestore": { "title": "Restore this grade level?", "description": "It will become available again." },
+    "toasts": { "archived": "Grade level archived.", "restored": "Grade level restored.", "error": "Something went wrong. Please try again." }
+  },
+  "subjects": {
+    "sectionTitle": "Subjects",
+    "addButton": "Add subject",
+    "columns": {
+      "name": "Name",
+      "code": "Code",
+      "core": "Core",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No subjects yet",
+      "description": "Add your school's first subject to get started."
+    },
+    "coreYes": "Core",
+    "coreNo": "Elective",
+    "form": {
+      "createTitle": "Add subject",
+      "editTitle": "Edit subject",
+      "nameLabel": "Name",
+      "codeLabel": "Code",
+      "codePlaceholder": "e.g. MATH",
+      "isCoreLabel": "This is a core subject",
+      "errors": { "nameRequired": "Name is required.", "codeRequired": "Code is required." },
+      "toasts": { "created": "Subject created.", "updated": "Subject updated.", "error": "Could not save subject." }
+    },
+    "confirmArchive": { "title": "Archive this subject?", "description": "It will no longer be assignable to classes until restored." },
+    "confirmRestore": { "title": "Restore this subject?", "description": "It will become assignable again." },
+    "toasts": { "archived": "Subject archived.", "restored": "Subject restored.", "error": "Something went wrong. Please try again." }
+  },
+  "classes": {
+    "sectionTitle": "Classes",
+    "addButton": "Add class",
+    "columns": {
+      "name": "Name",
+      "gradeLevel": "Grade level",
+      "capacity": "Capacity",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No classes yet",
+      "description": "Add your school's first class to get started."
+    },
+    "form": {
+      "createTitle": "Add class",
+      "editTitle": "Edit class",
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. A",
+      "gradeLevelLabel": "Grade level",
+      "capacityLabel": "Capacity",
+      "capacityPlaceholder": "Optional",
+      "errors": { "nameRequired": "Name is required.", "gradeLevelRequired": "Choose a grade level." },
+      "toasts": { "created": "Class created.", "updated": "Class updated.", "error": "Could not save class." }
+    },
+    "confirmArchive": { "title": "Archive this class?", "description": "It will no longer accept new enrollments until restored." },
+    "confirmRestore": { "title": "Restore this class?", "description": "It will accept new enrollments again." },
+    "toasts": { "archived": "Class archived.", "restored": "Class restored.", "error": "Something went wrong. Please try again." }
+  },
+  "detail": {
+    "backLink": "Back to classes",
+    "editButton": "Edit",
+    "cancelButton": "Cancel",
+    "gradeLevelLabel": "Grade level",
+    "capacityLabel": "Capacity",
+    "notSet": "Not set",
+    "notFound": "Class not found."
+  },
+  "classSubjects": {
+    "sectionTitle": "Subjects taught in this class",
+    "empty": "No subjects assigned yet.",
+    "assignLabel": "Assign a subject",
+    "assignPlaceholder": "Choose a subject…",
+    "assignButton": "Assign",
+    "removeButton": "Remove",
+    "confirmRemove": { "title": "Remove this subject from the class?", "description": "Staff and students will no longer see it listed for this class. You can re-assign it later." },
+    "toasts": { "assigned": "Subject assigned.", "removed": "Subject removed.", "error": "Something went wrong. Please try again." }
+  }
+}

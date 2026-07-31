@@ -1,0 +1,133 @@
+{
+  "list": {
+    "title": "Students",
+    "subtitle": "Manage student profiles, enrollment, and guardians.",
+    "searchPlaceholder": "Search by name or admission number…",
+    "statusFilter": {
+      "all": "All statuses",
+      "active": "Active",
+      "archived": "Archived"
+    },
+    "columns": {
+      "name": "Name",
+      "admissionNumber": "Admission #",
+      "gender": "Gender",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "actions": {
+      "enrolStudent": "Enrol student",
+      "export": "Export"
+    },
+    "empty": {
+      "title": "No students yet",
+      "description": "Enrol your first student to get started."
+    },
+    "row": {
+      "view": "View",
+      "archive": "Archive",
+      "restore": "Restore"
+    },
+    "confirmArchive": {
+      "title": "Archive this student?",
+      "description": "The student's record is kept, but they'll be marked archived and excluded from active rosters until restored."
+    },
+    "confirmRestore": {
+      "title": "Restore this student?",
+      "description": "The student will be marked active again."
+    },
+    "toasts": {
+      "archived": "Student archived.",
+      "restored": "Student restored.",
+      "error": "Something went wrong. Please try again."
+    }
+  },
+  "form": {
+    "createTitle": "Enrol new student",
+    "editTitle": "Edit student",
+    "admissionNumberLabel": "Admission number",
+    "admissionNumberPlaceholder": "Leave blank to auto-generate",
+    "firstNameLabel": "First name",
+    "lastNameLabel": "Last name",
+    "genderLabel": "Gender",
+    "genderNotSpecified": "Not specified",
+    "genderMale": "Male",
+    "genderFemale": "Female",
+    "dateOfBirthLabel": "Date of birth",
+    "admissionDateLabel": "Admission date",
+    "admissionDatePlaceholder": "Defaults to today",
+    "errors": {
+      "firstNameRequired": "First name is required.",
+      "lastNameRequired": "Last name is required.",
+      "dateOfBirthFuture": "Date of birth can't be in the future."
+    },
+    "toasts": {
+      "created": "Student enrolled.",
+      "updated": "Student updated.",
+      "error": "Could not save student."
+    }
+  },
+  "detail": {
+    "backLink": "Back to students",
+    "editButton": "Edit",
+    "cancelButton": "Cancel",
+    "genderLabel": "Gender",
+    "dateOfBirthLabel": "Date of birth",
+    "admissionDateLabel": "Admission date",
+    "notSpecified": "Not specified"
+  },
+  "enrollment": {
+    "sectionTitle": "Enrollment history",
+    "enrolButton": "Enrol into a class",
+    "cancelButton": "Cancel",
+    "classLabel": "Class",
+    "academicYearLabel": "Academic year",
+    "enrolledDateLabel": "Enrolled date",
+    "enrolledDatePlaceholder": "Defaults to today",
+    "submitButton": "Enrol",
+    "empty": "No enrollment history yet.",
+    "transferToLabel": "Transfer to",
+    "transferButton": "Transfer",
+    "markCompletedButton": "Mark completed",
+    "withdrawReasonLabel": "Withdrawal reason (optional)",
+    "withdrawButton": "Withdraw",
+    "confirmWithdraw": {
+      "title": "Withdraw this student?",
+      "description": "This ends their enrollment in this class. It can't be easily undone — re-enroll them if this was a mistake."
+    },
+    "toasts": {
+      "enrolled": "Student enrolled.",
+      "transferred": "Student transferred.",
+      "withdrawn": "Student withdrawn.",
+      "completed": "Enrollment marked completed.",
+      "error": "Something went wrong. Please try again.",
+      "classRequired": "Choose a class to continue."
+    }
+  },
+  "guardians": {
+    "sectionTitle": "Guardians",
+    "empty": "No guardians linked yet.",
+    "primaryContactBadge": "Primary contact",
+    "searchPlaceholder": "Search guardians by name, phone, or email…",
+    "searchButton": "Search",
+    "selectGuardianLabel": "Select a guardian",
+    "selectGuardianPlaceholder": "Choose…",
+    "relationshipLabel": "Relationship to student",
+    "relationshipPlaceholder": "e.g. Mother, Father, Uncle, Guardian",
+    "primaryContactLabel": "Primary contact",
+    "linkSelectedButton": "Link selected guardian",
+    "addNewInsteadButton": "Add a new guardian instead",
+    "cancelNewButton": "Cancel new guardian",
+    "unlinkButton": "Unlink",
+    "confirmUnlink": {
+      "title": "Unlink this guardian?",
+      "description": "They'll no longer be linked to this student. You can link them again later if needed."
+    },
+    "toasts": {
+      "linked": "Guardian linked.",
+      "unlinked": "Guardian unlinked.",
+      "error": "Something went wrong. Please try again.",
+      "selectionRequired": "Pick a guardian and enter their relationship to the student."
+    }
+  }
+}

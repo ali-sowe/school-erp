@@ -1,0 +1,26 @@
+export const APPROVAL_MESSAGES = {
+    CREATED: 'Approval request created successfully.',
+    FETCHED: 'Approval request retrieved successfully.',
+    FETCHED_ALL: 'Approval requests retrieved successfully.',
+    PENDING_FETCHED: 'Pending approvals retrieved successfully.',
+    APPROVED: 'Step approved successfully.',
+    REJECTED: 'Approval request rejected.',
+    EXECUTED: 'Approval request marked as executed.',
+    CANCELLED: 'Approval request cancelled.',
+
+    NOT_FOUND: 'Approval request not found.',
+    APPROVER_NOT_FOUND: 'One or more specified approvers do not exist in this school.',
+    APPROVER_ROLE_NOT_FOUND: 'One or more specified approver roles do not exist in this school.',
+    STEPS_REQUIRED: 'At least one approval step is required.',
+    STEP_APPROVER_REQUIRED: 'Each step needs exactly one of approver_user_id or approver_role_name.',
+    NOT_PENDING: 'This request is not pending review.',
+    NO_PENDING_STEP: 'This request has no pending step to act on.',
+    NOT_YOUR_APPROVAL: 'You are not the approver for the current step of this request.',
+    APPROVER_CANNOT_BE_REQUESTER: 'You cannot be an approver on your own request.',
+    NOT_APPROVED: 'This request must be approved before it can be executed.',
+    ALREADY_DECIDED: 'This request has already been decided.',
+    ONLY_REQUESTER_CAN_CANCEL: 'Only the person who created this request can cancel it.',
+    CANNOT_CANCEL: 'Only a request that is still pending review can be cancelled.',
+    REJECT_COMMENT_REQUIRED: 'A comment is required to reject a step.',
+    CANCEL_REASON_REQUIRED: 'A reason is required to cancel a request.'
+};

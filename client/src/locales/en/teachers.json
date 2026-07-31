@@ -1,0 +1,77 @@
+{
+  "list": {
+    "title": "Teachers",
+    "subtitle": "Manage your school's teaching staff.",
+    "searchPlaceholder": "Search by name or employee number…",
+    "statusFilter": { "active": "Active", "archived": "Archived", "all": "All" },
+    "actions": { "addTeacher": "Add teacher", "export": "Export" },
+    "columns": {
+      "name": "Name",
+      "employeeNumber": "Employee #",
+      "specialization": "Specialization",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "row": { "archive": "Archive", "restore": "Restore" },
+    "empty": { "title": "No teachers yet", "description": "Add your school's first teacher to get started." },
+    "confirmArchive": { "title": "Archive this teacher?", "description": "They'll no longer appear when assigning new classes or subjects, until restored." },
+    "confirmRestore": { "title": "Restore this teacher?", "description": "They'll become available again for new assignments." },
+    "toasts": { "archived": "Teacher archived.", "restored": "Teacher restored.", "error": "Something went wrong. Please try again." }
+  },
+  "form": {
+    "createTitle": "Add teacher",
+    "editTitle": "Edit teacher",
+    "firstNameLabel": "First name",
+    "lastNameLabel": "Last name",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "passwordPlaceholderCreate": "Set an initial password",
+    "employeeNumberLabel": "Employee number",
+    "employeeNumberHint": "Leave blank to auto-generate one.",
+    "qualificationLabel": "Qualification",
+    "specializationLabel": "Specialization",
+    "hireDateLabel": "Hire date",
+    "errors": {
+      "firstNameRequired": "First name is required.",
+      "lastNameRequired": "Last name is required.",
+      "emailRequired": "Email is required.",
+      "emailInvalid": "Enter a valid email address.",
+      "passwordRequired": "Password is required.",
+      "passwordTooShort": "Password must be at least 8 characters."
+    },
+    "toasts": { "created": "Teacher added.", "updated": "Teacher updated.", "error": "Could not save teacher." }
+  },
+  "detail": {
+    "backLink": "Back to teachers",
+    "notFound": "Teacher not found.",
+    "editButton": "Edit",
+    "cancelButton": "Cancel",
+    "employeeNumberLabel": "Employee number",
+    "emailLabel": "Email",
+    "qualificationLabel": "Qualification",
+    "specializationLabel": "Specialization",
+    "hireDateLabel": "Hire date",
+    "notSet": "Not set"
+  },
+  "assignments": {
+    "subjectsSectionTitle": "Subjects taught",
+    "subjectsEmpty": "Not currently assigned to teach any subject.",
+    "subjectsColumns": { "class": "Class", "subject": "Subject", "academicYear": "Academic year", "status": "Status" },
+    "homeroomSectionTitle": "Homeroom classes",
+    "homeroomEmpty": "Not currently a homeroom teacher for any class.",
+    "homeroomColumns": { "class": "Class", "academicYear": "Academic year", "status": "Status" }
+  },
+  "classAssignments": {
+    "subjectTeachersSectionTitle": "Subject teachers",
+    "subjectTeachersEmpty": "No teachers assigned to any subject yet.",
+    "assignButton": "Assign",
+    "endButton": "End",
+    "chooseSubjectPlaceholder": "Choose a subject…",
+    "confirmEnd": { "title": "End this assignment?", "description": "The teacher will no longer be recorded as teaching this subject to this class for the current academic year." },
+    "toasts": { "assigned": "Teacher assigned.", "ended": "Assignment ended.", "error": "Could not save this assignment." },
+    "homeroomSectionTitle": "Homeroom teacher",
+    "homeroomNotAssigned": "No homeroom teacher assigned yet for the current academic year.",
+    "homeroomAssignButton": "Assign homeroom teacher",
+    "homeroomChangeButton": "Change"
+  }
+}

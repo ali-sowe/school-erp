@@ -1,77 +1,158 @@
-import { useEffect, useState } from 'react';
-import api from '../../services/api';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+
+import { useAuth } from '@/context/AuthContext';
+import { useStudentAttendanceHistory, useUpdateAttendanceRecord } from '@/hooks/attendance/useStudentAttendance';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { StatusBadge } from '@/components/erp/StatusBadge';
+import { EmptyState } from '@/components/erp/EmptyState';
+
+const ATTENDANCE_STATUSES = ['PRESENT', 'ABSENT', 'LATE', 'EXCUSED'];
 
 function StudentAttendancePanel({ studentId }) {
-  const [history, setHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { t } = useTranslation('attendance');
+  const { hasPermission } = useAuth();
+  const canWrite = hasPermission('attendance.write');
+
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
+  const [range, setRange] = useState({ from: undefined, to: undefined });
 
-  const loadHistory = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const response = await api.get(`/students/${studentId}/attendance`, {
-        params: { from: from || undefined, to: to || undefined }
-      });
-      setHistory(response.data?.data || []);
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Unable to load attendance history.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: history, isLoading } = useStudentAttendanceHistory(studentId, range);
+  const updateRecord = useUpdateAttendanceRecord(studentId);
 
-  useEffect(() => {
-    loadHistory();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [studentId]);
+  const [editingId, setEditingId] = useState(null);
+  const [editValues, setEditValues] = useState({ status: '', remarks: '' });
 
   const handleFilter = (event) => {
     event.preventDefault();
-    loadHistory();
+    setRange({ from: from || undefined, to: to || undefined });
+  };
+
+  const startEdit = (record) => {
+    setEditingId(record.id);
+    setEditValues({ status: record.status, remarks: record.remarks || '' });
+  };
+
+  const handleSaveEdit = async (recordId) => {
+    try {
+      await updateRecord.mutateAsync({ recordId, status: editValues.status, remarks: editValues.remarks || undefined });
+      toast.success(t('history.toasts.updated'));
+      setEditingId(null);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || t('history.toasts.error'));
+    }
   };
 
   return (
-    <section className="hero-card">
-      <div className="card-header">
-        <h2>Attendance history</h2>
-      </div>
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">{t('history.title')}</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-space-4">
+        <form onSubmit={handleFilter} className="flex flex-wrap items-end gap-space-2">
+          <div className="space-y-1">
+            <p className="text-xs text-muted-foreground">{t('history.fromLabel')}</p>
+            <Input type="date" value={from} onChange={(event) => setFrom(event.target.value)} />
+          </div>
+          <div className="space-y-1">
+            <p className="text-xs text-muted-foreground">{t('history.toLabel')}</p>
+            <Input type="date" value={to} onChange={(event) => setTo(event.target.value)} />
+          </div>
+          <Button type="submit" variant="outline">
+            {t('history.filterButton')}
+          </Button>
+        </form>
 
-      <form onSubmit={handleFilter} className="toolbar-row">
-        <input type="date" value={from} onChange={(event) => setFrom(event.target.value)} placeholder="From" />
-        <input type="date" value={to} onChange={(event) => setTo(event.target.value)} placeholder="To" />
-        <button type="submit" className="secondary">Filter</button>
-      </form>
+        {isLoading && (
+          <div className="space-y-space-2">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        )}
 
-      {error ? <p className="error-text">{error}</p> : null}
+        {!isLoading && (!history || history.length === 0) && <EmptyState title={t('history.empty')} />}
 
-      {loading ? (
-        <p>Loading attendance history…</p>
-      ) : history.length === 0 ? (
-        <p className="record-meta">No attendance recorded yet.</p>
-      ) : (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Remarks</th>
-            </tr>
-          </thead>
-          <tbody>
-            {history.map((record) => (
-              <tr key={record.id}>
-                <td>{record.attendance_date?.slice(0, 10)}</td>
-                <td><span className={`status-badge status-${record.status?.toLowerCase()}`}>{record.status}</span></td>
-                <td>{record.remarks || '—'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </section>
+        {!isLoading && history && history.length > 0 && (
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t('history.columns.date')}</TableHead>
+                  <TableHead>{t('history.columns.status')}</TableHead>
+                  <TableHead>{t('history.columns.remarks')}</TableHead>
+                  {canWrite && <TableHead>{t('history.columns.actions')}</TableHead>}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {history.map((record) => {
+                  const isEditing = editingId === record.id;
+                  return (
+                    <TableRow key={record.id}>
+                      <TableCell>{record.attendance_date?.slice(0, 10)}</TableCell>
+                      <TableCell>
+                        {isEditing ? (
+                          <Select value={editValues.status} onValueChange={(value) => setEditValues((current) => ({ ...current, status: value }))}>
+                            <SelectTrigger className="w-36">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {ATTENDANCE_STATUSES.map((status) => (
+                                <SelectItem key={status} value={status}>
+                                  {status}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <StatusBadge status={record.status} />
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {isEditing ? (
+                          <Input
+                            value={editValues.remarks}
+                            onChange={(event) => setEditValues((current) => ({ ...current, remarks: event.target.value }))}
+                            className="min-w-48"
+                          />
+                        ) : (
+                          record.remarks || '—'
+                        )}
+                      </TableCell>
+                      {canWrite && (
+                        <TableCell>
+                          {isEditing ? (
+                            <div className="flex gap-space-2">
+                              <Button size="sm" onClick={() => handleSaveEdit(record.id)} disabled={updateRecord.isPending}>
+                                {t('history.saveButton')}
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={() => setEditingId(null)}>
+                                {t('history.cancelButton')}
+                              </Button>
+                            </div>
+                          ) : (
+                            <Button size="sm" variant="outline" onClick={() => startEdit(record)}>
+                              {t('history.editButton')}
+                            </Button>
+                          )}
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 

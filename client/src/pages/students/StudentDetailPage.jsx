@@ -1,109 +1,106 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useParams } from 'react-router';
-import api from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
-import StudentForm from '../../components/students/StudentForm';
-import GuardianLinkPanel from '../../components/students/GuardianLinkPanel';
-import EnrollmentPanel from '../../components/students/EnrollmentPanel';
-import StudentAttendancePanel from '../../components/attendance/StudentAttendancePanel';
+import { useTranslation } from 'react-i18next';
+import { ArrowLeft } from 'lucide-react';
+
+import { useAuth } from '@/context/AuthContext';
+import { useStudent } from '@/hooks/students/useStudents';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { StatusBadge } from '@/components/erp/StatusBadge';
+import StudentForm from '@/components/students/StudentForm';
+import GuardianLinkPanel from '@/components/students/GuardianLinkPanel';
+import EnrollmentPanel from '@/components/students/EnrollmentPanel';
+import StudentAttendancePanel from '@/components/attendance/StudentAttendancePanel';
 
 function StudentDetailPage() {
   const { id } = useParams();
+  const { t } = useTranslation('students');
   const { hasPermission } = useAuth();
   const canWrite = hasPermission('students.write');
   const canViewAttendance = hasPermission('attendance.read');
 
-  const [student, setStudent] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { data: student, isLoading, isError } = useStudent(id);
   const [editing, setEditing] = useState(false);
 
-  const loadStudent = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const response = await api.get(`/students/${id}`);
-      setStudent(response.data?.data);
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Unable to load student.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadStudent();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
-
-  const handleSaved = (updatedStudent) => {
-    setStudent(updatedStudent);
-    setEditing(false);
-  };
-
-  if (loading) {
+  if (isLoading) {
     return (
-      <main className="erp-shell">
-        <p>Loading student…</p>
-      </main>
+      <div className="space-y-space-4">
+        <Skeleton className="h-8 w-40" />
+        <Skeleton className="h-40 w-full" />
+      </div>
     );
   }
 
-  if (error && !student) {
+  if (isError || !student) {
     return (
-      <main className="erp-shell">
-        <p className="error-text">{error}</p>
-        <Link to="/students">Back to students</Link>
-      </main>
+      <div className="space-y-space-4">
+        <Alert variant="destructive">
+          <AlertTitle>{t('common:states.errorTitle', { ns: 'common' })}</AlertTitle>
+          <AlertDescription>{t('common:states.errorDescription', { ns: 'common' })}</AlertDescription>
+        </Alert>
+        <Link to="/students" className="text-sm text-primary hover:underline">
+          ← {t('detail.backLink')}
+        </Link>
+      </div>
     );
   }
 
   return (
-    <main className="erp-shell">
-      <Link to="/students" className="back-link">← Back to students</Link>
+    <div className="space-y-space-6">
+      <Link to="/students" className="inline-flex items-center gap-space-1 text-sm text-muted-foreground hover:text-foreground">
+        <ArrowLeft className="h-4 w-4" />
+        {t('detail.backLink')}
+      </Link>
 
-      <section className="hero-card">
-        <div className="card-header">
+      <Card>
+        <CardHeader className="flex flex-row items-start justify-between space-y-0">
           <div>
-            <p className="eyebrow">{student.admission_number}</p>
-            <h1>{student.first_name} {student.last_name}</h1>
+            <p className="text-sm text-muted-foreground">{student.admission_number}</p>
+            <CardTitle className="text-2xl">
+              {student.first_name} {student.last_name}
+            </CardTitle>
           </div>
-          <div className="actions">
-            <span className={`status-badge status-${student.status?.toLowerCase()}`}>{student.status}</span>
-            {canWrite && student.status !== 'ARCHIVED' ? (
-              <button type="button" className="secondary" onClick={() => setEditing((current) => !current)}>
-                {editing ? 'Cancel' : 'Edit'}
-              </button>
-            ) : null}
+          <div className="flex items-center gap-space-2">
+            <StatusBadge status={student.status} />
+            {canWrite && student.status !== 'ARCHIVED' && (
+              <Button variant="outline" size="sm" onClick={() => setEditing((current) => !current)}>
+                {editing ? t('detail.cancelButton') : t('detail.editButton')}
+              </Button>
+            )}
           </div>
-        </div>
-
-        {error ? <p className="error-text">{error}</p> : null}
-
-        {editing ? (
-          <StudentForm student={student} onSaved={handleSaved} onCancel={() => setEditing(false)} />
-        ) : (
-          <dl className="detail-grid">
-            <div>
-              <dt>Gender</dt>
-              <dd>{student.gender || 'Not specified'}</dd>
-            </div>
-            <div>
-              <dt>Date of birth</dt>
-              <dd>{student.date_of_birth ? student.date_of_birth.slice(0, 10) : 'Not specified'}</dd>
-            </div>
-            <div>
-              <dt>Admission date</dt>
-              <dd>{student.admission_date ? student.admission_date.slice(0, 10) : '—'}</dd>
-            </div>
-          </dl>
-        )}
-      </section>
+        </CardHeader>
+        <CardContent>
+          {editing ? (
+            <StudentForm student={student} onSaved={() => setEditing(false)} onCancel={() => setEditing(false)} />
+          ) : (
+            <dl className="grid gap-space-4 sm:grid-cols-3">
+              <div>
+                <dt className="text-sm text-muted-foreground">{t('detail.genderLabel')}</dt>
+                <dd className="font-medium">{student.gender || t('detail.notSpecified')}</dd>
+              </div>
+              <div>
+                <dt className="text-sm text-muted-foreground">{t('detail.dateOfBirthLabel')}</dt>
+                <dd className="font-medium">{student.date_of_birth ? student.date_of_birth.slice(0, 10) : t('detail.notSpecified')}</dd>
+              </div>
+              <div>
+                <dt className="text-sm text-muted-foreground">{t('detail.admissionDateLabel')}</dt>
+                <dd className="font-medium">{student.admission_date ? student.admission_date.slice(0, 10) : '—'}</dd>
+              </div>
+            </dl>
+          )}
+        </CardContent>
+      </Card>
 
       <GuardianLinkPanel studentId={student.id} canWrite={canWrite} />
       <EnrollmentPanel studentId={student.id} canWrite={canWrite} />
-      {canViewAttendance ? <StudentAttendancePanel studentId={student.id} /> : null}
-    </main>
+      {/* StudentAttendancePanel was migrated to the new stack along with
+          the rest of the Attendance module — reused here as-is. */}
+      {canViewAttendance && <StudentAttendancePanel studentId={student.id} />}
+    </div>
   );
 }
 

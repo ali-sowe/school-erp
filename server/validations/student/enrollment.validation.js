@@ -10,6 +10,11 @@ export const transferStudentSchema = Joi.object({
     class_id: Joi.number().integer().positive().required()
 });
 
+export const requestTransferStudentSchema = Joi.object({
+    class_id: Joi.number().integer().positive().required(),
+    reason: Joi.string().trim().min(3).max(500).required()
+});
+
 export const withdrawStudentSchema = Joi.object({
     reason: Joi.string().trim().max(255)
 });

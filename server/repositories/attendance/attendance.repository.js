@@ -111,6 +111,47 @@ export async function findRosterWithAttendance(classId, academicYearId, attendan
     );
 }
 
+// School-wide listing, optionally filtered by class/student/date range —
+// same conditions-array style as findForStudent/getClassSummary, just not
+// pre-scoped to one class or student. Added for the attendance report
+// dataset (see services/report/datasets/attendance.dataset.js), which
+// needs "the whole school's attendance for this range", not one student's
+// or one class's.
+export async function findAll(schoolId, { classId, studentId, from, to, status } = {}) {
+    const conditions = ['school_id = ?'];
+    const values = [schoolId];
+
+    if (classId) {
+        conditions.push('class_id = ?');
+        values.push(classId);
+    }
+
+    if (studentId) {
+        conditions.push('student_id = ?');
+        values.push(studentId);
+    }
+
+    if (from) {
+        conditions.push('attendance_date >= ?');
+        values.push(from);
+    }
+
+    if (to) {
+        conditions.push('attendance_date <= ?');
+        values.push(to);
+    }
+
+    if (status) {
+        conditions.push('status = ?');
+        values.push(status);
+    }
+
+    return await query(
+        `SELECT * FROM attendance_records WHERE ${conditions.join(' AND ')} ORDER BY attendance_date DESC`,
+        values
+    );
+}
+
 // A student's attendance history, optionally bounded by a date range. Most
 // recent first, since that's what a teacher/parent looking at a student's
 // record usually wants to see.

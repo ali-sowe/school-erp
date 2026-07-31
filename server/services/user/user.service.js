@@ -50,8 +50,16 @@ export async function updateUser(id, data, schoolId) {
     return await userRepository.findById(user.id);
 }
 
-export async function deleteUser(id, schoolId) {
+export async function deleteUser(id, schoolId, actingUserId = null) {
     const user = await getUserById(id, schoolId);
+
+    // Deleting your own account while logged in as it is either a mistake
+    // or a way to accidentally lock a school out entirely if you're its
+    // only Administrator — block it outright rather than trying to guess
+    // intent. Ask another administrator, or transfer responsibilities first.
+    if (actingUserId !== null && Number(id) === Number(actingUserId)) {
+        throw new AppError(HTTP_STATUS.BAD_REQUEST, USER_MESSAGES.CANNOT_DELETE_SELF);
+    }
 
     await userRepository.remove(user.id);
     return { id: user.id };

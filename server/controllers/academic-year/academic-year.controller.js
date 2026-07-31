@@ -91,3 +91,15 @@ export const overrideAcademicYear = asyncHandler(
         });
     }
 );
+
+export const requestOverrideAcademicYear = asyncHandler(
+    async (req, res) => {
+        const request = await academicYearService.requestAcademicYearOverride(req.params.id, req.body, req.user.schoolId, req.user.userId);
+
+        res.status(HTTP_STATUS.CREATED).json({
+            success: true,
+            message: ACADEMIC_YEAR_MESSAGES.OVERRIDE_REQUESTED,
+            data: request
+        });
+    }
+);

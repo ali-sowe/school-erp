@@ -1,133 +1,249 @@
-import { useEffect, useState } from 'react';
-import api from '../services/api';
-import AdminUserForm from '../components/AdminUserForm';
-import AdminRoleForm from '../components/AdminRoleForm';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+import { Plus, ShieldCheck, Users as UsersIcon } from 'lucide-react';
+
+import { useUsers } from '@/hooks/admin/useUsers';
+import { useDeleteUser } from '@/hooks/admin/useUserMutations';
+import { useRoles } from '@/hooks/admin/useRoles';
+import { useDeleteRole } from '@/hooks/admin/useRoleMutations';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DataTable } from '@/components/erp/DataTable';
+import { EmptyState } from '@/components/erp/EmptyState';
+import { ConfirmDialog } from '@/components/erp/ConfirmDialog';
+import UserForm from '@/components/admin/UserForm';
+import RoleForm from '@/components/admin/RoleForm';
 
 function AdminDashboard() {
-  const [users, setUsers] = useState([]);
-  const [roles, setRoles] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { t } = useTranslation('admin');
+
+  const { data: users, isLoading: usersLoading } = useUsers();
+  const { data: roles, isLoading: rolesLoading } = useRoles();
+  const deleteUser = useDeleteUser();
+  const deleteRole = useDeleteRole();
+
+  const [userFormOpen, setUserFormOpen] = useState(false);
   const [activeUser, setActiveUser] = useState(null);
+  const [userToDelete, setUserToDelete] = useState(null);
+
+  const [roleFormOpen, setRoleFormOpen] = useState(false);
   const [activeRole, setActiveRole] = useState(null);
-  const [showUserForm, setShowUserForm] = useState(false);
-  const [showRoleForm, setShowRoleForm] = useState(false);
+  const [roleToDelete, setRoleToDelete] = useState(null);
 
-  const loadData = async () => {
+  const roleNameById = useMemo(() => {
+    const map = new Map();
+    (roles ?? []).forEach((role) => map.set(role.id, role.role_name));
+    return map;
+  }, [roles]);
+
+  const userColumns = useMemo(
+    () => [
+      {
+        accessorKey: 'first_name',
+        header: t('users.table.name'),
+        cell: ({ row }) => `${row.original.first_name} ${row.original.last_name}`,
+      },
+      { accessorKey: 'email', header: t('users.table.email') },
+      {
+        accessorKey: 'role_id',
+        header: t('users.table.role'),
+        cell: ({ row }) => roleNameById.get(row.original.role_id) || '—',
+      },
+      {
+        accessorKey: 'status',
+        header: t('users.table.status'),
+        cell: ({ row }) => (
+          <Badge variant={row.original.status === 'active' ? 'success' : 'secondary'}>{row.original.status}</Badge>
+        ),
+      },
+      {
+        id: 'actions',
+        header: t('users.table.actions'),
+        cell: ({ row }) => (
+          <div className="flex gap-space-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setActiveUser(row.original);
+                setUserFormOpen(true);
+              }}
+            >
+              {t('common:actions.edit', { ns: 'common' })}
+            </Button>
+            <Button variant="outline" size="sm" className="text-destructive" onClick={() => setUserToDelete(row.original)}>
+              {t('common:actions.delete', { ns: 'common' })}
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [t, roleNameById]
+  );
+
+  const roleColumns = useMemo(
+    () => [
+      { accessorKey: 'role_name', header: t('roles.table.name') },
+      {
+        accessorKey: 'description',
+        header: t('roles.table.description'),
+        cell: ({ row }) => row.original.description || '—',
+      },
+      {
+        accessorKey: 'permissions',
+        header: t('roles.table.permissions'),
+        cell: ({ row }) => t('roles.permissionCount', { count: row.original.permissions?.length ?? 0 }),
+      },
+      {
+        id: 'actions',
+        header: t('roles.table.actions'),
+        cell: ({ row }) => (
+          <div className="flex gap-space-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setActiveRole(row.original);
+                setRoleFormOpen(true);
+              }}
+            >
+              {t('common:actions.edit', { ns: 'common' })}
+            </Button>
+            <Button variant="outline" size="sm" className="text-destructive" onClick={() => setRoleToDelete(row.original)}>
+              {t('common:actions.delete', { ns: 'common' })}
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [t]
+  );
+
+  const handleDeleteUser = async () => {
     try {
-      const [usersRes, rolesRes] = await Promise.all([
-        api.get('/users'),
-        api.get('/roles')
-      ]);
-      setUsers(usersRes.data?.data || []);
-      setRoles(rolesRes.data?.data || []);
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Unable to load admin data.');
-    } finally {
-      setLoading(false);
+      await deleteUser.mutateAsync(userToDelete.id);
+      toast.success(t('users.deleteConfirm.toastSuccess'));
+    } catch (error) {
+      toast.error(error?.response?.data?.message || t('users.deleteConfirm.toastError'));
+      throw error; // keep the confirm dialog open so the message above is seen
     }
   };
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const handleUserSaved = async () => {
-    setShowUserForm(false);
-    setActiveUser(null);
-    await loadData();
-  };
-
-  const handleRoleSaved = async () => {
-    setShowRoleForm(false);
-    setActiveRole(null);
-    await loadData();
-  };
-
-  const handleDeleteUser = async (userId) => {
+  const handleDeleteRole = async () => {
     try {
-      await api.delete(`/users/${userId}`);
-      await loadData();
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Could not delete user.');
+      await deleteRole.mutateAsync(roleToDelete.id);
+      toast.success(t('roles.deleteConfirm.toastSuccess'));
+    } catch (error) {
+      toast.error(error?.response?.data?.message || t('roles.deleteConfirm.toastError'));
+      throw error;
     }
   };
-
-  const handleDeleteRole = async (roleId) => {
-    try {
-      await api.delete(`/roles/${roleId}`);
-      await loadData();
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Could not delete role.');
-    }
-  };
-
-  if (loading) return <p>Loading admin dashboard…</p>;
 
   return (
-    <div className="erp-shell">
-      <section className="hero-card">
-        <p className="eyebrow">Admin Console</p>
-        <h1>Manage users and access roles</h1>
-        <p>Track account status, role assignments, and permission scopes from one place.</p>
-      </section>
+    <div className="space-y-space-6">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">{t('title')}</h1>
+        <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
+      </div>
 
-      {error ? <p className="error-text">{error}</p> : null}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <UsersIcon className="h-4 w-4" />
+            {t('tabs.users')}
+          </CardTitle>
+          <Button
+            size="sm"
+            onClick={() => {
+              setActiveUser(null);
+              setUserFormOpen(true);
+            }}
+          >
+            <Plus className="h-4 w-4" />
+            {t('users.addButton')}
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <DataTable
+            columns={userColumns}
+            data={users}
+            isLoading={usersLoading}
+            emptyState={<EmptyState icon={UsersIcon} title={t('users.empty.title')} description={t('users.empty.description')} />}
+          />
+        </CardContent>
+      </Card>
 
-      <section className="feature-grid">
-        <article className="feature-card">
-          <div className="card-header">
-            <h2>Users</h2>
-            <button onClick={() => { setActiveUser(null); setShowUserForm(true); }}>Add user</button>
-          </div>
-          {showUserForm ? (
-            <AdminUserForm
-              user={activeUser}
-              roles={roles}
-              onSaved={handleUserSaved}
-              onCancel={() => { setShowUserForm(false); setActiveUser(null); }}
-            />
-          ) : (
-            <ul>
-              {users.map((user) => (
-                <li key={user.id} className="list-row">
-                  <span>{user.first_name} {user.last_name} • {user.email}</span>
-                  <div className="actions">
-                    <button className="secondary" onClick={() => { setActiveUser(user); setShowUserForm(true); }}>Edit</button>
-                    <button className="danger" onClick={() => handleDeleteUser(user.id)}>Delete</button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </article>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <ShieldCheck className="h-4 w-4" />
+            {t('tabs.roles')}
+          </CardTitle>
+          <Button
+            size="sm"
+            onClick={() => {
+              setActiveRole(null);
+              setRoleFormOpen(true);
+            }}
+          >
+            <Plus className="h-4 w-4" />
+            {t('roles.addButton')}
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <DataTable
+            columns={roleColumns}
+            data={roles}
+            isLoading={rolesLoading}
+            emptyState={<EmptyState icon={ShieldCheck} title={t('roles.empty.title')} description={t('roles.empty.description')} />}
+          />
+        </CardContent>
+      </Card>
 
-        <article className="feature-card">
-          <div className="card-header">
-            <h2>Roles</h2>
-            <button onClick={() => { setActiveRole(null); setShowRoleForm(true); }}>Add role</button>
-          </div>
-          {showRoleForm ? (
-            <AdminRoleForm
-              role={activeRole}
-              onSaved={handleRoleSaved}
-              onCancel={() => { setShowRoleForm(false); setActiveRole(null); }}
-            />
-          ) : (
-            <ul>
-              {roles.map((role) => (
-                <li key={role.id} className="list-row">
-                  <span>{role.role_name}</span>
-                  <div className="actions">
-                    <button className="secondary" onClick={() => { setActiveRole(role); setShowRoleForm(true); }}>Edit</button>
-                    <button className="danger" onClick={() => handleDeleteRole(role.id)}>Delete</button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </article>
-      </section>
+      <Dialog open={userFormOpen} onOpenChange={setUserFormOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{activeUser ? t('users.form.editTitle') : t('users.form.createTitle')}</DialogTitle>
+          </DialogHeader>
+          <UserForm
+            user={activeUser}
+            roles={roles ?? []}
+            onSaved={() => setUserFormOpen(false)}
+            onCancel={() => setUserFormOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={roleFormOpen} onOpenChange={setRoleFormOpen}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{activeRole ? t('roles.form.editTitle') : t('roles.form.createTitle')}</DialogTitle>
+          </DialogHeader>
+          <RoleForm role={activeRole} onSaved={() => setRoleFormOpen(false)} onCancel={() => setRoleFormOpen(false)} />
+        </DialogContent>
+      </Dialog>
+
+      <ConfirmDialog
+        open={Boolean(userToDelete)}
+        onOpenChange={(open) => !open && setUserToDelete(null)}
+        title={t('users.deleteConfirm.title')}
+        description={t('users.deleteConfirm.description', { name: userToDelete ? `${userToDelete.first_name} ${userToDelete.last_name}` : '' })}
+        confirmLabel={t('users.deleteConfirm.confirmLabel')}
+        onConfirm={handleDeleteUser}
+      />
+
+      <ConfirmDialog
+        open={Boolean(roleToDelete)}
+        onOpenChange={(open) => !open && setRoleToDelete(null)}
+        title={t('roles.deleteConfirm.title')}
+        description={t('roles.deleteConfirm.description', { name: roleToDelete?.role_name || '' })}
+        confirmLabel={t('roles.deleteConfirm.confirmLabel')}
+        onConfirm={handleDeleteRole}
+      />
     </div>
   );
 }

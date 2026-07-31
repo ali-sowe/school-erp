@@ -14,6 +14,7 @@ export const findUserByEmail = async (email) => {
         u.email,
         u.password,
         u.status,
+        u.mfa_enabled,
         r.role_name,
         r.permissions
         FROM users u
@@ -39,6 +40,7 @@ export const findUserById = async (id) => {
         u.email,
         u.password,
         u.status,
+        u.mfa_enabled,
         r.role_name,
         r.permissions
         FROM users u

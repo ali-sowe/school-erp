@@ -21,5 +21,6 @@ export const ACADEMIC_YEAR_MESSAGES = {
     CANNOT_EDIT_COMPLETED: 'A completed academic year cannot be modified.',
 
     OVERRIDE_REQUIRED: 'This action is outside the allowed scheduling window and requires an authorized override.',
-    OVERRIDE_SUCCESS: 'Academic year schedule overridden successfully.'
+    OVERRIDE_SUCCESS: 'Academic year schedule overridden successfully.',
+    OVERRIDE_REQUESTED: 'Override request submitted for approval.'
 };

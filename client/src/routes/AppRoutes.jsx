@@ -8,7 +8,14 @@ import AdminDashboard from '../pages/AdminDashboard';
 import StudentsListPage from '../pages/students/StudentsListPage';
 import StudentDetailPage from '../pages/students/StudentDetailPage';
 import GuardiansListPage from '../pages/guardians/GuardiansListPage';
+import GuardianDetailPage from '../pages/guardians/GuardianDetailPage';
 import AttendancePage from '../pages/attendance/AttendancePage';
+import ClassesPage from '../pages/classes/ClassesPage';
+import ClassDetailPage from '../pages/classes/ClassDetailPage';
+import TeachersListPage from '../pages/teachers/TeachersListPage';
+import TeacherDetailPage from '../pages/teachers/TeacherDetailPage';
+import ExamsListPage from '../pages/exams/ExamsListPage';
+import ExamDetailPage from '../pages/exams/ExamDetailPage';
 
 function AppRoutes() {
   return (
@@ -51,10 +58,66 @@ function AppRoutes() {
               }
             />
             <Route
+              path="/guardians/:id"
+              element={
+                <ProtectedRoute permission="guardians.read">
+                  <GuardianDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/attendance"
               element={
                 <ProtectedRoute permission="attendance.read">
                   <AttendancePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/classes"
+              element={
+                <ProtectedRoute permission="classes.read">
+                  <ClassesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/classes/:id"
+              element={
+                <ProtectedRoute permission="classes.read">
+                  <ClassDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/teachers"
+              element={
+                <ProtectedRoute permission="teachers.read">
+                  <TeachersListPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/teachers/:id"
+              element={
+                <ProtectedRoute permission="teachers.read">
+                  <TeacherDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/exams"
+              element={
+                <ProtectedRoute permission="exams.read">
+                  <ExamsListPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/exams/:id"
+              element={
+                <ProtectedRoute permission="exams.read">
+                  <ExamDetailPage />
                 </ProtectedRoute>
               }
             />

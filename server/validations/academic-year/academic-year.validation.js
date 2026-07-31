@@ -13,3 +13,9 @@ export const updateAcademicYearSchema = Joi.object({
     start_date: Joi.date(),
     end_date: Joi.date().greater(Joi.ref('start_date'))
 }).min(1);
+
+export const requestOverrideAcademicYearSchema = Joi.object({
+    reason: Joi.string().trim().min(3).max(255).required(),
+    actual_start_date: Joi.date(),
+    actual_end_date: Joi.date()
+});

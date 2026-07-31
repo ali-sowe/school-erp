@@ -1,21 +1,109 @@
-:root {
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color: #10223f;
-  background-color: #f4f7fb;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Design tokens (ADR-010: Design Tokens & Color Strategy).
+ * Neutral monochrome foundation per the UI Patterns doc — no fixed brand
+ * color yet, since a distinct brand identity is a later decision, not a
+ * blocker for building the UI. success/warning are added on top of
+ * shadcn/ui's own tokens specifically so status meaning (pending / overdue
+ * / approved, attendance states) is readable by color alone, per ADR-010.
+ *
+ * --radius: 0.5rem (8px) matches Enrole's own radius-sm token exactly —
+ * see tailwind.config.js's borderRadius scale for how xs/sm/md/lg/xl derive
+ * from this one value.
+ */
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222 20% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 20% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 20% 12%;
+
+    --primary: 222 20% 12%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 210 20% 96%;
+    --secondary-foreground: 222 20% 12%;
+
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 14% 42%;
+
+    --accent: 210 20% 96%;
+    --accent-foreground: 222 20% 12%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 142 71% 33%;
+    --success-foreground: 0 0% 98%;
+
+    --warning: 38 92% 42%;
+    --warning-foreground: 0 0% 98%;
+
+    --border: 214 20% 89%;
+    --input: 214 20% 89%;
+    --ring: 222 20% 12%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222 20% 10%;
+    --foreground: 210 20% 96%;
+
+    --card: 222 18% 13%;
+    --card-foreground: 210 20% 96%;
+
+    --popover: 222 18% 13%;
+    --popover-foreground: 210 20% 96%;
+
+    --primary: 210 20% 96%;
+    --primary-foreground: 222 20% 12%;
+
+    --secondary: 222 14% 20%;
+    --secondary-foreground: 210 20% 96%;
+
+    --muted: 222 14% 20%;
+    --muted-foreground: 215 14% 65%;
+
+    --accent: 222 14% 20%;
+    --accent-foreground: 210 20% 96%;
+
+    --destructive: 0 63% 42%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 142 60% 40%;
+    --success-foreground: 0 0% 98%;
+
+    --warning: 38 85% 50%;
+    --warning-foreground: 222 20% 12%;
+
+    --border: 222 14% 22%;
+    --input: 222 14% 22%;
+    --ring: 210 20% 80%;
+  }
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-}
+@layer base {
+  * {
+    @apply border-border;
+  }
 
-* {
-  box-sizing: border-box;
+  body {
+    @apply bg-background text-foreground;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-width: 320px;
+    min-height: 100vh;
+  }
 }

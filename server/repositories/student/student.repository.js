@@ -113,3 +113,13 @@ export async function update(id, data) {
 export async function setStatus(id, status) {
     await query(`UPDATE students SET status = ? WHERE id = ?`, [status, id]);
 }
+
+// Portal account support (see student-portal-account.service.js).
+export async function attachUserAccount(id, userId) {
+    await query(`UPDATE students SET user_id = ? WHERE id = ?`, [userId, id]);
+}
+
+export async function findByUserId(userId) {
+    const rows = await query(`SELECT * FROM students WHERE user_id = ?`, [userId]);
+    return rows[0] || null;
+}

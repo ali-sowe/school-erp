@@ -17,6 +17,7 @@ import {
     resolveAcademicYearId
 } from "../../helpers/student/enrollment.helper.js";
 import * as enrollmentRepository from "../../repositories/student/enrollment.repository.js";
+import { ensureSchoolIsOpenOnDate } from "../calendar/calendar.service.js";
 
 // Marks (or corrects) attendance for every student listed, for one class on
 // one day, as a single atomic operation — either the whole day's roster is
@@ -32,6 +33,12 @@ export async function markAttendance(classId, data, schoolId, userId = null) {
 
     validateAttendanceDate(data.date);
     validateNoDuplicateEntries(data.entries);
+
+    // The Calendar Engine's whole reason for existing (see docs: School
+    // Calendar Engine Design — "Future dependencies: ... attendance
+    // periods") — a day the school has marked closed (holiday, mid-term
+    // break, emergency closure) can't have attendance recorded against it.
+    await ensureSchoolIsOpenOnDate(schoolId, data.date);
 
     const academicYearId = await resolveAcademicYearId(data.academic_year_id, schoolId);
 

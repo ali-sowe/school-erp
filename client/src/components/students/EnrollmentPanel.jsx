@@ -1,208 +1,208 @@
-import { useEffect, useState } from 'react';
-import api from '../../services/api';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+import { CalendarClock } from 'lucide-react';
+
+import { useStudentEnrollments, useEnrollStudent, useTransferStudent, useWithdrawStudent, useCompleteEnrollment } from '@/hooks/students/useStudentEnrollments';
+import { useClasses } from '@/hooks/shared/useClasses';
+import { useAcademicYears } from '@/hooks/shared/useAcademicYears';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ClassSelector } from '@/components/erp/ClassSelector';
+import { AcademicYearSelector } from '@/components/erp/AcademicYearSelector';
+import { EmptyState } from '@/components/erp/EmptyState';
+import { StatusBadge } from '@/components/erp/StatusBadge';
+import { ConfirmDialog } from '@/components/erp/ConfirmDialog';
 
 // student_enrollments only stores class_id/academic_year_id, so this panel
-// fetches classes/academic years once and resolves names client-side rather
-// than adding a join the repository doesn't already do.
+// resolves names client-side from the shared classes/academic-years lookups
+// rather than adding a join the repository doesn't already do.
 function EnrollmentPanel({ studentId, canWrite }) {
-  const [history, setHistory] = useState([]);
-  const [classes, setClasses] = useState([]);
-  const [academicYears, setAcademicYears] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { t } = useTranslation('students');
 
-  const [showEnrollForm, setShowEnrollForm] = useState(false);
+  const { data: history, isLoading } = useStudentEnrollments(studentId);
+  const { data: classes } = useClasses();
+  const { data: academicYears } = useAcademicYears();
+
+  const enrollStudent = useEnrollStudent(studentId);
+  const transferStudent = useTransferStudent(studentId);
+  const withdrawStudent = useWithdrawStudent(studentId);
+  const completeEnrollment = useCompleteEnrollment(studentId);
+
+  const [enrollOpen, setEnrollOpen] = useState(false);
   const [classId, setClassId] = useState('');
   const [academicYearId, setAcademicYearId] = useState('');
   const [enrolledDate, setEnrolledDate] = useState('');
-  const [submitting, setSubmitting] = useState(false);
 
-  const [transferTargets, setTransferTargets] = useState({});
-  const [withdrawReasons, setWithdrawReasons] = useState({});
+  const [transferState, setTransferState] = useState(null); // { enrollmentId, classId }
+  const [withdrawState, setWithdrawState] = useState(null); // { enrollmentId, reason }
+  const [confirmWithdrawId, setConfirmWithdrawId] = useState(null);
 
-  const loadAll = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const [historyRes, classesRes, yearsRes] = await Promise.all([
-        api.get(`/students/${studentId}/enrollments`),
-        api.get('/classes'),
-        api.get('/academic-years')
-      ]);
-      setHistory(historyRes.data?.data || []);
-      setClasses(classesRes.data?.data || []);
-      setAcademicYears(yearsRes.data?.data || []);
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Unable to load enrollment history.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadAll();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [studentId]);
-
-  const classNameFor = (id) => classes.find((item) => item.id === id)?.name || `Class #${id}`;
-  const yearNameFor = (id) => academicYears.find((item) => item.id === id)?.name || `Year #${id}`;
+  const classNameFor = (id) => classes?.find((item) => item.id === id)?.name || `Class #${id}`;
+  const yearNameFor = (id) => academicYears?.find((item) => item.id === id)?.name || `Year #${id}`;
 
   const handleEnroll = async (event) => {
     event.preventDefault();
     if (!classId) {
-      setError('Choose a class to enrol the student into.');
+      toast.error(t('enrollment.toasts.classRequired'));
       return;
     }
-    setSubmitting(true);
-    setError('');
     try {
-      const payload = { class_id: classId };
-      if (academicYearId) payload.academic_year_id = academicYearId;
+      const payload = { class_id: Number(classId) };
+      if (academicYearId) payload.academic_year_id = Number(academicYearId);
       if (enrolledDate) payload.enrolled_date = enrolledDate;
-      await api.post(`/students/${studentId}/enrollments`, payload);
-      setShowEnrollForm(false);
+      await enrollStudent.mutateAsync(payload);
+      toast.success(t('enrollment.toasts.enrolled'));
+      setEnrollOpen(false);
       setClassId('');
       setAcademicYearId('');
       setEnrolledDate('');
-      loadAll();
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Could not enrol student.');
-    } finally {
-      setSubmitting(false);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || t('enrollment.toasts.error'));
     }
   };
 
   const handleTransfer = async (enrollmentId) => {
-    const newClassId = transferTargets[enrollmentId];
-    if (!newClassId) {
-      setError('Choose a class to transfer into.');
+    if (!transferState?.classId) {
+      toast.error(t('enrollment.toasts.classRequired'));
       return;
     }
     try {
-      await api.patch(`/students/${studentId}/enrollments/${enrollmentId}/transfer`, { class_id: newClassId });
-      loadAll();
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Could not transfer student.');
+      await transferStudent.mutateAsync({ enrollmentId, classId: Number(transferState.classId) });
+      toast.success(t('enrollment.toasts.transferred'));
+      setTransferState(null);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || t('enrollment.toasts.error'));
     }
   };
 
-  const handleWithdraw = async (enrollmentId) => {
+  const handleWithdraw = async () => {
     try {
-      await api.patch(`/students/${studentId}/enrollments/${enrollmentId}/withdraw`, {
-        reason: withdrawReasons[enrollmentId] || undefined
-      });
-      loadAll();
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Could not withdraw student.');
+      await withdrawStudent.mutateAsync({ enrollmentId: confirmWithdrawId, reason: withdrawState?.reason || undefined });
+      toast.success(t('enrollment.toasts.withdrawn'));
+      setWithdrawState(null);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || t('enrollment.toasts.error'));
+      throw error;
     }
   };
 
   const handleComplete = async (enrollmentId) => {
     try {
-      await api.patch(`/students/${studentId}/enrollments/${enrollmentId}/complete`);
-      loadAll();
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Could not complete enrollment.');
+      await completeEnrollment.mutateAsync({ enrollmentId });
+      toast.success(t('enrollment.toasts.completed'));
+    } catch (error) {
+      toast.error(error?.response?.data?.message || t('enrollment.toasts.error'));
     }
   };
 
   return (
-    <section className="hero-card">
-      <div className="card-header">
-        <h2>Enrollment history</h2>
-        {canWrite ? (
-          <button type="button" onClick={() => setShowEnrollForm((current) => !current)}>
-            {showEnrollForm ? 'Cancel' : 'Enrol into a class'}
-          </button>
-        ) : null}
-      </div>
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0">
+        <CardTitle className="text-base">{t('enrollment.sectionTitle')}</CardTitle>
+        {canWrite && <Button size="sm" onClick={() => setEnrollOpen(true)}>{t('enrollment.enrolButton')}</Button>}
+      </CardHeader>
+      <CardContent className="space-y-space-3">
+        {!isLoading && (!history || history.length === 0) && (
+          <EmptyState icon={CalendarClock} title={t('enrollment.empty')} />
+        )}
 
-      {error ? <p className="error-text">{error}</p> : null}
-
-      {showEnrollForm ? (
-        <form onSubmit={handleEnroll} className="panel-form nested-panel">
-          <label>
-            Class
-            <select value={classId} onChange={(event) => setClassId(event.target.value)} required>
-              <option value="">Choose a class…</option>
-              {classes.map((classItem) => (
-                <option key={classItem.id} value={classItem.id}>{classItem.name}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Academic year
-            <select value={academicYearId} onChange={(event) => setAcademicYearId(event.target.value)}>
-              <option value="">Use the active academic year</option>
-              {academicYears.map((year) => (
-                <option key={year.id} value={year.id}>{year.name}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Enrolled date
-            <input type="date" value={enrolledDate} onChange={(event) => setEnrolledDate(event.target.value)} placeholder="Defaults to today" />
-          </label>
-          <div className="form-actions">
-            <button type="submit" disabled={submitting}>{submitting ? 'Enrolling…' : 'Enrol'}</button>
-          </div>
-        </form>
-      ) : null}
-
-      {loading ? (
-        <p>Loading enrollment history…</p>
-      ) : history.length === 0 ? (
-        <p className="record-meta">No enrollment history yet.</p>
-      ) : (
-        <ul className="record-list">
-          {history.map((enrollment) => (
-            <li key={enrollment.id} className="record-item">
-              <div className="list-row">
-                <div>
-                  <strong>{yearNameFor(enrollment.academic_year_id)}</strong>
-                  <span className={`status-badge status-${enrollment.status?.toLowerCase()}`}>{enrollment.status}</span>
-                  <p className="record-meta">
-                    {classNameFor(enrollment.class_id)} · enrolled {enrollment.enrolled_date}
-                    {enrollment.reason ? ` · ${enrollment.reason}` : ''}
-                  </p>
-                </div>
+        {history?.map((enrollment) => (
+          <div key={enrollment.id} className="rounded-md border p-space-3 space-y-space-2">
+            <div className="flex items-center justify-between gap-space-2">
+              <div>
+                <p className="font-medium">{yearNameFor(enrollment.academic_year_id)}</p>
+                <p className="text-sm text-muted-foreground">
+                  {classNameFor(enrollment.class_id)} · {t('enrollment.enrolledDateLabel').toLowerCase()} {enrollment.enrolled_date}
+                  {enrollment.reason ? ` · ${enrollment.reason}` : ''}
+                </p>
               </div>
+              <StatusBadge status={enrollment.status} />
+            </div>
 
-              {canWrite && enrollment.status === 'ACTIVE' ? (
-                <div className="nested-panel enrollment-actions">
-                  <label>
-                    Transfer to
-                    <select
-                      value={transferTargets[enrollment.id] || ''}
-                      onChange={(event) => setTransferTargets((current) => ({ ...current, [enrollment.id]: event.target.value }))}
-                    >
-                      <option value="">Choose a class…</option>
-                      {classes.map((classItem) => (
-                        <option key={classItem.id} value={classItem.id}>{classItem.name}</option>
-                      ))}
-                    </select>
-                  </label>
-                  <div className="actions">
-                    <button type="button" className="secondary" onClick={() => handleTransfer(enrollment.id)}>Transfer</button>
-                    <button type="button" onClick={() => handleComplete(enrollment.id)}>Mark completed</button>
-                  </div>
-                  <label>
-                    Withdrawal reason (optional)
-                    <input
-                      value={withdrawReasons[enrollment.id] || ''}
-                      onChange={(event) => setWithdrawReasons((current) => ({ ...current, [enrollment.id]: event.target.value }))}
-                    />
-                  </label>
-                  <div className="actions">
-                    <button type="button" className="danger" onClick={() => handleWithdraw(enrollment.id)}>Withdraw</button>
-                  </div>
+            {canWrite && enrollment.status === 'ACTIVE' && (
+              <div className="flex flex-wrap items-end gap-space-2 border-t pt-space-2">
+                <div className="w-48 space-y-1">
+                  <p className="text-xs text-muted-foreground">{t('enrollment.transferToLabel')}</p>
+                  <ClassSelector
+                    value={transferState?.enrollmentId === enrollment.id ? transferState.classId : ''}
+                    onChange={(value) => setTransferState({ enrollmentId: enrollment.id, classId: value })}
+                  />
                 </div>
-              ) : null}
-            </li>
-          ))}
-        </ul>
-      )}
-    </section>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleTransfer(enrollment.id)}
+                  disabled={transferState?.enrollmentId !== enrollment.id || !transferState?.classId}
+                >
+                  {t('enrollment.transferButton')}
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => handleComplete(enrollment.id)}>
+                  {t('enrollment.markCompletedButton')}
+                </Button>
+
+                <div className="w-56 space-y-1">
+                  <p className="text-xs text-muted-foreground">{t('enrollment.withdrawReasonLabel')}</p>
+                  <Input
+                    value={withdrawState?.enrollmentId === enrollment.id ? withdrawState.reason : ''}
+                    onChange={(event) => setWithdrawState({ enrollmentId: enrollment.id, reason: event.target.value })}
+                  />
+                </div>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => setConfirmWithdrawId(enrollment.id)}
+                >
+                  {t('enrollment.withdrawButton')}
+                </Button>
+              </div>
+            )}
+          </div>
+        ))}
+      </CardContent>
+
+      <Dialog open={enrollOpen} onOpenChange={setEnrollOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('enrollment.enrolButton')}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleEnroll} className="space-y-space-4">
+            <div className="space-y-1">
+              <p className="text-sm font-medium">{t('enrollment.classLabel')}</p>
+              <ClassSelector value={classId} onChange={setClassId} />
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-medium">{t('enrollment.academicYearLabel')}</p>
+              <AcademicYearSelector value={academicYearId} onChange={setAcademicYearId} />
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-medium">{t('enrollment.enrolledDateLabel')}</p>
+              <Input type="date" value={enrolledDate} onChange={(event) => setEnrolledDate(event.target.value)} placeholder={t('enrollment.enrolledDatePlaceholder')} />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setEnrollOpen(false)}>
+                {t('enrollment.cancelButton')}
+              </Button>
+              <Button type="submit" disabled={enrollStudent.isPending}>
+                {t('enrollment.submitButton')}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <ConfirmDialog
+        open={Boolean(confirmWithdrawId)}
+        onOpenChange={(open) => !open && setConfirmWithdrawId(null)}
+        title={t('enrollment.confirmWithdraw.title')}
+        description={t('enrollment.confirmWithdraw.description')}
+        confirmLabel={t('enrollment.withdrawButton')}
+        onConfirm={handleWithdraw}
+      />
+    </Card>
   );
 }
 

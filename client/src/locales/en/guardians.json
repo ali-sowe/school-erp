@@ -1,0 +1,102 @@
+{
+  "list": {
+    "title": "Guardians",
+    "subtitle": "Manage parent and guardian contact records.",
+    "searchPlaceholder": "Search by name, phone, or email…",
+    "statusFilter": {
+      "all": "All statuses",
+      "active": "Active",
+      "archived": "Archived"
+    },
+    "columns": {
+      "name": "Name",
+      "contact": "Contact",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "actions": {
+      "addGuardian": "Add guardian"
+    },
+    "empty": {
+      "title": "No guardians yet",
+      "description": "Add your first guardian record to get started."
+    },
+    "row": {
+      "view": "View",
+      "archive": "Archive",
+      "restore": "Restore"
+    },
+    "noPhone": "No phone",
+    "noEmail": "No email",
+    "confirmArchive": {
+      "title": "Archive this guardian?",
+      "description": "Their record is kept, but they'll be marked archived and excluded from active lists until restored."
+    },
+    "confirmRestore": {
+      "title": "Restore this guardian?",
+      "description": "The guardian will be marked active again."
+    },
+    "toasts": {
+      "archived": "Guardian archived.",
+      "restored": "Guardian restored.",
+      "error": "Something went wrong. Please try again."
+    }
+  },
+  "form": {
+    "createTitle": "Add guardian",
+    "editTitle": "Edit guardian",
+    "firstNameLabel": "First name",
+    "lastNameLabel": "Last name",
+    "phoneLabel": "Phone",
+    "phonePlaceholder": "e.g. +2203456789",
+    "emailLabel": "Email",
+    "addressLabel": "Address",
+    "occupationLabel": "Occupation",
+    "errors": {
+      "firstNameRequired": "First name is required.",
+      "lastNameRequired": "Last name is required.",
+      "emailInvalid": "Enter a valid email address."
+    },
+    "toasts": {
+      "created": "Guardian added.",
+      "updated": "Guardian updated.",
+      "error": "Could not save guardian."
+    }
+  },
+  "detail": {
+    "backLink": "Back to guardians",
+    "editButton": "Edit",
+    "cancelButton": "Cancel",
+    "phoneLabel": "Phone",
+    "emailLabel": "Email",
+    "addressLabel": "Address",
+    "occupationLabel": "Occupation",
+    "notProvided": "Not provided",
+    "notFound": "Guardian not found."
+  },
+  "students": {
+    "sectionTitle": "Linked students",
+    "empty": "No students linked yet.",
+    "linkFromStudentHint": "Students are linked to guardians from the student's own profile page."
+  },
+  "portal": {
+    "sectionTitle": "Parent Portal access",
+    "hasAccountDescription": "This guardian has a Parent Portal login.",
+    "noAccountDescription": "This guardian doesn't have Parent Portal access yet.",
+    "grantButton": "Grant portal access",
+    "cancelButton": "Cancel",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Defaults to the guardian's email on file",
+    "passwordLabel": "Temporary password",
+    "submitButton": "Grant access",
+    "errors": {
+      "passwordRequired": "Enter a temporary password.",
+      "passwordTooShort": "Password must be at least 8 characters.",
+      "emailInvalid": "Enter a valid email address."
+    },
+    "toasts": {
+      "granted": "Portal access granted.",
+      "error": "Could not grant portal access."
+    }
+  }
+}

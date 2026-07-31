@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import * as guardianController from '../../controllers/student/guardian.controller.js';
+import * as guardianPortalAccountController from '../../controllers/student/guardian-portal-account.controller.js';
 import { asyncHandler } from '../../helpers/async-handler.helper.js';
 import { authenticate } from '../../middleware/auth/auth.middleware.js';
 import { authorize } from '../../middleware/auth/authorize.middleware.js';
 import { validate } from '../../middleware/validation/validate.middleware.js';
-import { createGuardianSchema, updateGuardianSchema } from '../../validations/student/guardian.validation.js';
+import { createGuardianSchema, updateGuardianSchema, createGuardianPortalAccountSchema } from '../../validations/student/guardian.validation.js';
 
 const router = Router();
 
@@ -17,5 +18,9 @@ router.patch('/:id/restore', authenticate, authorize(['guardians.write']), async
 
 // Reverse lookup: all students this guardian is responsible for.
 router.get('/:id/students', authenticate, authorize(['guardians.read']), asyncHandler(guardianController.getStudentsForGuardian));
+
+// Grants this guardian a Parent Portal login (see
+// guardian-portal-account.service.js).
+router.post('/:id/portal-account', authenticate, authorize(['guardians.write']), validate(createGuardianPortalAccountSchema), asyncHandler(guardianPortalAccountController.createGuardianPortalAccount));
 
 export default router;

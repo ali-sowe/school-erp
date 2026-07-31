@@ -49,6 +49,24 @@ export const transferStudent = asyncHandler(
     }
 );
 
+export const requestTransferStudent = asyncHandler(
+    async (req, res) => {
+        const request = await enrollmentService.requestStudentTransfer(
+            req.params.enrollmentId,
+            req.body.class_id,
+            req.body.reason,
+            req.user.schoolId,
+            req.user.userId
+        );
+
+        res.status(HTTP_STATUS.CREATED).json({
+            success: true,
+            message: ENROLLMENT_MESSAGES.TRANSFER_REQUESTED,
+            data: request
+        });
+    }
+);
+
 export const withdrawStudent = asyncHandler(
     async (req, res) => {
         const enrollment = await enrollmentService.withdrawStudent(

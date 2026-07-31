@@ -1,6 +1,7 @@
 import { AppError } from '../../helpers/app-error.helper.js';
 import { HTTP_STATUS } from '../../constants/httpStatus.js';
 import * as roleRepository from '../../repositories/role/role.repository.js';
+import * as userRepository from '../../repositories/user/user.repository.js';
 import { normalizePermissions } from '../../helpers/auth/permission.helper.js';
 
 export async function getRoles(schoolId) {
@@ -46,6 +47,18 @@ export async function updateRole(id, data, schoolId) {
 
 export async function deleteRole(id, schoolId) {
     const role = await getRoleById(id, schoolId);
+
+    // A role still assigned to someone can't be deleted — that would leave
+    // their user row pointing at a role_id that no longer exists, breaking
+    // every permission check for them at their next login. Reassign or
+    // deactivate those users first.
+    const usersWithRole = await userRepository.countByRoleId(role.id);
+    if (usersWithRole > 0) {
+        throw new AppError(
+            HTTP_STATUS.BAD_REQUEST,
+            `This role is still assigned to ${usersWithRole} user${usersWithRole === 1 ? '' : 's'}. Reassign them to a different role first.`
+        );
+    }
 
     await roleRepository.remove(role.id);
     return { id: role.id };

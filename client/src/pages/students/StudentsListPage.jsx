@@ -1,142 +1,177 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
-import api from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
-import StudentForm from '../../components/students/StudentForm';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+import { Download, GraduationCap, Plus } from 'lucide-react';
+
+import { useAuth } from '@/context/AuthContext';
+import { useStudents } from '@/hooks/students/useStudents';
+import { useArchiveStudent, useRestoreStudent } from '@/hooks/students/useStudentMutations';
+import { downloadFile } from '@/lib/downloadFile';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DataTable } from '@/components/erp/DataTable';
+import { EmptyState } from '@/components/erp/EmptyState';
+import { StatusBadge } from '@/components/erp/StatusBadge';
+import { ConfirmDialog } from '@/components/erp/ConfirmDialog';
+import StudentForm from '@/components/students/StudentForm';
 
 function StudentsListPage() {
+  const { t } = useTranslation('students');
   const { hasPermission } = useAuth();
   const canWrite = hasPermission('students.write');
 
-  const [students, setStudents] = useState([]);
   const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [showForm, setShowForm] = useState(false);
+  const [status, setStatus] = useState('ACTIVE');
+  const { data: students, isLoading } = useStudents({ search: search || undefined, status: status === 'ALL' ? undefined : status });
 
-  const loadStudents = async () => {
-    setLoading(true);
-    setError('');
+  const [formOpen, setFormOpen] = useState(false);
+  const [confirmTarget, setConfirmTarget] = useState(null); // { id, action: 'archive' | 'restore' }
+
+  const archiveStudent = useArchiveStudent();
+  const restoreStudent = useRestoreStudent();
+
+  const handleExport = async () => {
     try {
-      const params = {};
-      if (search) params.search = search;
-      if (status) params.status = status;
-      const response = await api.get('/students', { params });
-      setStudents(response.data?.data || []);
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Unable to load students.');
-    } finally {
-      setLoading(false);
+      await downloadFile('/reports/students/download', { params: { format: 'xlsx' }, fallbackFilename: 'students.xlsx' });
+    } catch {
+      toast.error(t('list.toasts.error'));
     }
   };
 
-  useEffect(() => {
-    loadStudents();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleSearchSubmit = (event) => {
-    event.preventDefault();
-    loadStudents();
-  };
-
-  const handleSaved = () => {
-    setShowForm(false);
-    loadStudents();
-  };
-
-  const handleArchive = async (student) => {
+  const handleConfirm = async () => {
+    if (!confirmTarget) return;
     try {
-      await api.patch(`/students/${student.id}/archive`);
-      loadStudents();
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Could not archive student.');
+      if (confirmTarget.action === 'archive') {
+        await archiveStudent.mutateAsync(confirmTarget.id);
+        toast.success(t('list.toasts.archived'));
+      } else {
+        await restoreStudent.mutateAsync(confirmTarget.id);
+        toast.success(t('list.toasts.restored'));
+      }
+    } catch {
+      toast.error(t('list.toasts.error'));
     }
   };
 
-  const handleRestore = async (student) => {
-    try {
-      await api.patch(`/students/${student.id}/restore`);
-      loadStudents();
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Could not restore student.');
-    }
-  };
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'last_name',
+        header: t('list.columns.name'),
+        cell: ({ row }) => (
+          <Link to={`/students/${row.original.id}`} className="font-medium text-primary hover:underline">
+            {row.original.first_name} {row.original.last_name}
+          </Link>
+        ),
+      },
+      {
+        accessorKey: 'admission_number',
+        header: t('list.columns.admissionNumber'),
+      },
+      {
+        accessorKey: 'gender',
+        header: t('list.columns.gender'),
+        cell: ({ row }) => row.original.gender || '—',
+      },
+      {
+        accessorKey: 'status',
+        header: t('list.columns.status'),
+        cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      },
+      ...(canWrite
+        ? [
+            {
+              id: 'actions',
+              header: t('list.columns.actions'),
+              cell: ({ row }) => {
+                const student = row.original;
+                return student.status === 'ARCHIVED' ? (
+                  <Button variant="outline" size="sm" onClick={() => setConfirmTarget({ id: student.id, action: 'restore' })}>
+                    {t('list.row.restore')}
+                  </Button>
+                ) : (
+                  <Button variant="outline" size="sm" onClick={() => setConfirmTarget({ id: student.id, action: 'archive' })}>
+                    {t('list.row.archive')}
+                  </Button>
+                );
+              },
+            },
+          ]
+        : []),
+    ],
+    [canWrite, t]
+  );
 
   return (
-    <main className="erp-shell">
-      <section className="hero-card">
-        <div className="card-header">
-          <div>
-            <p className="eyebrow">Students & Parents</p>
-            <h1>Students</h1>
-          </div>
-          {canWrite ? (
-            <button type="button" onClick={() => setShowForm(true)}>Enrol new student</button>
-          ) : null}
+    <div className="space-y-space-6">
+      <div className="flex flex-wrap items-center justify-between gap-space-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">{t('list.title')}</h1>
+          <p className="text-sm text-muted-foreground">{t('list.subtitle')}</p>
         </div>
+        <div className="flex gap-space-2">
+          <Button variant="outline" onClick={handleExport}>
+            <Download className="h-4 w-4" />
+            {t('list.actions.export')}
+          </Button>
+          {canWrite && (
+            <Button onClick={() => setFormOpen(true)}>
+              <Plus className="h-4 w-4" />
+              {t('list.actions.enrolStudent')}
+            </Button>
+          )}
+        </div>
+      </div>
 
-        <form onSubmit={handleSearchSubmit} className="toolbar-row">
-          <input
-            placeholder="Search by name or admission number…"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-          />
-          <select value={status} onChange={(event) => setStatus(event.target.value)}>
-            <option value="">All statuses</option>
-            <option value="ACTIVE">Active</option>
-            <option value="ARCHIVED">Archived</option>
-          </select>
-          <button type="submit" className="secondary">Search</button>
-        </form>
-      </section>
+      <div className="flex flex-wrap gap-space-3">
+        <Input
+          placeholder={t('list.searchPlaceholder')}
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          className="max-w-xs"
+        />
+        <Select value={status} onValueChange={setStatus}>
+          <SelectTrigger className="w-48">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ACTIVE">{t('list.statusFilter.active')}</SelectItem>
+            <SelectItem value="ARCHIVED">{t('list.statusFilter.archived')}</SelectItem>
+            <SelectItem value="ALL">{t('list.statusFilter.all')}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-      {error ? <p className="error-text">{error}</p> : null}
+      <DataTable
+        columns={columns}
+        data={students}
+        isLoading={isLoading}
+        emptyState={<EmptyState icon={GraduationCap} title={t('list.empty.title')} description={t('list.empty.description')} />}
+      />
 
-      {showForm ? (
-        <section className="hero-card">
-          <StudentForm onSaved={handleSaved} onCancel={() => setShowForm(false)} />
-        </section>
-      ) : null}
+      <Dialog open={formOpen} onOpenChange={setFormOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('form.createTitle')}</DialogTitle>
+          </DialogHeader>
+          <StudentForm onSaved={() => setFormOpen(false)} onCancel={() => setFormOpen(false)} />
+        </DialogContent>
+      </Dialog>
 
-      <section className="hero-card">
-        {loading ? (
-          <p>Loading students…</p>
-        ) : students.length === 0 ? (
-          <p>No students found.</p>
-        ) : (
-          <ul className="record-list">
-            {students.map((student) => (
-              <li key={student.id} className="record-item">
-                <div className="list-row">
-                  <div>
-                    <Link to={`/students/${student.id}`}>
-                      <strong>{student.first_name} {student.last_name}</strong>
-                    </Link>
-                    <span className={`status-badge status-${student.status?.toLowerCase()}`}>{student.status}</span>
-                    <p className="record-meta">
-                      {student.admission_number} · {student.gender || 'Gender not set'}
-                    </p>
-                  </div>
-                  <div className="actions">
-                    <Link to={`/students/${student.id}`}>
-                      <button type="button" className="secondary">View</button>
-                    </Link>
-                    {canWrite && student.status === 'ACTIVE' ? (
-                      <button type="button" className="danger" onClick={() => handleArchive(student)}>Archive</button>
-                    ) : null}
-                    {canWrite && student.status === 'ARCHIVED' ? (
-                      <button type="button" onClick={() => handleRestore(student)}>Restore</button>
-                    ) : null}
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-    </main>
+      <ConfirmDialog
+        open={Boolean(confirmTarget)}
+        onOpenChange={(open) => !open && setConfirmTarget(null)}
+        title={confirmTarget?.action === 'archive' ? t('list.confirmArchive.title') : t('list.confirmRestore.title')}
+        description={confirmTarget?.action === 'archive' ? t('list.confirmArchive.description') : t('list.confirmRestore.description')}
+        confirmLabel={confirmTarget?.action === 'archive' ? t('list.row.archive') : t('list.row.restore')}
+        destructive={confirmTarget?.action === 'archive'}
+        onConfirm={handleConfirm}
+      />
+    </div>
   );
 }
 

@@ -16,6 +16,13 @@ GET {{baseUrl}}/auth/me HTTP/1.1
 ### logout
 POST {{baseUrl}}/auth/logout HTTP/1.1
 
+### refresh the access token (uses the httpOnly refreshToken cookie set by login —
+### rotates it too, so the old refresh token stops working after this call)
+POST {{baseUrl}}/auth/refresh HTTP/1.1
+
+### log out of all devices (revokes every refresh token for this user)
+POST {{baseUrl}}/auth/logout-all HTTP/1.1
+
 ###############################################
 # Onboarding a new school (Platform Administrator only)
 # Creates the school + its default roles (Administrator/Teacher/Student/Parent)
@@ -108,6 +115,18 @@ PATCH {{baseUrl}}/academic-years/1/complete HTTP/1.1
 
 ### override academic year (authorized exception — see Calendar Engine doc)
 PATCH {{baseUrl}}/academic-years/1/override HTTP/1.1
+Content-Type: application/json
+
+{
+    "actual_start_date": "2028-09-10",
+    "reason": "Reopening delayed one week due to national holiday adjustment"
+}
+
+### same override, but routed through the Approval Workflow Engine instead of
+### applied immediately (goes to PENDING_REVIEW; an Administrator approves via
+### /approval-requests/:id/approve, which runs the override automatically on
+### the final approval — see ACADEMIC_YEAR_OVERRIDE in workflow-executor-registry.js)
+POST {{baseUrl}}/academic-years/1/override-request HTTP/1.1
 Content-Type: application/json
 
 {
@@ -386,3 +405,662 @@ PATCH {{baseUrl}}/students/1/enrollments/1/complete HTTP/1.1
 
 ### get a class roster (academic_year_id defaults to the active year if omitted)
 GET {{baseUrl}}/classes/1/roster HTTP/1.1
+
+###############################################
+# Attendance
+###############################################
+
+### mark attendance for a class on a given date
+POST {{baseUrl}}/classes/1/attendance HTTP/1.1
+Content-Type: application/json
+
+{
+    "date": "2028-09-15",
+    "entries": [
+        { "student_id": 1, "status": "PRESENT" },
+        { "student_id": 2, "status": "ABSENT" }
+    ]
+}
+
+### get a class's attendance for a specific date (defaults to the active academic year)
+GET {{baseUrl}}/classes/1/attendance?date=2028-09-15 HTTP/1.1
+
+### get a class's attendance summary over a date range
+GET {{baseUrl}}/classes/1/attendance/summary?from=2028-09-01&to=2028-09-30 HTTP/1.1
+
+### get one student's attendance history
+GET {{baseUrl}}/students/1/attendance?from=2028-09-01&to=2028-09-30 HTTP/1.1
+
+### correct a single already-recorded attendance entry
+PATCH {{baseUrl}}/attendance/1 HTTP/1.1
+Content-Type: application/json
+
+{
+    "status": "LATE"
+}
+
+###############################################
+# Teacher Management
+###############################################
+
+### create a teacher (creates the login + employment profile atomically)
+POST {{baseUrl}}/teachers HTTP/1.1
+Content-Type: application/json
+
+{
+    "first_name": "Ousman",
+    "last_name": "Bah",
+    "email": "obah@nusrat.edu.gm",
+    "password": "Teacher@123",
+    "qualification": "BSc Mathematics",
+    "specialization": "Mathematics"
+}
+
+### get all teachers (scoped to the logged-in school)
+GET {{baseUrl}}/teachers HTTP/1.1
+
+### search teachers by name or employee number
+GET {{baseUrl}}/teachers?search=Bah HTTP/1.1
+
+### get teacher by id
+GET {{baseUrl}}/teachers/1 HTTP/1.1
+
+### update teacher
+PATCH {{baseUrl}}/teachers/1 HTTP/1.1
+Content-Type: application/json
+
+{
+    "qualification": "MSc Mathematics"
+}
+
+### archive teacher
+PATCH {{baseUrl}}/teachers/1/archive HTTP/1.1
+
+### restore teacher
+PATCH {{baseUrl}}/teachers/1/restore HTTP/1.1
+
+### assign a teacher to teach a subject for a class (defaults to the active academic year)
+POST {{baseUrl}}/classes/1/subject-teachers HTTP/1.1
+Content-Type: application/json
+
+{
+    "teacher_id": 1,
+    "subject_id": 1
+}
+
+### get which teacher teaches each subject for a class
+GET {{baseUrl}}/classes/1/subject-teachers HTTP/1.1
+
+### end a subject-teacher assignment
+PATCH {{baseUrl}}/teacher-subject-assignments/1/end HTTP/1.1
+
+### set the homeroom/class teacher for a class (defaults to the active academic year)
+PUT {{baseUrl}}/classes/1/class-teacher HTTP/1.1
+Content-Type: application/json
+
+{
+    "teacher_id": 1
+}
+
+### get the homeroom/class teacher for a class
+GET {{baseUrl}}/classes/1/class-teacher HTTP/1.1
+
+### end a class-teacher assignment
+PATCH {{baseUrl}}/class-teacher-assignments/1/end HTTP/1.1
+
+###############################################
+# Finance
+# Invoices/payments are never deleted — a mistake is voided with a required
+# reason and audit-logged (Constitution: "important actions require audit history").
+###############################################
+
+### create a fee structure (grade_level_id omitted = applies to every grade)
+POST {{baseUrl}}/fee-structures HTTP/1.1
+Content-Type: application/json
+
+{
+    "academic_year_id": 1,
+    "grade_level_id": 1,
+    "name": "Tuition Fee - Term 1",
+    "amount": 5000
+}
+
+### get all fee structures (scoped to the logged-in school)
+GET {{baseUrl}}/fee-structures HTTP/1.1
+
+### get fee structures for a specific academic year
+GET {{baseUrl}}/fee-structures?academic_year_id=1 HTTP/1.1
+
+### get fee structure by id
+GET {{baseUrl}}/fee-structures/1 HTTP/1.1
+
+### update fee structure
+PATCH {{baseUrl}}/fee-structures/1 HTTP/1.1
+Content-Type: application/json
+
+{
+    "amount": 5500
+}
+
+### archive fee structure
+PATCH {{baseUrl}}/fee-structures/1/archive HTTP/1.1
+
+### restore fee structure
+PATCH {{baseUrl}}/fee-structures/1/restore HTTP/1.1
+
+### create a single ad-hoc invoice (amount_due/description optional if fee_structure_id is given)
+POST {{baseUrl}}/invoices HTTP/1.1
+Content-Type: application/json
+
+{
+    "student_id": 1,
+    "academic_year_id": 1,
+    "fee_structure_id": 1
+}
+
+### bulk-generate invoices for every actively-enrolled student in a class
+POST {{baseUrl}}/invoices/bulk-generate HTTP/1.1
+Content-Type: application/json
+
+{
+    "fee_structure_id": 1,
+    "class_id": 1
+}
+
+### get all invoices (scoped to the logged-in school)
+GET {{baseUrl}}/invoices HTTP/1.1
+
+### get invoices for a specific student
+GET {{baseUrl}}/invoices?student_id=1 HTTP/1.1
+
+### get invoice by id
+GET {{baseUrl}}/invoices/1 HTTP/1.1
+
+### void an invoice (only allowed if it has no payments recorded)
+PATCH {{baseUrl}}/invoices/1/void HTTP/1.1
+Content-Type: application/json
+
+{
+    "reason": "Issued in error"
+}
+
+### get a school's fee collection summary for an academic year
+GET {{baseUrl}}/invoices/summary?academic_year_id=1 HTTP/1.1
+
+### record a payment against an invoice
+POST {{baseUrl}}/invoices/1/payments HTTP/1.1
+Content-Type: application/json
+
+{
+    "amount": 2500,
+    "payment_method": "MOBILE_MONEY",
+    "payment_date": "2028-09-15",
+    "reference_number": "QM-2028-004821"
+}
+
+### get payments recorded against an invoice
+GET {{baseUrl}}/invoices/1/payments HTTP/1.1
+
+### void a payment (invoice balance is recalculated automatically)
+PATCH {{baseUrl}}/payments/1/void HTTP/1.1
+Content-Type: application/json
+
+{
+    "reason": "Duplicate entry"
+}
+
+###############################################
+# Messaging
+# Staff-to-staff conversations + school/grade/class announcements.
+# Students/guardians have no login yet, so only users (staff) can be
+# conversation participants or in-app announcement readers today.
+###############################################
+
+### start (or reuse) a direct conversation with another staff member
+POST {{baseUrl}}/conversations HTTP/1.1
+Content-Type: application/json
+
+{
+    "participant_ids": [2]
+}
+
+### start a group conversation
+POST {{baseUrl}}/conversations HTTP/1.1
+Content-Type: application/json
+
+{
+    "participant_ids": [2, 3],
+    "title": "Senior Secondary Staff"
+}
+
+### get my conversations
+GET {{baseUrl}}/conversations HTTP/1.1
+
+### get a conversation by id
+GET {{baseUrl}}/conversations/1 HTTP/1.1
+
+### get messages in a conversation (paginate with ?before_id=<oldest loaded id>)
+GET {{baseUrl}}/conversations/1/messages HTTP/1.1
+
+### send a message
+POST {{baseUrl}}/conversations/1/messages HTTP/1.1
+Content-Type: application/json
+
+{
+    "body": "Can you cover my Grade 8 class tomorrow morning?"
+}
+
+### delete (soft-delete) my own message
+DELETE {{baseUrl}}/conversations/1/messages/1 HTTP/1.1
+
+### mark a conversation as read
+PATCH {{baseUrl}}/conversations/1/read HTTP/1.1
+
+### publish a school-wide announcement
+POST {{baseUrl}}/announcements HTTP/1.1
+Content-Type: application/json
+
+{
+    "title": "School closed Friday for Ministry inspection",
+    "body": "The school will be closed to students on Friday. Staff should report as usual.",
+    "audience_type": "SCHOOL"
+}
+
+### publish an announcement to one grade level
+POST {{baseUrl}}/announcements HTTP/1.1
+Content-Type: application/json
+
+{
+    "title": "Upper Basic mock exam schedule released",
+    "body": "The mock exam timetable has been posted on the noticeboard.",
+    "audience_type": "GRADE_LEVEL",
+    "audience_id": 1
+}
+
+### publish an announcement to one class
+POST {{baseUrl}}/announcements HTTP/1.1
+Content-Type: application/json
+
+{
+    "title": "Field trip permission slips due",
+    "body": "Please submit signed permission slips by Wednesday.",
+    "audience_type": "CLASS",
+    "audience_id": 1
+}
+
+### get all announcements
+GET {{baseUrl}}/announcements HTTP/1.1
+
+### get announcement by id
+GET {{baseUrl}}/announcements/1 HTTP/1.1
+
+### update an announcement
+PATCH {{baseUrl}}/announcements/1 HTTP/1.1
+Content-Type: application/json
+
+{
+    "body": "Updated: submit signed permission slips by Thursday instead."
+}
+
+### archive an announcement
+PATCH {{baseUrl}}/announcements/1/archive HTTP/1.1
+
+### restore an announcement
+PATCH {{baseUrl}}/announcements/1/restore HTTP/1.1
+
+### mark an announcement as read (staff only, for now)
+PATCH {{baseUrl}}/announcements/1/read HTTP/1.1
+
+### see who has read an announcement (staff only, for now)
+GET {{baseUrl}}/announcements/1/readers HTTP/1.1
+
+### get the actual students + guardian contact info this announcement targets
+# (useful today for a manual phone call/SMS since guardians have no in-app account yet)
+GET {{baseUrl}}/announcements/1/recipients HTTP/1.1
+
+### get my notifications (most recent first)
+GET {{baseUrl}}/notifications HTTP/1.1
+
+### get only unread notifications
+GET {{baseUrl}}/notifications?is_read=false HTTP/1.1
+
+### page further back (before_id = the oldest id already loaded)
+GET {{baseUrl}}/notifications?before_id=10&limit=20 HTTP/1.1
+
+### get my unread count (for a bell-icon badge)
+GET {{baseUrl}}/notifications/unread-count HTTP/1.1
+
+### mark one notification as read
+PATCH {{baseUrl}}/notifications/1/read HTTP/1.1
+
+### mark all my notifications as read
+PATCH {{baseUrl}}/notifications/read-all HTTP/1.1
+
+###############################################
+# Library
+# A borrow always targets a specific copy, never the title directly.
+###############################################
+
+### create a book
+POST {{baseUrl}}/library/books HTTP/1.1
+Content-Type: application/json
+
+{
+    "title": "Things Fall Apart",
+    "author": "Chinua Achebe",
+    "isbn": "9780385474542",
+    "category": "Literature"
+}
+
+### get all books
+GET {{baseUrl}}/library/books HTTP/1.1
+
+### search books
+GET {{baseUrl}}/library/books?search=Achebe HTTP/1.1
+
+### get book by id
+GET {{baseUrl}}/library/books/1 HTTP/1.1
+
+### update book
+PATCH {{baseUrl}}/library/books/1 HTTP/1.1
+Content-Type: application/json
+
+{
+    "category": "African Literature"
+}
+
+### archive book
+PATCH {{baseUrl}}/library/books/1/archive HTTP/1.1
+
+### restore book
+PATCH {{baseUrl}}/library/books/1/restore HTTP/1.1
+
+### add physical copies of a book
+POST {{baseUrl}}/library/books/1/copies HTTP/1.1
+Content-Type: application/json
+
+{
+    "count": 3
+}
+
+### get copies for a book
+GET {{baseUrl}}/library/books/1/copies HTTP/1.1
+
+### withdraw a damaged/lost copy from circulation
+PATCH {{baseUrl}}/library/copies/1/withdraw HTTP/1.1
+Content-Type: application/json
+
+{
+    "reason": "Water damaged"
+}
+
+### restore a withdrawn copy
+PATCH {{baseUrl}}/library/copies/1/restore HTTP/1.1
+
+### issue a copy to a student (copy_id omitted = auto-pick any available copy)
+POST {{baseUrl}}/library/books/1/borrow HTTP/1.1
+Content-Type: application/json
+
+{
+    "student_id": 1,
+    "borrowed_date": "2028-09-15",
+    "due_date": "2028-09-29"
+}
+
+### get all borrow records (scoped to the logged-in school)
+GET {{baseUrl}}/library/borrow-records HTTP/1.1
+
+### get overdue borrow records
+GET {{baseUrl}}/library/borrow-records?overdueOnly=true HTTP/1.1
+
+### get borrow record by id
+GET {{baseUrl}}/library/borrow-records/1 HTTP/1.1
+
+### return a copy in good condition
+PATCH {{baseUrl}}/library/borrow-records/1/return HTTP/1.1
+Content-Type: application/json
+
+{
+    "condition": "GOOD"
+}
+
+### return a copy reported damaged
+PATCH {{baseUrl}}/library/borrow-records/2/return HTTP/1.1
+Content-Type: application/json
+
+{
+    "condition": "DAMAGED",
+    "remarks": "Spine broken"
+}
+
+### get a student's borrow history
+GET {{baseUrl}}/students/1/library-history HTTP/1.1
+
+###############################################
+# Approval Workflow Engine
+# Generic engine: any module can route a decision through this instead of
+# applying it immediately. Lifecycle: PENDING_REVIEW -> APPROVED -> EXECUTED
+# (or REJECTED/CANCELLED). See workflow-executor-registry.js for which
+# workflow_types currently have a registered executor (INVOICE_VOID,
+# PAYMENT_VOID, STUDENT_TRANSFER).
+###############################################
+
+### create an approval request with a two-step chain (named user, then any Administrator)
+POST {{baseUrl}}/approval-requests HTTP/1.1
+Content-Type: application/json
+
+{
+    "workflow_type": "INVOICE_VOID",
+    "entity_type": "Invoice",
+    "entity_id": 1,
+    "title": "Void invoice #1 - issued to wrong student",
+    "description": "Invoice was generated for the wrong student during bulk generation.",
+    "metadata": { "invoice_id": 1, "reason": "Issued to wrong student" },
+    "steps": [
+        { "approver_user_id": 2 },
+        { "approver_role_name": "Administrator" }
+    ]
+}
+
+### get all approval requests (filters: status, workflow_type, entity_type, entity_id)
+GET {{baseUrl}}/approval-requests HTTP/1.1
+
+### get requests waiting on my decision
+GET {{baseUrl}}/approval-requests/my-pending HTTP/1.1
+
+### get approval request by id (includes its full step chain)
+GET {{baseUrl}}/approval-requests/1 HTTP/1.1
+
+### approve the current step
+PATCH {{baseUrl}}/approval-requests/1/approve HTTP/1.1
+Content-Type: application/json
+
+{
+    "comment": "Confirmed with the office - approved."
+}
+
+### reject the current step (rejects the whole request)
+PATCH {{baseUrl}}/approval-requests/1/reject HTTP/1.1
+Content-Type: application/json
+
+{
+    "comment": "Need the original enrollment record before this can be voided."
+}
+
+### execute a fully-approved request (runs the registered executor, if any)
+PATCH {{baseUrl}}/approval-requests/1/execute HTTP/1.1
+Content-Type: application/json
+
+{
+    "note": "Executed after Finance sign-off."
+}
+
+### cancel a request still pending review (only the original requester can)
+PATCH {{baseUrl}}/approval-requests/1/cancel HTTP/1.1
+Content-Type: application/json
+
+{
+    "reason": "No longer needed - fixed the invoice directly instead."
+}
+
+###############################################
+# Expense Tracker
+# Money going OUT (school operating costs), distinct from
+# fee-structures/invoices/payments (student fees coming IN). Every
+# expense is approval-gated — see expense.service.js for why there's no
+# separate "confirm"/"pay" endpoint here: use the generic
+# /api/approval-requests/:id/{approve,reject,cancel,execute} endpoints.
+###############################################
+
+### create an expense category
+POST {{baseUrl}}/expense-categories HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Utilities",
+    "description": "Electricity, water, and generator fuel"
+}
+
+### get all expense categories
+GET {{baseUrl}}/expense-categories HTTP/1.1
+
+### get only active expense categories
+GET {{baseUrl}}/expense-categories?status=ACTIVE HTTP/1.1
+
+### get expense category by id
+GET {{baseUrl}}/expense-categories/1 HTTP/1.1
+
+### update expense category
+PATCH {{baseUrl}}/expense-categories/1 HTTP/1.1
+Content-Type: application/json
+
+{
+    "description": "Electricity, water, generator fuel, and gas"
+}
+
+### archive expense category
+PATCH {{baseUrl}}/expense-categories/1/archive HTTP/1.1
+
+### restore expense category
+PATCH {{baseUrl}}/expense-categories/1/restore HTTP/1.1
+
+### submit an expense (creates the record and kicks off its approval chain)
+POST {{baseUrl}}/expenses HTTP/1.1
+Content-Type: application/json
+
+{
+    "category_id": 1,
+    "academic_year_id": 1,
+    "title": "Generator fuel - January",
+    "description": "Diesel for backup generator during grid outages",
+    "amount": 4500,
+    "expense_date": "2026-01-15",
+    "vendor_name": "Serrekunda Fuel Depot",
+    "payment_method": "CASH",
+    "reference_number": "RCPT-2026-0114"
+}
+
+### get all expenses (filters: category_id, academic_year_id, status)
+GET {{baseUrl}}/expenses HTTP/1.1
+
+### get expenses for one academic year, still pending review
+GET {{baseUrl}}/expenses?academic_year_id=1&status=PENDING_REVIEW HTTP/1.1
+
+### get expense by id (status comes from its linked approval request)
+GET {{baseUrl}}/expenses/1 HTTP/1.1
+
+### get a per-category expense summary for an academic year
+# (only counts EXECUTED expenses — see expense.repository.js getSummary)
+GET {{baseUrl}}/expenses/summary?academic_year_id=1 HTTP/1.1
+
+### approve / reject / cancel / execute an expense's approval request
+# (same generic engine every other approval-gated workflow uses)
+PATCH {{baseUrl}}/approval-requests/1/approve HTTP/1.1
+Content-Type: application/json
+
+{
+    "comment": "Reasonable and within this month's budget."
+}
+
+### export the expenses dataset as an Excel file
+GET {{baseUrl}}/reports/expenses/download?format=xlsx&academic_year_id=1 HTTP/1.1
+
+###############################################
+# Calendar
+###############################################
+
+### add a fixed-date public holiday
+POST {{baseUrl}}/calendar-events HTTP/1.1
+Content-Type: application/json
+
+{
+    "academic_year_id": 1,
+    "title": "Independence Day",
+    "category": "Public Holiday",
+    "start_date": "2026-02-18",
+    "end_date": "2026-02-18",
+    "is_school_closed": true
+}
+
+### add a movable-date holiday (Islamic calendar — entered explicitly each year, never auto-repeated)
+POST {{baseUrl}}/calendar-events HTTP/1.1
+Content-Type: application/json
+
+{
+    "academic_year_id": 1,
+    "title": "Eid al-Fitr",
+    "category": "Religious Holiday",
+    "start_date": "2026-03-20",
+    "end_date": "2026-03-21",
+    "is_school_closed": true
+}
+
+### add a school event that isn't a closure (teaching continues)
+POST {{baseUrl}}/calendar-events HTTP/1.1
+Content-Type: application/json
+
+{
+    "academic_year_id": 1,
+    "title": "Inter-House Sports Day",
+    "category": "School Event",
+    "start_date": "2026-04-10",
+    "end_date": "2026-04-10",
+    "is_school_closed": false
+}
+
+### get every calendar event for an academic year
+GET {{baseUrl}}/calendar-events?academic_year_id=1 HTTP/1.1
+
+### get only the events that close the school
+GET {{baseUrl}}/calendar-events?academic_year_id=1&category=Public%20Holiday HTTP/1.1
+
+### get events overlapping a date range (for a calendar month/week view)
+GET {{baseUrl}}/calendar-events?from=2026-02-01&to=2026-02-28 HTTP/1.1
+
+### get one event
+GET {{baseUrl}}/calendar-events/1 HTTP/1.1
+
+### update an event (e.g. correcting a movable holiday's date once confirmed)
+PATCH {{baseUrl}}/calendar-events/2 HTTP/1.1
+Content-Type: application/json
+
+{
+    "start_date": "2026-03-21",
+    "end_date": "2026-03-22"
+}
+
+### archive an event entered by mistake
+PATCH {{baseUrl}}/calendar-events/3/archive HTTP/1.1
+
+### restore it
+PATCH {{baseUrl}}/calendar-events/3/restore HTTP/1.1
+
+### copy last year's calendar into the new academic year as a starting point
+# (movable-date entries still need manual review afterward — see the module's comments)
+POST {{baseUrl}}/calendar-events/copy HTTP/1.1
+Content-Type: application/json
+
+{
+    "source_academic_year_id": 1,
+    "target_academic_year_id": 2
+}

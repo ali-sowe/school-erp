@@ -5,6 +5,9 @@ import { ACADEMIC_YEAR_MESSAGES } from "../../constants/messages/academic-year/a
 import { HTTP_STATUS } from "../../constants/httpStatus.js";
 import * as auditRepository from "../../repositories/audit/audit.repository.js";
 import { getChangedFields } from "../../helpers/audit/audit.helper.js";
+import { createApprovalRequest } from "../approval/approval.service.js";
+import { registerWorkflowExecutor } from "../approval/workflow-executor-registry.js";
+import { registerRequiredSteps } from "../approval/workflow-step-policy-registry.js";
 
 export async function createAcademicYear(data, schoolId, userId = null) {
     validateAcademicYearDates(data.start_date, data.end_date);
@@ -178,3 +181,58 @@ export async function overrideAcademicYear(id, payload, schoolId, userId = null)
 
     return updatedAcademicYear;
 }
+
+// Routes the same override through the Approval Workflow Engine (ADR-004)
+// instead of applying it immediately — the docs name "academic overrides"
+// as one of the engine's intended use cases, same reasoning as
+// enrollment.service.js's requestStudentTransfer. overrideAcademicYear
+// above still exists and is still reachable directly (PATCH .../override)
+// for schools that don't want the extra step — this is an additional,
+// opt-in path, not a replacement.
+export async function requestAcademicYearOverride(id, payload, schoolId, userId = null) {
+    const academicYear = await findOwnedAcademicYearOrThrow(id, schoolId);
+
+    if (academicYear.status === "COMPLETED") {
+        throw new AppError(HTTP_STATUS.BAD_REQUEST, ACADEMIC_YEAR_MESSAGES.CANNOT_EDIT_COMPLETED);
+    }
+
+    return await createApprovalRequest(
+        {
+            workflow_type: 'ACADEMIC_YEAR_OVERRIDE',
+            entity_type: 'AcademicYear',
+            entity_id: academicYear.id,
+            title: `Override ${academicYear.name}'s schedule`,
+            description: payload.reason,
+            metadata: {
+                actual_start_date: payload.actual_start_date ?? null,
+                actual_end_date: payload.actual_end_date ?? null
+            },
+            steps: [{ approver_role_name: 'Administrator' }]
+        },
+        schoolId,
+        userId
+    );
+}
+
+// Registered once at module load, same pattern as invoice.service.js's
+// 'INVOICE_VOID' executor and enrollment.service.js's 'STUDENT_TRANSFER'
+// one. approval.service.js only knows some executor may exist for a
+// workflow_type — never that academic years exist at all.
+registerWorkflowExecutor('ACADEMIC_YEAR_OVERRIDE', async (request, schoolId, userId) => {
+    await overrideAcademicYear(
+        request.entity_id,
+        {
+            actual_start_date: request.metadata.actual_start_date,
+            actual_end_date: request.metadata.actual_end_date,
+            reason: request.description
+        },
+        schoolId,
+        userId
+    );
+});
+
+// Enforced server-side so the POST /approval-requests endpoint can't be
+// used to create an ACADEMIC_YEAR_OVERRIDE with any approver other than an
+// Administrator, no matter what steps a caller sends — see
+// workflow-step-policy-registry.js.
+registerRequiredSteps('ACADEMIC_YEAR_OVERRIDE', [{ approver_role_name: 'Administrator' }]);
