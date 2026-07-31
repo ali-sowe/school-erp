@@ -1209,7 +1209,7 @@ export const ensureCoreTables = async () => {
         CREATE TABLE IF NOT EXISTS import_batch_rows (
             id INT AUTO_INCREMENT PRIMARY KEY,
             import_batch_id INT NOT NULL,
-            \`row_number\` INT NOT NULL,
+            row_number INT NOT NULL,
             raw_data JSON NOT NULL,
             normalized_data JSON NULL,
             status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
@@ -1217,7 +1217,7 @@ export const ensureCoreTables = async () => {
             imported_entity_id INT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             CONSTRAINT fk_import_batch_rows_batch FOREIGN KEY (import_batch_id) REFERENCES import_batches(id),
-            CONSTRAINT uq_import_batch_rows_batch_row UNIQUE (import_batch_id, \`row_number\`)
+            CONSTRAINT uq_import_batch_rows_batch_row UNIQUE (import_batch_id, row_number)
         )
     `);
 

@@ -43,7 +43,7 @@ const NAV_ITEMS = [
   { key: 'teachers', to: '/teachers', permission: 'teachers.read', icon: Presentation, ready: true },
   { key: 'attendance', to: '/attendance', permission: 'attendance.read', icon: ClipboardCheck, ready: true },
   { key: 'exams', to: '/exams', permission: 'exams.read', icon: FileSpreadsheet, ready: true },
-  { key: 'finance', to: '/finance', permission: 'finance.read', icon: Wallet, ready: false },
+  { key: 'finance', to: '/finance', permission: 'finance.read', icon: Wallet, ready: true },
   { key: 'admin', to: '/admin', permission: 'users.read', icon: ShieldCheck, ready: true },
 ];
 

@@ -16,6 +16,8 @@ import TeachersListPage from '../pages/teachers/TeachersListPage';
 import TeacherDetailPage from '../pages/teachers/TeacherDetailPage';
 import ExamsListPage from '../pages/exams/ExamsListPage';
 import ExamDetailPage from '../pages/exams/ExamDetailPage';
+import FinancePage from '../pages/finance/FinancePage';
+import InvoiceDetailPage from '../pages/finance/InvoiceDetailPage';
 
 function AppRoutes() {
   return (
@@ -118,6 +120,22 @@ function AppRoutes() {
               element={
                 <ProtectedRoute permission="exams.read">
                   <ExamDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/finance"
+              element={
+                <ProtectedRoute permission="finance.read">
+                  <FinancePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/finance/invoices/:id"
+              element={
+                <ProtectedRoute permission="finance.read">
+                  <InvoiceDetailPage />
                 </ProtectedRoute>
               }
             />

@@ -1,0 +1,136 @@
+{
+  "title": "Finance",
+  "subtitle": "Fee structures, invoices, and payments.",
+  "feeStructures": {
+    "sectionTitle": "Fee structures",
+    "addButton": "Add fee structure",
+    "table": {
+      "name": "Name",
+      "amount": "Amount",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No fee structures yet",
+      "description": "Add a fee structure before you can generate invoices for students."
+    },
+    "toasts": {
+      "archived": "Fee structure archived.",
+      "restored": "Fee structure restored.",
+      "error": "Couldn't update this fee structure."
+    },
+    "form": {
+      "createTitle": "Add fee structure",
+      "editTitle": "Edit fee structure",
+      "academicYearLabel": "Academic year",
+      "gradeLevelLabel": "Grade level",
+      "gradeLevelPlaceholder": "Applies to every grade",
+      "gradeLevelHint": "Leave unset for a school-wide fee that applies to every grade.",
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. Tuition Fee – Term 1",
+      "amountLabel": "Amount",
+      "errors": {
+        "academicYearRequired": "Choose an academic year.",
+        "nameRequired": "Enter a name.",
+        "amountRequired": "Enter an amount."
+      },
+      "toasts": {
+        "created": "Fee structure created successfully.",
+        "updated": "Fee structure updated successfully.",
+        "error": "Couldn't save this fee structure. Please try again."
+      }
+    }
+  },
+  "invoices": {
+    "sectionTitle": "Invoices",
+    "addButton": "Create invoice",
+    "table": {
+      "student": "Student",
+      "description": "Description",
+      "amountDue": "Amount due",
+      "amountPaid": "Amount paid",
+      "status": "Status",
+      "actions": "Actions",
+      "viewButton": "View"
+    },
+    "empty": {
+      "title": "No invoices yet",
+      "description": "Create an invoice from a fee structure to start billing a student."
+    },
+    "toasts": {
+      "created": "Invoice created successfully.",
+      "error": "Couldn't create this invoice."
+    },
+    "form": {
+      "createTitle": "Create invoice",
+      "studentLabel": "Student",
+      "feeStructureLabel": "Fee structure",
+      "feeStructurePlaceholder": "Choose a fee structure"
+    },
+    "detail": {
+      "backLink": "Back to Finance",
+      "notFound": "This invoice couldn't be found.",
+      "amountDueLabel": "Amount due",
+      "amountPaidLabel": "Amount paid",
+      "balanceLabel": "Remaining balance",
+      "descriptionLabel": "Description",
+      "dueDateLabel": "Due date",
+      "voidedReasonLabel": "Void reason",
+      "actions": {
+        "recordPayment": "Record payment",
+        "void": "Void invoice",
+        "requestVoid": "Request void (via approval)"
+      },
+      "paymentsTitle": "Payments",
+      "paymentsEmpty": "No payments recorded yet.",
+      "paymentsTable": {
+        "date": "Date",
+        "amount": "Amount",
+        "method": "Method",
+        "reference": "Reference",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "recordPaymentDialog": {
+        "title": "Record a payment",
+        "amountLabel": "Amount",
+        "methodLabel": "Payment method",
+        "methodPlaceholder": "e.g. CASH, BANK_TRANSFER, MOBILE_MONEY",
+        "dateLabel": "Payment date",
+        "referenceLabel": "Reference number",
+        "referencePlaceholder": "Optional — transaction ID, receipt number…",
+        "errors": {
+          "amountRequired": "Enter an amount.",
+          "methodRequired": "Enter a payment method.",
+          "dateRequired": "Choose a payment date."
+        }
+      },
+      "voidDialog": {
+        "title": "Void this invoice?",
+        "titleRequest": "Request approval to void this invoice?",
+        "description": "This can only be done while the invoice has no payments recorded against it. Explain why.",
+        "descriptionRequest": "This will be sent for approval instead of applied immediately. Explain why.",
+        "reasonPlaceholder": "Reason for voiding this invoice",
+        "reasonRequired": "A reason is required.",
+        "confirmButton": "Void invoice",
+        "confirmButtonRequest": "Submit for approval"
+      },
+      "voidPaymentDialog": {
+        "title": "Void this payment?",
+        "titleRequest": "Request approval to void this payment?",
+        "reasonPlaceholder": "Reason for voiding this payment",
+        "reasonRequired": "A reason is required.",
+        "confirmButton": "Void payment",
+        "confirmButtonRequest": "Submit for approval"
+      },
+      "toasts": {
+        "paymentRecorded": "Payment recorded successfully.",
+        "paymentVoided": "Payment voided.",
+        "paymentVoidRequested": "Void request submitted for approval.",
+        "invoiceVoided": "Invoice voided.",
+        "invoiceVoidRequested": "Void request submitted for approval.",
+        "error": "Something went wrong. Please try again."
+      }
+    }
+  }
+}
