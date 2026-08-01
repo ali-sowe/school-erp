@@ -8,12 +8,16 @@ import { Badge } from '@/components/ui/badge';
 // payment states) rather than one bespoke badge per module — anything not
 // listed here still renders sensibly via the fallback below.
 const STATUS_MAP = {
-  // Approval Workflow Engine
+  // Approval Workflow Engine (request-level statuses above; PENDING and
+  // SKIPPED are step-level — a step waiting its turn, or one that never
+  // ran because the request was rejected/cancelled before reaching it)
   PENDING_REVIEW: { label: 'Pending review', variant: 'warning' },
   APPROVED: { label: 'Approved', variant: 'success' },
   REJECTED: { label: 'Rejected', variant: 'destructive' },
   EXECUTED: { label: 'Executed', variant: 'success' },
   CANCELLED: { label: 'Cancelled', variant: 'secondary' },
+  PENDING: { label: 'Pending', variant: 'warning' },
+  SKIPPED: { label: 'Skipped', variant: 'secondary' },
 
   // Archive/restore lifecycle (fee structures, subjects, classes, etc.)
   ACTIVE: { label: 'Active', variant: 'success' },
@@ -36,6 +40,15 @@ const STATUS_MAP = {
   ABSENT: { label: 'Absent', variant: 'destructive' },
   LATE: { label: 'Late', variant: 'warning' },
   EXCUSED: { label: 'Excused', variant: 'secondary' },
+
+  // Library (copies + borrow records)
+  AVAILABLE: { label: 'Available', variant: 'success' },
+  BORROWED: { label: 'Borrowed', variant: 'warning' },
+  RETURNED: { label: 'Returned', variant: 'success' },
+  DAMAGED: { label: 'Damaged', variant: 'destructive' },
+  LOST: { label: 'Lost', variant: 'destructive' },
+  WITHDRAWN: { label: 'Withdrawn', variant: 'secondary' },
+  OVERDUE: { label: 'Overdue', variant: 'destructive' },
 };
 
 function humanize(status) {

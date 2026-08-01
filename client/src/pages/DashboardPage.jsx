@@ -1,9 +1,11 @@
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router';
 import { ClipboardList, Sparkles } from 'lucide-react';
 
 import { useAuth } from '@/context/AuthContext';
 import { useMyPendingApprovals } from '@/hooks/useMyPendingApprovals';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { getWorkflowTypeLabel } from '@/lib/workflowTypeLabels';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { EmptyState } from '@/components/erp/EmptyState';
@@ -50,17 +52,29 @@ function PendingApprovalsCard() {
         {!isLoading && !isError && approvals?.length > 0 && (
           <ul className="space-y-3">
             {approvals.map((request) => (
-              <li key={request.id} className="flex items-center justify-between gap-3 rounded-sm border p-space-3">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{request.title}</p>
-                  <p className="truncate text-xs text-muted-foreground">{request.workflow_type}</p>
-                </div>
-                <StatusBadge status={request.status} />
+              <li key={request.id}>
+                <Link
+                  to={`/approvals/${request.id}`}
+                  className="flex items-center justify-between gap-3 rounded-sm border p-space-3 hover:bg-muted/50"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">{request.title}</p>
+                    <p className="truncate text-xs text-muted-foreground">{getWorkflowTypeLabel(request.workflow_type)}</p>
+                  </div>
+                  <StatusBadge status={request.status} />
+                </Link>
               </li>
             ))}
           </ul>
         )}
       </CardContent>
+      {!isLoading && !isError && approvals?.length > 0 && (
+        <CardFooter>
+          <Link to="/approvals" className="text-sm text-primary hover:underline">
+            {t('common:actions.viewAll', { ns: 'common' })}
+          </Link>
+        </CardFooter>
+      )}
     </Card>
   );
 }

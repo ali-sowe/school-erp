@@ -15,6 +15,7 @@ import StudentForm from '@/components/students/StudentForm';
 import GuardianLinkPanel from '@/components/students/GuardianLinkPanel';
 import EnrollmentPanel from '@/components/students/EnrollmentPanel';
 import StudentAttendancePanel from '@/components/attendance/StudentAttendancePanel';
+import StudentBorrowHistoryPanel from '@/components/library/StudentBorrowHistoryPanel';
 
 function StudentDetailPage() {
   const { id } = useParams();
@@ -22,6 +23,7 @@ function StudentDetailPage() {
   const { hasPermission } = useAuth();
   const canWrite = hasPermission('students.write');
   const canViewAttendance = hasPermission('attendance.read');
+  const canViewLibrary = hasPermission('library.read');
 
   const { data: student, isLoading, isError } = useStudent(id);
   const [editing, setEditing] = useState(false);
@@ -100,6 +102,7 @@ function StudentDetailPage() {
       {/* StudentAttendancePanel was migrated to the new stack along with
           the rest of the Attendance module — reused here as-is. */}
       {canViewAttendance && <StudentAttendancePanel studentId={student.id} />}
+      {canViewLibrary && <StudentBorrowHistoryPanel studentId={student.id} />}
     </div>
   );
 }

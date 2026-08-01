@@ -18,6 +18,15 @@ import ExamsListPage from '../pages/exams/ExamsListPage';
 import ExamDetailPage from '../pages/exams/ExamDetailPage';
 import FinancePage from '../pages/finance/FinancePage';
 import InvoiceDetailPage from '../pages/finance/InvoiceDetailPage';
+import LibraryPage from '../pages/library/LibraryPage';
+import BookDetailPage from '../pages/library/BookDetailPage';
+import ApprovalsPage from '../pages/approvals/ApprovalsPage';
+import ApprovalRequestDetailPage from '../pages/approvals/ApprovalRequestDetailPage';
+import ExpensesPage from '../pages/expenses/ExpensesPage';
+import ExpenseDetailPage from '../pages/expenses/ExpenseDetailPage';
+import LeaveRequestsPage from '../pages/leave-requests/LeaveRequestsPage';
+import LeaveRequestDetailPage from '../pages/leave-requests/LeaveRequestDetailPage';
+import AcademicCalendarPage from '../pages/academic-calendar/AcademicCalendarPage';
 
 function AppRoutes() {
   return (
@@ -136,6 +145,78 @@ function AppRoutes() {
               element={
                 <ProtectedRoute permission="finance.read">
                   <InvoiceDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/library"
+              element={
+                <ProtectedRoute permission="library.read">
+                  <LibraryPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/library/books/:id"
+              element={
+                <ProtectedRoute permission="library.read">
+                  <BookDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/approvals"
+              element={
+                <ProtectedRoute permission="approvals.read">
+                  <ApprovalsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/approvals/:id"
+              element={
+                <ProtectedRoute permission="approvals.read">
+                  <ApprovalRequestDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/expenses"
+              element={
+                <ProtectedRoute permission="expenses.read">
+                  <ExpensesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/expenses/:id"
+              element={
+                <ProtectedRoute permission="expenses.read">
+                  <ExpenseDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/leave-requests"
+              element={
+                <ProtectedRoute permission="leave-requests.read">
+                  <LeaveRequestsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/leave-requests/:id"
+              element={
+                <ProtectedRoute permission="leave-requests.read">
+                  <LeaveRequestDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/academic-calendar"
+              element={
+                <ProtectedRoute permission="academic-years.read">
+                  <AcademicCalendarPage />
                 </ProtectedRoute>
               }
             />

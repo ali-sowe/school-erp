@@ -1,0 +1,52 @@
+{
+  "page": {
+    "title": "Leave Requests",
+    "subtitle": "Request time off and track approval status."
+  },
+  "myRequests": {
+    "sectionTitle": "My leave requests",
+    "addButton": "Request leave",
+    "empty": { "title": "No leave requests yet", "description": "Submit a request to see it here." },
+    "columns": { "leaveType": "Type", "dates": "Dates", "status": "Status" }
+  },
+  "all": {
+    "sectionTitle": "All leave requests",
+    "statusFilter": {
+      "all": "All statuses",
+      "pending": "Pending review",
+      "approved": "Approved",
+      "executed": "Executed",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled"
+    },
+    "empty": { "title": "No leave requests yet", "description": "Requests submitted by staff will appear here." },
+    "columns": { "requestedBy": "Requested by", "leaveType": "Type", "dates": "Dates", "status": "Status" }
+  },
+  "form": {
+    "createTitle": "Request leave",
+    "leaveTypeLabel": "Leave type",
+    "leaveTypes": { "SICK": "Sick", "VACATION": "Vacation", "PERSONAL": "Personal", "OTHER": "Other" },
+    "startDateLabel": "Start date",
+    "endDateLabel": "End date",
+    "reasonLabel": "Reason",
+    "reasonPlaceholder": "Optional — more detail for the approver",
+    "errors": {
+      "startDateRequired": "Choose a start date.",
+      "endDateRequired": "Choose an end date."
+    },
+    "toasts": {
+      "created": "Leave request submitted for approval.",
+      "error": "Couldn't submit this leave request."
+    }
+  },
+  "detail": {
+    "backLink": "Back to Leave Requests",
+    "notFound": "This leave request couldn't be found.",
+    "leaveTypeLabel": "Leave type",
+    "datesLabel": "Dates",
+    "reasonLabel": "Reason",
+    "notSet": "Not set",
+    "approvalLinkLabel": "Approval request",
+    "viewApprovalButton": "View approval request"
+  }
+}

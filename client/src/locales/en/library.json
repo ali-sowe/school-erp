@@ -1,0 +1,108 @@
+{
+  "page": {
+    "title": "Library",
+    "subtitle": "Manage the book catalog and circulation."
+  },
+  "books": {
+    "sectionTitle": "Book catalog",
+    "addButton": "Add book",
+    "searchPlaceholder": "Search by title, author, or ISBN…",
+    "statusFilter": { "all": "All statuses", "active": "Active", "archived": "Archived" },
+    "columns": { "title": "Title", "author": "Author", "category": "Category", "status": "Status", "actions": "Actions" },
+    "empty": { "title": "No books yet", "description": "Add your first book to get started." },
+    "confirmArchive": { "title": "Archive this book?", "description": "It will no longer be available to issue until restored." },
+    "confirmRestore": { "title": "Restore this book?", "description": "It will become available to issue again." },
+    "toasts": { "archived": "Book archived.", "restored": "Book restored.", "error": "Something went wrong. Please try again." },
+    "form": {
+      "createTitle": "Add book",
+      "editTitle": "Edit book",
+      "titleLabel": "Title",
+      "authorLabel": "Author",
+      "isbnLabel": "ISBN",
+      "categoryLabel": "Category",
+      "publisherLabel": "Publisher",
+      "descriptionLabel": "Description",
+      "errors": { "titleRequired": "Title is required." },
+      "toasts": { "created": "Book added to catalog.", "updated": "Book updated.", "error": "Could not save book." }
+    }
+  },
+  "detail": {
+    "backLink": "Back to library",
+    "editButton": "Edit",
+    "cancelButton": "Cancel",
+    "authorLabel": "Author",
+    "isbnLabel": "ISBN",
+    "categoryLabel": "Category",
+    "publisherLabel": "Publisher",
+    "descriptionLabel": "Description",
+    "notProvided": "Not provided",
+    "notFound": "Book not found.",
+    "copiesSummary": "{{available}} of {{total}} copies available"
+  },
+  "copies": {
+    "sectionTitle": "Copies",
+    "addButton": "Add copies",
+    "empty": "No copies added yet.",
+    "columns": { "copyNumber": "Copy #", "status": "Status", "actions": "Actions" },
+    "unnumbered": "(no copy number)",
+    "withdrawButton": "Withdraw",
+    "restoreButton": "Restore",
+    "confirmWithdraw": {
+      "title": "Withdraw this copy?",
+      "description": "It will no longer be available to borrow. Give a reason so there's a record of why."
+    },
+    "confirmRestore": { "title": "Restore this copy to available?", "description": "It will be issuable again." },
+    "toasts": { "added": "Copies added.", "withdrawn": "Copy withdrawn.", "restored": "Copy restored.", "error": "Something went wrong. Please try again." },
+    "form": {
+      "title": "Add copies",
+      "modeLabel": "How would you like to add copies?",
+      "modeQuantity": "Just a quantity (untagged)",
+      "modeNumbers": "Specific copy numbers",
+      "quantityLabel": "Quantity",
+      "copyNumbersLabel": "Copy numbers",
+      "copyNumbersHint": "One per line.",
+      "errors": { "quantityRequired": "Enter a quantity of at least 1.", "copyNumbersRequired": "Enter at least one copy number." },
+      "submitButton": "Add"
+    },
+    "withdrawForm": { "reasonLabel": "Reason", "errors": { "reasonRequired": "A reason is required." }, "submitButton": "Withdraw" }
+  },
+  "borrow": {
+    "sectionTitle": "Circulation",
+    "issueButton": "Issue a book",
+    "statusFilter": { "all": "All", "borrowed": "Currently borrowed", "overdue": "Overdue", "returned": "Returned" },
+    "columns": { "student": "Student", "book": "Book", "borrowedDate": "Borrowed", "dueDate": "Due", "status": "Status", "actions": "Actions" },
+    "empty": { "title": "No borrow records yet", "description": "Issue a book to a student to get started." },
+    "overdueBadge": "Overdue",
+    "returnButton": "Return",
+    "toasts": { "issued": "Book issued.", "returned": "Book returned.", "error": "Something went wrong. Please try again." },
+    "issueForm": {
+      "title": "Issue a book",
+      "bookLabel": "Book",
+      "bookPlaceholder": "Choose a book…",
+      "studentLabel": "Student",
+      "copyLabel": "Copy (optional)",
+      "copyPlaceholder": "Auto-assign an available copy",
+      "borrowedDateLabel": "Borrowed date",
+      "dueDateLabel": "Due date",
+      "errors": { "bookRequired": "Choose a book.", "studentRequired": "Choose a student.", "dueDateRequired": "Choose a due date." },
+      "submitButton": "Issue"
+    },
+    "returnForm": {
+      "title": "Return this book",
+      "conditionLabel": "Condition",
+      "conditionGood": "Good",
+      "conditionDamaged": "Damaged",
+      "conditionLost": "Lost",
+      "returnedDateLabel": "Returned date",
+      "remarksLabel": "Remarks (optional)",
+      "submitButton": "Confirm return"
+    }
+  },
+  "studentHistory": {
+    "sectionTitle": "Borrowed books",
+    "empty": "No books borrowed yet.",
+    "fromLabel": "From",
+    "toLabel": "To",
+    "filterButton": "Filter"
+  }
+}

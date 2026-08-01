@@ -7,8 +7,13 @@ import {
   BookOpen,
   Presentation,
   ClipboardCheck,
+  ClipboardList,
   FileSpreadsheet,
   Wallet,
+  Receipt,
+  CalendarClock,
+  CalendarRange,
+  Library as LibraryIcon,
   ShieldCheck,
   PanelLeftClose,
   PanelLeftOpen,
@@ -30,13 +35,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-// Mirrors the "Version 1 Modules" build order from docs/readme.txt.
-// `ready` means "has a frontend page today" — every one of these modules
-// already exists on the backend; this list is purely about frontend
-// coverage, so the nav always shows the full roadmap rather than only
-// whatever happens to have a screen so far.
+// Mirrors the "Version 1 Modules" build order from docs/readme.txt, plus
+// modules added after that roadmap (Library). `ready` means "has a
+// frontend page today" — every one of these modules already exists on the
+// backend; this list is purely about frontend coverage, so the nav always
+// shows the full roadmap rather than only whatever happens to have a
+// screen so far.
 const NAV_ITEMS = [
   { key: 'dashboard', to: '/dashboard', permission: null, icon: LayoutDashboard, ready: true },
+  { key: 'academic-calendar', to: '/academic-calendar', permission: 'academic-years.read', icon: CalendarRange, ready: true },
   { key: 'students', to: '/students', permission: 'students.read', icon: GraduationCap, ready: true },
   { key: 'guardians', to: '/guardians', permission: 'guardians.read', icon: UserRound, ready: true },
   { key: 'classes', to: '/classes', permission: 'classes.read', icon: BookOpen, ready: true },
@@ -44,6 +51,10 @@ const NAV_ITEMS = [
   { key: 'attendance', to: '/attendance', permission: 'attendance.read', icon: ClipboardCheck, ready: true },
   { key: 'exams', to: '/exams', permission: 'exams.read', icon: FileSpreadsheet, ready: true },
   { key: 'finance', to: '/finance', permission: 'finance.read', icon: Wallet, ready: true },
+  { key: 'expenses', to: '/expenses', permission: 'expenses.read', icon: Receipt, ready: true },
+  { key: 'library', to: '/library', permission: 'library.read', icon: LibraryIcon, ready: true },
+  { key: 'approvals', to: '/approvals', permission: 'approvals.read', icon: ClipboardList, ready: true },
+  { key: 'leave-requests', to: '/leave-requests', permission: 'leave-requests.read', icon: CalendarClock, ready: true },
   { key: 'admin', to: '/admin', permission: 'users.read', icon: ShieldCheck, ready: true },
 ];
 
