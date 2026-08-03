@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
 import { AuthProvider } from '../context/AuthContext';
+import { RealtimeProvider } from '../context/RealtimeContext';
 import ProtectedRoute from '../components/ProtectedRoute';
 import AppLayout from '../components/AppLayout';
 import LoginPage from '../pages/LoginPage';
@@ -26,12 +27,15 @@ import ExpensesPage from '../pages/expenses/ExpensesPage';
 import ExpenseDetailPage from '../pages/expenses/ExpenseDetailPage';
 import LeaveRequestsPage from '../pages/leave-requests/LeaveRequestsPage';
 import LeaveRequestDetailPage from '../pages/leave-requests/LeaveRequestDetailPage';
+import ConversationsPage from '../pages/communication/ConversationsPage';
+import AnnouncementsPage from '../pages/communication/AnnouncementsPage';
 import AcademicCalendarPage from '../pages/academic-calendar/AcademicCalendarPage';
 
 function AppRoutes() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <RealtimeProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
 
@@ -221,6 +225,22 @@ function AppRoutes() {
               }
             />
             <Route
+              path="/conversations"
+              element={
+                <ProtectedRoute permission="messaging.read">
+                  <ConversationsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/announcements"
+              element={
+                <ProtectedRoute permission="announcements.read">
+                  <AnnouncementsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/admin"
               element={
                 <ProtectedRoute permission="users.read">
@@ -233,6 +253,7 @@ function AppRoutes() {
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
+        </RealtimeProvider>
       </AuthProvider>
     </BrowserRouter>
   );

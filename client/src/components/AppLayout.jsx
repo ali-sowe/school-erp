@@ -14,6 +14,8 @@ import {
   CalendarClock,
   CalendarRange,
   Library as LibraryIcon,
+  MessageSquare,
+  Megaphone,
   ShieldCheck,
   PanelLeftClose,
   PanelLeftOpen,
@@ -34,6 +36,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import NotificationBell from '@/components/notifications/NotificationBell';
 
 // Mirrors the "Version 1 Modules" build order from docs/readme.txt, plus
 // modules added after that roadmap (Library). `ready` means "has a
@@ -55,6 +58,8 @@ const NAV_ITEMS = [
   { key: 'library', to: '/library', permission: 'library.read', icon: LibraryIcon, ready: true },
   { key: 'approvals', to: '/approvals', permission: 'approvals.read', icon: ClipboardList, ready: true },
   { key: 'leave-requests', to: '/leave-requests', permission: 'leave-requests.read', icon: CalendarClock, ready: true },
+  { key: 'conversations', to: '/conversations', permission: 'messaging.read', icon: MessageSquare, ready: true },
+  { key: 'announcements', to: '/announcements', permission: 'announcements.read', icon: Megaphone, ready: true },
   { key: 'admin', to: '/admin', permission: 'users.read', icon: ShieldCheck, ready: true },
 ];
 
@@ -176,6 +181,9 @@ function AppLayout() {
       </aside>
 
       <div className="flex-1 overflow-auto">
+        <div className="flex h-14 items-center justify-end border-b px-space-6">
+          <NotificationBell />
+        </div>
         <main className="mx-auto max-w-6xl p-space-6">
           <Outlet />
         </main>

@@ -60,6 +60,16 @@ export async function getConversationById(id, schoolId, userId) {
     return conversation;
 }
 
+// Only reachable by an active participant — same access rule as the
+// conversation and its messages, since who's in a private conversation is
+// itself information that shouldn't leak to non-participants.
+export async function getConversationParticipants(id, schoolId, userId) {
+    await findOwnedConversationOrThrow(id, schoolId);
+    await ensureActiveParticipantOrThrow(id, userId);
+
+    return await participantRepository.findActiveParticipantsWithUsers(id);
+}
+
 export async function getMessages(conversationId, schoolId, userId, pagination) {
     await findOwnedConversationOrThrow(conversationId, schoolId);
     await ensureActiveParticipantOrThrow(conversationId, userId);

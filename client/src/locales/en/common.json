@@ -43,6 +43,8 @@
     "library": "Library",
     "approvals": "Approvals",
     "leave-requests": "Leave Requests",
+    "conversations": "Messages",
+    "announcements": "Announcements",
     "admin": "Administration"
   }
 }

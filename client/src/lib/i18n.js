@@ -17,17 +17,18 @@ import approvals from '@/locales/en/approvals.json';
 import expenses from '@/locales/en/expenses.json';
 import leaveRequests from '@/locales/en/leave-requests.json';
 import academicCalendar from '@/locales/en/academic-calendar.json';
+import communication from '@/locales/en/communication.json';
 
 // ADR-008: ship with a single locale (English) initially, but route every
 // UI string through t() from day one and namespace files by module — so
 // adding a second language later is "add a locale folder", not a rewrite.
 i18n.use(initReactI18next).init({
   resources: {
-    en: { common, auth, dashboard, students, guardians, attendance, admin, classes, teachers, exams, finance, library, approvals, expenses, 'leave-requests': leaveRequests, 'academic-calendar': academicCalendar },
+    en: { common, auth, dashboard, students, guardians, attendance, admin, classes, teachers, exams, finance, library, approvals, expenses, 'leave-requests': leaveRequests, 'academic-calendar': academicCalendar, communication },
   },
   lng: 'en',
   fallbackLng: 'en',
-  ns: ['common', 'auth', 'dashboard', 'students', 'guardians', 'attendance', 'admin', 'classes', 'teachers', 'exams', 'finance', 'library', 'approvals', 'expenses', 'leave-requests', 'academic-calendar'],
+  ns: ['common', 'auth', 'dashboard', 'students', 'guardians', 'attendance', 'admin', 'classes', 'teachers', 'exams', 'finance', 'library', 'approvals', 'expenses', 'leave-requests', 'academic-calendar', 'communication'],
   defaultNS: 'common',
   interpolation: {
     escapeValue: false, // React already escapes output

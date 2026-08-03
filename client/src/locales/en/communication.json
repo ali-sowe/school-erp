@@ -1,0 +1,72 @@
+{
+  "conversations": {
+    "title": "Messages",
+    "subtitle": "Direct and group conversations with other staff.",
+    "newButton": "New conversation",
+    "you": "You",
+    "unknownSender": "Unknown",
+    "selectPrompt": "Select a conversation to view messages.",
+    "emptyThread": "No messages yet. Say hello!",
+    "messagePlaceholder": "Type a message…",
+    "messageDeleted": "This message was deleted.",
+    "empty": {
+      "title": "No conversations yet",
+      "description": "Start a conversation with another staff member."
+    },
+    "newDialog": {
+      "title": "New conversation",
+      "participantsLabel": "Participants",
+      "participantsRequired": "Choose at least one person.",
+      "groupTitleLabel": "Group name",
+      "titleRequiredForGroup": "Enter a name for this group conversation.",
+      "toastSuccess": "Conversation started.",
+      "toastError": "Couldn't start this conversation."
+    },
+    "toasts": {
+      "sendError": "Couldn't send this message.",
+      "deleteError": "Couldn't delete this message."
+    }
+  },
+  "announcements": {
+    "title": "Announcements",
+    "subtitle": "School, grade, or class-wide announcements.",
+    "addButton": "Publish announcement",
+    "audienceTypes": {
+      "SCHOOL": "Whole school",
+      "GRADE_LEVEL": "One grade level",
+      "CLASS": "One class"
+    },
+    "empty": {
+      "title": "No announcements yet",
+      "description": "Publish your first announcement to reach staff, students, and parents."
+    },
+    "toasts": {
+      "archived": "Announcement archived.",
+      "restored": "Announcement restored.",
+      "error": "Couldn't update this announcement."
+    },
+    "form": {
+      "createTitle": "Publish announcement",
+      "titleLabel": "Title",
+      "bodyLabel": "Message",
+      "audienceLabel": "Audience",
+      "gradeLevelLabel": "Grade level",
+      "classLabel": "Class",
+      "publishButton": "Publish",
+      "errors": {
+        "titleRequired": "Enter a title.",
+        "bodyRequired": "Enter a message.",
+        "audienceIdRequired": "Choose which grade level or class this is for."
+      },
+      "toasts": {
+        "created": "Announcement published successfully.",
+        "error": "Couldn't publish this announcement."
+      }
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "empty": "No notifications yet."
+  }
+}

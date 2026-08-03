@@ -39,6 +39,18 @@ export const getConversationById = asyncHandler(
     }
 );
 
+export const getParticipants = asyncHandler(
+    async (req, res) => {
+        const participants = await conversationService.getConversationParticipants(req.params.id, req.user.schoolId, req.user.userId);
+
+        res.status(HTTP_STATUS.OK).json({
+            success: true,
+            message: CONVERSATION_MESSAGES.PARTICIPANTS_FETCHED,
+            data: participants
+        });
+    }
+);
+
 export const getMessages = asyncHandler(
     async (req, res) => {
         const messages = await conversationService.getMessages(

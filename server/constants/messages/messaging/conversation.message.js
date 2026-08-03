@@ -19,5 +19,6 @@ export const CONVERSATION_MESSAGES = {
     MESSAGE_NOT_OWNED: 'You can only delete your own messages.',
     MESSAGE_DELETED: 'Message deleted successfully.',
 
-    MARKED_AS_READ: 'Conversation marked as read.'
+    MARKED_AS_READ: 'Conversation marked as read.',
+    PARTICIPANTS_FETCHED: 'Participants retrieved successfully.'
 };
