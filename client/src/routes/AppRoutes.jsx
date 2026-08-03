@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from '../context/AuthContext';
 import { RealtimeProvider } from '../context/RealtimeContext';
 import ProtectedRoute from '../components/ProtectedRoute';

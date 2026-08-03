@@ -3,6 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Plus, Send, Trash2 } from 'lucide-react';
 
+// Update the active conversation when the "open" query param changes, so that
+// the notification bell can open a conversation directly without needing to
+// click it in the list first.
+import { useSearchParams } from 'react-router-dom';
+
 import { useAuth } from '@/context/AuthContext';
 import {
   useConversations,
@@ -24,6 +29,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { EmptyState } from '@/components/erp/EmptyState';
 import { StaffMultiSelect } from '@/components/erp/StaffMultiSelect';
 
+
 // Resolves "who am I talking to" for the conversation list, since a
 // conversation row itself only carries a type/title, never participant
 // names — see useConversationParticipants' own comment for why.
@@ -39,6 +45,7 @@ function useConversationTitle(conversation, currentUserId) {
 
   return others.map((participant) => `${participant.first_name} ${participant.last_name}`).join(', ');
 }
+
 
 function ConversationListItem({ conversation, currentUserId, isActive, onClick }) {
   const title = useConversationTitle(conversation, currentUserId);
@@ -228,8 +235,22 @@ function ConversationsPage() {
 
   const { data: conversations, isLoading } = useConversations();
   useConversationsListRealtimeSync();
-  const [activeId, setActiveId] = useState(null);
   const [newDialogOpen, setNewDialogOpen] = useState(false);
+
+  // Inside ConversationsPage:
+  const [searchParams] = useSearchParams();
+  const [activeId, setActiveId] = useState(() => {
+    const fromQuery = searchParams.get('open');
+    return fromQuery ? Number(fromQuery) : null;
+  });
+
+  // Optional: if you want activeId to update when the ?open param changes later:
+  useEffect(() => {
+    const fromQuery = searchParams.get('open');
+    if (fromQuery) {
+      setActiveId(Number(fromQuery));
+    }
+  }, [searchParams.get('open')]);
 
   return (
     <div className="space-y-space-4">

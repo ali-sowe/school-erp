@@ -66,6 +66,8 @@ export function useCreateConversation() {
   });
 }
 
+// Optimistic updates for sending a message: add it to the list immediately, 
+// then reconcile with the server response (or roll back on error). This is a bit more complex than the other mutations because we need to know the current user ID to construct a temporary message object. The current user ID is stored in the auth query cache, so we can retrieve it from there.
 export function useSendMessage(conversationId) {
   const queryClient = useQueryClient();
 
@@ -74,12 +76,47 @@ export function useSendMessage(conversationId) {
       const response = await api.post(`/conversations/${conversationId}/messages`, { body });
       return response.data?.data;
     },
+    // Optimistically add the new message to the list
+    onMutate: async (newMessageBody) => {
+      const queryKey = ['conversations', conversationId, 'messages'];
+
+      // Cancel any outgoing refetches for this query
+      await queryClient.cancelQueries({ queryKey });
+
+      // Get the current messages (oldest → newest, as useMessages returns)
+      const previousMessages = queryClient.getQueryData(queryKey) ?? [];
+
+      // Construct a temporary message object matching your backend shape
+      // Adjust field names to match your real Message type.
+      const tempMessage = {
+        id: `temp-${Date.now()}`, // temporary ID until server responds
+        conversation_id: conversationId,
+        body: newMessageBody,
+        sender_id: queryClient.getQueryData(['auth', 'user'])?.id, // or pass currentUserId in
+        created_at: new Date().toISOString(),
+        status: 'SENT', // or whatever your UI expects
+      };
+
+      // Append to the end (because useMessages returns oldest→newest)
+      queryClient.setQueryData(queryKey, (old = []) => [...old, tempMessage]);
+
+      // Return context for rollback
+      return { previousMessages };
+    },
+    onError: (err, newMessageBody, context) => {
+      const queryKey = ['conversations', conversationId, 'messages'];
+      // Roll back to previous messages on error
+      queryClient.setQueryData(queryKey, context?.previousMessages ?? []);
+      // Optional: toast already handled in handleSend
+    },
     onSuccess: () => {
+      // Refetch to reconcile with server (real ID, timestamps, etc.)
       queryClient.invalidateQueries({ queryKey: ['conversations', conversationId, 'messages'] });
       queryClient.invalidateQueries({ queryKey: ['conversations'] });
     },
   });
 }
+
 
 export function useDeleteMessage(conversationId) {
   const queryClient = useQueryClient();

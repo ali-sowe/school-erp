@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useNavigate } from 'react-router';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard,
@@ -182,7 +182,7 @@ function AppLayout() {
 
       <div className="flex-1 overflow-auto">
         <div className="flex h-14 items-center justify-end border-b px-space-6">
-          <NotificationBell />
+          <NotificationBell /> 
         </div>
         <main className="mx-auto max-w-6xl p-space-6">
           <Outlet />

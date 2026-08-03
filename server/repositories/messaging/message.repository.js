@@ -26,13 +26,13 @@ export async function findForConversation(conversationId, { limit = 50, beforeId
             ORDER BY id DESC
             LIMIT ?
             `,
-            [conversationId, beforeId, limit]
+            [conversationId, String(beforeId), String(limit)]
         );
     }
 
     return await query(
         `SELECT * FROM messages WHERE conversation_id = ? ORDER BY id DESC LIMIT ?`,
-        [conversationId, limit]
+        [conversationId, String(limit)]
     );
 }
 

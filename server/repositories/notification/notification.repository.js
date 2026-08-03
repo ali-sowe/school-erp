@@ -45,15 +45,15 @@ export async function findForUser(userId, { isRead, limit = 30, beforeId } = {})
 
     if (isRead !== undefined) {
         conditions.push('is_read = ?');
-        values.push(isRead ? 1 : 0);
+        values.push(String(isRead ? 1 : 0));
     }
 
     if (beforeId) {
         conditions.push('id < ?');
-        values.push(beforeId);
+        values.push(String(beforeId));
     }
 
-    values.push(limit);
+    values.push(String(limit));
 
     return await query(
         `
