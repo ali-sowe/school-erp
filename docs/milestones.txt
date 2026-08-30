@@ -1,0 +1,4 @@
+Milestone 1: Authentication & Foundation:
+    Objective:
+    | Build a secure authentication system that every 
+    | future feature will rely on.

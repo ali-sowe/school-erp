@@ -1,0 +1,29 @@
+import http from 'http';
+import app from './app.js';
+import env from './config/env.js';
+import { testConnection } from './database/test-connection.js';
+import { ensureCoreTables } from './database/schema.js';
+import { seedPlatformAdministrator } from './services/auth/auth.service.js';
+import { initializeSocket } from './realtime/socket.js';
+
+const PORT = env.port;
+
+const startServer = async () => {
+    try {
+        await testConnection();
+        await ensureCoreTables();
+        await seedPlatformAdministrator();
+
+        const server = http.createServer(app);
+        initializeSocket(server);
+
+        server.listen(PORT, () => {
+            console.log(`🚀 Server is running on http://localhost:${PORT}`);
+        });
+    } catch (error) {
+        console.error('❌ Failed to start server:', error);
+        process.exit(1);
+    }
+};
+
+startServer();

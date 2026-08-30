@@ -1,0 +1,108 @@
+{
+  "title": "Expenses",
+  "subtitle": "School operating expenses and their approval status.",
+  "categories": {
+    "sectionTitle": "Categories",
+    "addButton": "Add category",
+    "table": {
+      "name": "Name",
+      "description": "Description",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No expense categories yet",
+      "description": "Add a category before you can submit an expense."
+    },
+    "toasts": {
+      "archived": "Category archived.",
+      "restored": "Category restored.",
+      "error": "Couldn't update this category."
+    },
+    "form": {
+      "createTitle": "Add category",
+      "editTitle": "Edit category",
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. Utilities",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Optional",
+      "errors": {
+        "nameRequired": "Enter a name."
+      },
+      "toasts": {
+        "created": "Category created successfully.",
+        "updated": "Category updated successfully.",
+        "error": "Couldn't save this category. Please try again."
+      }
+    }
+  },
+  "expenses": {
+    "sectionTitle": "Expenses",
+    "addButton": "Submit expense",
+    "table": {
+      "title": "Title",
+      "category": "Category",
+      "amount": "Amount",
+      "expenseDate": "Date",
+      "status": "Status",
+      "actions": "Actions",
+      "viewButton": "View"
+    },
+    "empty": {
+      "title": "No expenses yet",
+      "description": "Submit an expense to send it for approval."
+    },
+    "toasts": {
+      "created": "Expense submitted for approval.",
+      "error": "Couldn't submit this expense."
+    },
+    "form": {
+      "createTitle": "Submit expense",
+      "categoryLabel": "Category",
+      "categoryPlaceholder": "Choose a category",
+      "academicYearLabel": "Academic year",
+      "titleLabel": "Title",
+      "titlePlaceholder": "e.g. Classroom furniture repair",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Optional \u2014 more detail for the approver",
+      "amountLabel": "Amount",
+      "expenseDateLabel": "Expense date",
+      "vendorNameLabel": "Vendor",
+      "vendorNamePlaceholder": "Optional",
+      "paymentMethodLabel": "Payment method",
+      "paymentMethodPlaceholder": "Optional \u2014 e.g. CASH, BANK_TRANSFER",
+      "referenceLabel": "Reference number",
+      "referencePlaceholder": "Optional",
+      "errors": {
+        "categoryRequired": "Choose a category.",
+        "academicYearRequired": "Choose an academic year.",
+        "titleRequired": "Enter a title.",
+        "amountRequired": "Enter an amount.",
+        "expenseDateRequired": "Choose an expense date."
+      }
+    }
+  },
+  "detail": {
+    "backLink": "Back to Expenses",
+    "notFound": "This expense couldn't be found.",
+    "categoryLabel": "Category",
+    "amountLabel": "Amount",
+    "expenseDateLabel": "Expense date",
+    "vendorNameLabel": "Vendor",
+    "paymentMethodLabel": "Payment method",
+    "referenceLabel": "Reference number",
+    "descriptionLabel": "Description",
+    "notSet": "Not set",
+    "approvalLinkLabel": "Approval request",
+    "viewApprovalButton": "View approval request"
+  },
+  "summary": {
+    "sectionTitle": "Spending summary",
+    "yearLabel": "Academic year",
+    "categoryHeader": "Category",
+    "totalHeader": "Total spent",
+    "countHeader": "Expenses",
+    "empty": "No executed expenses yet for this year.",
+    "chooseYearFirst": "Choose an academic year to see spending."
+  }
+}

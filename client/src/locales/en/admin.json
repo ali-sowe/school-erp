@@ -1,0 +1,110 @@
+{
+  "title": "Administration",
+  "subtitle": "Manage staff accounts and the roles that control what they can access.",
+  "tabs": {
+    "users": "Users",
+    "roles": "Roles"
+  },
+  "users": {
+    "addButton": "Add user",
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No users yet",
+      "description": "Add your first staff account to get started."
+    },
+    "form": {
+      "createTitle": "Add user",
+      "editTitle": "Edit user",
+      "firstNameLabel": "First name",
+      "lastNameLabel": "Last name",
+      "emailLabel": "Email",
+      "roleLabel": "Role",
+      "rolePlaceholder": "Select a role",
+      "passwordLabel": "Password",
+      "passwordPlaceholderCreate": "Set an initial password",
+      "passwordPlaceholderEdit": "Leave blank to keep the current password",
+      "errors": {
+        "firstNameRequired": "Enter a first name.",
+        "lastNameRequired": "Enter a last name.",
+        "emailRequired": "Enter an email address.",
+        "emailInvalid": "Enter a valid email address.",
+        "roleRequired": "Choose a role.",
+        "passwordRequired": "Set a password for this new account.",
+        "passwordTooShort": "Password must be at least 8 characters."
+      },
+      "toasts": {
+        "created": "User created successfully.",
+        "updated": "User updated successfully.",
+        "error": "Couldn't save this user. Please try again."
+      }
+    },
+    "deleteConfirm": {
+      "title": "Delete this user?",
+      "description": "This permanently removes {{name}}'s account and login access. This cannot be undone.",
+      "confirmLabel": "Delete user",
+      "toastSuccess": "User deleted.",
+      "toastError": "Couldn't delete this user."
+    }
+  },
+  "roles": {
+    "addButton": "Add role",
+    "table": {
+      "name": "Role name",
+      "description": "Description",
+      "permissions": "Permissions",
+      "actions": "Actions"
+    },
+    "permissionCount": "{{count}} permission",
+    "permissionCount_other": "{{count}} permissions",
+    "empty": {
+      "title": "No roles yet",
+      "description": "Add a role to start assigning permissions to staff."
+    },
+    "form": {
+      "createTitle": "Add role",
+      "editTitle": "Edit role",
+      "nameLabel": "Role name",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "What this role is for, at a glance",
+      "permissionsLabel": "Permissions",
+      "permissionsHint": "Choose what staff with this role can view and change.",
+      "readLabel": "View",
+      "writeLabel": "Manage",
+      "errors": {
+        "nameRequired": "Enter a role name."
+      },
+      "toasts": {
+        "created": "Role created successfully.",
+        "updated": "Role updated successfully.",
+        "error": "Couldn't save this role. Please try again."
+      }
+    },
+    "deleteConfirm": {
+      "title": "Delete this role?",
+      "description": "This permanently removes the \"{{name}}\" role. It can only be deleted while no user is assigned to it.",
+      "confirmLabel": "Delete role",
+      "toastSuccess": "Role deleted.",
+      "toastError": "Couldn't delete this role."
+    }
+  },
+  "permissionGroups": {
+    "academics": "Academics",
+    "studentsAndGuardians": "Students & Guardians",
+    "attendance": "Attendance",
+    "teachers": "Teachers",
+    "exams": "Exams",
+    "finance": "Finance",
+    "library": "Library",
+    "communication": "Communication",
+    "workflow": "Approvals & Leave",
+    "documents": "Documents & Reports",
+    "calendar": "Calendar",
+    "administration": "Administration"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "title": "Schools",
+  "subtitle": "Onboard and manage schools on the platform.",
+  "addButton": "Add school",
+  "table": {
+    "name": "Name",
+    "region": "Region",
+    "educationLevels": "Education levels",
+    "status": "Status",
+    "actions": "Actions",
+    "suspendButton": "Suspend",
+    "reactivateButton": "Reactivate"
+  },
+  "empty": {
+    "title": "No schools yet",
+    "description": "Onboard the first school to get started."
+  },
+  "toasts": {
+    "suspended": "School suspended.",
+    "reactivated": "School reactivated.",
+    "error": "Couldn't update this school."
+  },
+  "educationLevels": {
+    "EARLY_CHILDHOOD": "Early Childhood",
+    "LOWER_BASIC": "Lower Basic",
+    "UPPER_BASIC": "Upper Basic",
+    "SENIOR_SECONDARY": "Senior Secondary"
+  },
+  "form": {
+    "createTitle": "Add school",
+    "editTitle": "Edit school",
+    "nameLabel": "School name",
+    "regionLabel": "Region",
+    "ownershipTypeLabel": "Ownership type",
+    "ownershipTypePlaceholder": "e.g. Government, Private, Faith-based",
+    "educationLevelsLabel": "Education levels offered",
+    "adminSectionTitle": "First administrator account",
+    "adminFirstNameLabel": "First name",
+    "adminLastNameLabel": "Last name",
+    "adminEmailLabel": "Email",
+    "adminPasswordLabel": "Password",
+    "errors": {
+      "nameRequired": "Enter a school name.",
+      "adminFirstNameRequired": "Enter the administrator's first name.",
+      "adminLastNameRequired": "Enter the administrator's last name.",
+      "adminEmailRequired": "Enter the administrator's email.",
+      "adminEmailInvalid": "Enter a valid email address.",
+      "adminPasswordTooShort": "Password must be at least 8 characters."
+    },
+    "toasts": {
+      "created": "School registered successfully.",
+      "updated": "School updated successfully.",
+      "error": "Couldn't save this school. Please try again."
+    }
+  }
+}

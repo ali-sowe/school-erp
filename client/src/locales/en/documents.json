@@ -1,0 +1,66 @@
+{
+  "title": "Documents",
+  "subtitle": "Letters, circulars, policies, and other school documents.",
+  "uploadButton": "Upload document",
+  "searchPlaceholder": "Search documents…",
+  "table": {
+    "title": "Title",
+    "category": "Category",
+    "kind": "Type",
+    "status": "Status",
+    "processing": "Processing",
+    "actions": "Actions",
+    "retryButton": "Retry"
+  },
+  "kinds": {
+    "READABLE": "Document",
+    "DATA": "Spreadsheet"
+  },
+  "categories": {
+    "LETTER": "Letter",
+    "CIRCULAR": "Circular",
+    "POLICY": "Policy",
+    "MEETING_MINUTES": "Meeting Minutes",
+    "CERTIFICATE": "Certificate",
+    "DATA_IMPORT": "Data Import",
+    "OTHER": "Other"
+  },
+  "empty": {
+    "title": "No documents yet",
+    "description": "Upload your first document to get started."
+  },
+  "toasts": {
+    "archived": "Document archived.",
+    "restored": "Document restored.",
+    "reprocessTriggered": "Reprocessing has been triggered.",
+    "updated": "Document updated.",
+    "error": "Couldn't complete this action."
+  },
+  "editDialog": {
+    "title": "Edit document",
+    "titleLabel": "Title",
+    "categoryLabel": "Category",
+    "categoryPlaceholder": "Choose a category",
+    "descriptionLabel": "Description",
+    "errors": {
+      "titleRequired": "Enter a title."
+    },
+    "toastSuccess": "Document updated.",
+    "toastError": "Couldn't update this document."
+  },
+  "uploadDialog": {
+    "title": "Upload document",
+    "fileLabel": "File",
+    "titleLabel": "Title",
+    "categoryLabel": "Category",
+    "categoryPlaceholder": "Choose a category",
+    "descriptionLabel": "Description",
+    "submitButton": "Upload",
+    "errors": {
+      "fileRequired": "Choose a file.",
+      "titleRequired": "Enter a title."
+    },
+    "toastSuccess": "Document uploaded successfully.",
+    "toastError": "Couldn't upload this document."
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "list": {
+    "title": "Exams",
+    "subtitle": "Schedule exams, record results, and review performance.",
+    "actions": { "addExam": "Schedule exam" },
+    "filters": { "classLabel": "Class", "statusLabel": "Status", "allStatuses": "All statuses" },
+    "statuses": { "SCHEDULED": "Scheduled", "ONGOING": "Ongoing", "COMPLETED": "Completed" },
+    "columns": { "name": "Exam", "class": "Class", "type": "Type", "dates": "Planned dates", "status": "Status" },
+    "empty": { "title": "No exams yet", "description": "Schedule your first exam to get started." }
+  },
+  "form": {
+    "createTitle": "Schedule exam",
+    "classLabel": "Class",
+    "termLabel": "Term",
+    "nameLabel": "Exam name",
+    "namePlaceholder": "e.g. Mid-Term Exam",
+    "examTypeLabel": "Exam type",
+    "examTypePlaceholder": "e.g. END_OF_TERM",
+    "plannedStartLabel": "Planned start date",
+    "plannedEndLabel": "Planned end date",
+    "errors": {
+      "classRequired": "Choose a class.",
+      "termRequired": "Choose a term.",
+      "nameRequired": "Give this exam a name.",
+      "startRequired": "Planned start date is required.",
+      "endRequired": "Planned end date is required."
+    },
+    "toasts": { "created": "Exam scheduled.", "error": "Could not save this exam." }
+  },
+  "detail": {
+    "backLink": "Back to exams",
+    "notFound": "Exam not found.",
+    "editButton": "Edit",
+    "cancelButton": "Cancel",
+    "classLabel": "Class",
+    "termLabel": "Term",
+    "typeLabel": "Type",
+    "plannedDatesLabel": "Planned dates",
+    "actualDatesLabel": "Actual dates",
+    "notStarted": "Not yet",
+    "reasonLabel": "Reopen reason",
+    "actions": {
+      "start": "Start exam",
+      "complete": "Complete exam",
+      "reopen": "Reopen exam"
+    },
+    "confirmStart": { "title": "Start this exam?", "description": "Once started, the exam's details and subject list can no longer be changed — only results can be recorded." },
+    "confirmComplete": { "title": "Complete this exam?", "description": "Results can no longer be changed unless the exam is reopened." },
+    "reopenDialog": {
+      "title": "Reopen this exam?",
+      "description": "Provide a reason — this is recorded in the audit log.",
+      "reasonPlaceholder": "e.g. Marking error found in Mathematics",
+      "reasonRequired": "A reason is required to reopen a completed exam.",
+      "confirmButton": "Reopen"
+    },
+    "toasts": {
+      "updated": "Exam updated.",
+      "started": "Exam started.",
+      "completed": "Exam completed.",
+      "reopened": "Exam reopened.",
+      "error": "Something went wrong. Please try again."
+    },
+    "tabs": { "subjects": "Subjects", "results": "Results", "summary": "Summary" }
+  },
+  "subjects": {
+    "empty": "No subjects added to this exam yet.",
+    "columns": { "subject": "Subject", "maxScore": "Max score", "actions": "Actions" },
+    "addSectionTitle": "Add a subject",
+    "chooseSubjectPlaceholder": "Choose a subject…",
+    "maxScoreLabel": "Max score",
+    "addButton": "Add",
+    "removeButton": "Remove",
+    "lockedNotice": "The subject list is locked once the exam has started.",
+    "confirmRemove": { "title": "Remove this subject?", "description": "It will no longer be examined as part of this exam." },
+    "toasts": { "added": "Subject added.", "removed": "Subject removed.", "error": "Could not update this exam's subjects." }
+  },
+  "results": {
+    "chooseSubjectPrompt": "Choose a subject to record or review its results.",
+    "notOngoingNotice": "Results can only be recorded while the exam is ongoing.",
+    "columns": { "student": "Student", "admissionNumber": "Admission #", "score": "Score", "remarks": "Remarks" },
+    "remarksPlaceholder": "Optional remarks…",
+    "saveButton": "Save results",
+    "empty": "No students enrolled in this class for this academic year.",
+    "toasts": { "saved": "Results saved.", "error": "Could not save results." }
+  },
+  "summary": {
+    "empty": "No results recorded yet.",
+    "columns": {
+      "subject": "Subject",
+      "resultsRecorded": "Results recorded",
+      "average": "Average",
+      "lowest": "Lowest",
+      "highest": "Highest"
+    }
+  }
+}

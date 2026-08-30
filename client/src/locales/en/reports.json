@@ -1,0 +1,12 @@
+{
+  "title": "Reports",
+  "subtitle": "Export data from any module you have access to.",
+  "downloadButton": "Download",
+  "empty": {
+    "title": "No reports available",
+    "description": "You don't have access to any exportable datasets yet."
+  },
+  "toasts": {
+    "error": "Couldn't generate this report. Please try again."
+  }
+}

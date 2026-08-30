@@ -1,0 +1,73 @@
+{
+  "page": {
+    "title": "Approvals",
+    "subtitle": "Review and act on requests routed through the approval workflow."
+  },
+  "myPending": {
+    "sectionTitle": "Waiting on you",
+    "empty": "Nothing is waiting on your decision right now.",
+    "columns": { "yourStep": "Your step" }
+  },
+  "all": {
+    "sectionTitle": "All requests",
+    "statusFilter": {
+      "all": "All statuses",
+      "pending": "Pending review",
+      "approved": "Approved",
+      "executed": "Executed",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled"
+    },
+    "empty": { "title": "No approval requests yet", "description": "Requests created by other modules (leave, finance, transfers…) will appear here." },
+    "columns": { "title": "Title", "workflowType": "Type", "status": "Status", "requestedBy": "Requested by", "requestedAt": "Requested" }
+  },
+  "detail": {
+    "backLink": "Back to approvals",
+    "notFound": "Approval request not found.",
+    "requestedByLabel": "Requested by",
+    "requestedAtLabel": "Requested",
+    "relatedRecordLabel": "Related record",
+    "stepsTitle": "Approval steps",
+    "step": {
+      "assignedToUser": "Assigned to {{name}}",
+      "assignedToRole": "Assigned to anyone holding: {{role}}",
+      "decidedBy": "Decided by {{name}}",
+      "noComment": "No comment"
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "execute": "Execute",
+      "cancel": "Withdraw request"
+    },
+    "approveDialog": {
+      "title": "Approve this step?",
+      "description": "This moves the request to its next step, or fully approves it if this was the last one.",
+      "commentLabel": "Comment (optional)"
+    },
+    "rejectDialog": {
+      "title": "Reject this request?",
+      "description": "Rejecting any step rejects the whole request — it can't continue to later steps.",
+      "commentLabel": "Reason",
+      "commentRequired": "A reason is required."
+    },
+    "executeDialog": {
+      "title": "Execute this request?",
+      "description": "This carries out the action the request was approved for.",
+      "noteLabel": "Note (optional)"
+    },
+    "cancelDialog": {
+      "title": "Withdraw this request?",
+      "description": "Only you, as the requester, can withdraw it, and only while it's still pending review.",
+      "reasonLabel": "Reason",
+      "reasonRequired": "A reason is required."
+    },
+    "toasts": {
+      "approved": "Step approved.",
+      "rejected": "Request rejected.",
+      "executed": "Request executed.",
+      "cancelled": "Request withdrawn.",
+      "error": "Something went wrong. Please try again."
+    }
+  }
+}

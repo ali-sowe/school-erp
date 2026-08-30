@@ -1,0 +1,33 @@
+# Dependencies
+**/node_modules/
+
+# Logs
+**/logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment Variables
+#**/.env
+#**/.env.*
+
+# Build Output
+client/dist/
+client/build/
+server/dist/
+
+# Coverage
+**/coverage/
+
+# IDEs and Editors
+# .idea/
+# .vscode/
+
+# Temporary Files
+*.tmp
+*.temp
+
+# OS Files
+.DS_Store
+Thumbs.db

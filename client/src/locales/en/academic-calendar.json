@@ -1,0 +1,192 @@
+{
+  "page": {
+    "title": "Academic Calendar",
+    "subtitle": "Academic years, terms, and the school's holidays and events."
+  },
+  "yearFilter": {
+    "label": "Viewing terms and calendar for",
+    "chooseYearFirst": "Add an academic year above to get started."
+  },
+  "years": {
+    "sectionTitle": "Academic Years",
+    "addButton": "Add academic year",
+    "activateButton": "Activate",
+    "completeButton": "Mark completed",
+    "overrideButton": "Correct schedule",
+    "columns": {
+      "name": "Name",
+      "planned": "Planned dates",
+      "actual": "Actual dates",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No academic years yet",
+      "description": "Add the school's first academic year to get started."
+    },
+    "toasts": {
+      "activated": "Academic year activated.",
+      "completed": "Academic year marked completed.",
+      "error": "Something went wrong. Please try again."
+    },
+    "confirmActivate": {
+      "title": "Activate this academic year?",
+      "description": "Only one academic year can be active at a time. This will become the default year across the app until it's completed."
+    },
+    "confirmComplete": {
+      "title": "Mark this academic year completed?",
+      "description": "Completed academic years can no longer be edited directly — use \"Correct schedule\" afterward if a date needs fixing."
+    },
+    "form": {
+      "createTitle": "Add academic year",
+      "editTitle": "Edit academic year",
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. 2026/2027",
+      "startDateLabel": "Planned start date",
+      "endDateLabel": "Planned end date",
+      "errors": {
+        "nameRequired": "Enter a name for this academic year.",
+        "startDateRequired": "Choose a start date.",
+        "endDateRequired": "Choose an end date.",
+        "endAfterStart": "End date must be after the start date."
+      },
+      "toasts": {
+        "created": "Academic year created.",
+        "updated": "Academic year updated.",
+        "error": "Something went wrong. Please try again."
+      }
+    },
+    "overrideForm": {
+      "title": "Correct {{name}}'s schedule",
+      "description": "Record the dates the year actually started or ended, if different from the plan — for example a delayed reopening or an early closure. Every correction here is logged.",
+      "actualStartLabel": "Actual start date",
+      "actualEndLabel": "Actual end date",
+      "reasonLabel": "Reason",
+      "reasonPlaceholder": "e.g. Reopening delayed by two weeks due to flooding",
+      "reasonHint": "Required — shown in the audit history for this academic year.",
+      "submitButton": "Save correction",
+      "errors": {
+        "reasonRequired": "Explain why this schedule is being corrected."
+      },
+      "toasts": {
+        "saved": "Schedule correction saved.",
+        "error": "Something went wrong. Please try again."
+      }
+    }
+  },
+  "terms": {
+    "sectionTitle": "Terms",
+    "addButton": "Add term",
+    "activateButton": "Activate",
+    "completeButton": "Mark completed",
+    "columns": {
+      "name": "Name",
+      "dates": "Dates",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No terms for this year yet",
+      "description": "Add the year's first term to get started."
+    },
+    "toasts": {
+      "activated": "Term activated.",
+      "completed": "Term marked completed.",
+      "error": "Something went wrong. Please try again."
+    },
+    "confirmActivate": {
+      "title": "Activate this term?",
+      "description": "This marks the term as currently running."
+    },
+    "confirmComplete": {
+      "title": "Mark this term completed?",
+      "description": "Completed terms can no longer be edited."
+    },
+    "form": {
+      "createTitle": "Add term",
+      "editTitle": "Edit term",
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. Term 1",
+      "startDateLabel": "Start date",
+      "endDateLabel": "End date",
+      "errors": {
+        "nameRequired": "Enter a name for this term.",
+        "startDateRequired": "Choose a start date.",
+        "endDateRequired": "Choose an end date.",
+        "endAfterStart": "End date must be after the start date."
+      },
+      "toasts": {
+        "created": "Term created.",
+        "updated": "Term updated.",
+        "error": "Something went wrong. Please try again."
+      }
+    }
+  },
+  "events": {
+    "sectionTitle": "Holidays & School Events",
+    "addButton": "Add event",
+    "copyButton": "Copy from another year",
+    "closedYes": "School closed",
+    "closedNo": "Normal day",
+    "columns": {
+      "title": "Title",
+      "category": "Category",
+      "dates": "Dates",
+      "schoolClosed": "Effect",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No events for this year yet",
+      "description": "Add public holidays, mid-term breaks, or school events for this academic year."
+    },
+    "toasts": {
+      "archived": "Event archived.",
+      "restored": "Event restored.",
+      "error": "Something went wrong. Please try again."
+    },
+    "confirmArchive": {
+      "title": "Archive this event?",
+      "description": "It will no longer count toward school-closed days, but stays in the calendar's history."
+    },
+    "confirmRestore": {
+      "title": "Restore this event?",
+      "description": "It will count toward school-closed days again if marked as one."
+    },
+    "form": {
+      "createTitle": "Add calendar event",
+      "editTitle": "Edit calendar event",
+      "titleLabel": "Title",
+      "titlePlaceholder": "e.g. Eid al-Fitr, Independence Day, Sports Day",
+      "categoryLabel": "Category",
+      "categoryPlaceholder": "e.g. Public Holiday, Religious Holiday, School Event",
+      "categoryHint": "Your own label for grouping and filtering — not a fixed list.",
+      "startDateLabel": "Start date",
+      "endDateLabel": "End date",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Optional notes",
+      "schoolClosedLabel": "This closes the school",
+      "schoolClosedHint": "Attendance can't be recorded on a day marked as closed.",
+      "errors": {
+        "titleRequired": "Enter a title for this event.",
+        "startDateRequired": "Choose a start date.",
+        "endDateRequired": "Choose an end date.",
+        "endNotBeforeStart": "End date can't be before the start date."
+      },
+      "toasts": {
+        "created": "Calendar event created.",
+        "updated": "Calendar event updated.",
+        "error": "Something went wrong. Please try again."
+      }
+    },
+    "copyDialog": {
+      "title": "Copy events from another year",
+      "description": "Copies every active event from the year you choose into the currently selected year, using the exact same dates. Review the copied entries afterward — dates tied to the Islamic calendar (Eid, Ramadan-linked closures) shift earlier every year and won't be correct as-is.",
+      "sourcePlaceholder": "Choose a year to copy from…",
+      "toasts": {
+        "copied": "{{count}} event(s) copied. Review their dates before relying on them.",
+        "error": "Something went wrong. Please try again."
+      }
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "title": "Data Import",
+  "subtitle": "Bulk-import data from a spreadsheet, with every row validated before anything changes.",
+  "newButton": "New import",
+  "table": {
+    "targetType": "Imports into",
+    "totalRows": "Total",
+    "validRows": "Valid",
+    "invalidRows": "Invalid",
+    "status": "Status",
+    "actions": "Actions",
+    "viewButton": "View"
+  },
+  "empty": {
+    "title": "No imports yet",
+    "description": "Start a new import to bulk-load data from a spreadsheet."
+  },
+  "newDialog": {
+    "title": "New import",
+    "targetTypeLabel": "What are you importing?",
+    "targetTypePlaceholder": "Choose what this spreadsheet contains",
+    "expectedColumns": "Expected columns",
+    "fileLabel": "Spreadsheet file",
+    "submitButton": "Upload and validate",
+    "errors": {
+      "fileRequired": "Choose a spreadsheet file.",
+      "targetTypeRequired": "Choose what this spreadsheet contains."
+    },
+    "toastSuccess": "File uploaded and validated.",
+    "toastError": "Couldn't process this file."
+  },
+  "detail": {
+    "backLink": "Back to Data Import",
+    "notFound": "This import batch couldn't be found.",
+    "totalRows": "Total rows",
+    "validRows": "Valid",
+    "invalidRows": "Invalid",
+    "importedRows": "Imported",
+    "failedRows": "Failed",
+    "confirmButton": "Confirm import",
+    "cancelButton": "Cancel import",
+    "rowsTitle": "Rows",
+    "rowsTable": {
+      "rowNumber": "Row",
+      "status": "Status",
+      "errors": "Errors"
+    },
+    "confirmDialog": {
+      "title": "Confirm this import?",
+      "description": "This will import {{count}} valid rows. Invalid rows are skipped and can be fixed in a new import. This cannot be undone."
+    },
+    "cancelDialog": {
+      "title": "Cancel this import?",
+      "description": "This batch will be discarded and nothing will be imported."
+    },
+    "toasts": {
+      "confirmed": "Import confirmed and processing.",
+      "cancelled": "Import cancelled.",
+      "error": "Something went wrong. Please try again."
+    }
+  }
+}

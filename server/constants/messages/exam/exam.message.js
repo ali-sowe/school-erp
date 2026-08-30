@@ -1,0 +1,35 @@
+export const EXAM_MESSAGES = {
+    CREATED: 'Exam created successfully.',
+    UPDATED: 'Exam updated successfully.',
+    STARTED: 'Exam started successfully.',
+    COMPLETED: 'Exam completed successfully.',
+    REOPENED: 'Exam reopened successfully.',
+    FETCHED: 'Exam retrieved successfully.',
+    FETCHED_ALL: 'Exams retrieved successfully.',
+    SUMMARY_FETCHED: 'Exam summary retrieved successfully.',
+
+    NOT_FOUND: 'Exam not found.',
+    DUPLICATE_NAME: 'An exam with this name already exists for this class and academic year.',
+    CLASS_NOT_FOUND: 'The specified class does not exist.',
+    ACADEMIC_YEAR_NOT_FOUND: 'The specified academic year does not exist.',
+    TERM_NOT_FOUND: 'The specified term does not exist.',
+    TERM_NOT_IN_ACADEMIC_YEAR: 'The specified term does not belong to the specified academic year.',
+    INVALID_DATE_RANGE: 'The planned end date must be on or after the planned start date.',
+    CANNOT_EDIT_STARTED: 'An exam\'s details cannot be changed once it has started.',
+
+    ALREADY_STARTED: 'This exam has already started.',
+    ALREADY_COMPLETED: 'This exam has already been completed.',
+    CANNOT_START_WITHOUT_SUBJECTS: 'At least one subject must be added before starting this exam.',
+    CANNOT_START_UNSCHEDULED: 'Only a scheduled exam can be started.',
+    CANNOT_COMPLETE_UNSTARTED: 'Only an ongoing exam can be completed.',
+    CANNOT_REOPEN_UNCOMPLETED: 'Only a completed exam can be reopened.',
+    REOPEN_REASON_REQUIRED: 'A reason is required to reopen a completed exam.',
+
+    SUBJECT_NOT_FOUND: 'Subject not found.',
+    SUBJECT_NOT_TAUGHT_IN_CLASS: 'This subject is not part of this class\'s curriculum.',
+    SUBJECT_ALREADY_ADDED: 'This subject has already been added to this exam.',
+    SUBJECT_NOT_IN_EXAM: 'This subject has not been added to this exam.',
+    CANNOT_MODIFY_SUBJECTS_AFTER_START: 'Subjects cannot be added or removed once the exam has started.',
+    CANNOT_REMOVE_SUBJECT_WITH_RESULTS: 'This subject already has results recorded and cannot be removed.',
+    INVALID_MAX_SCORE: 'Maximum score must be greater than zero.'
+};

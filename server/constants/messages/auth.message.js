@@ -1,0 +1,33 @@
+export const AUTH_MESSAGES = {
+    LOGIN_SUCCESS: 'Login successful.',
+    LOGOUT_SUCCESS: 'Logout successful.',
+    INVALID_CREDENTIALS: 'Invalid email or password.',
+    UNAUTHORIZED: 'Unauthorized access.',
+    FORBIDDEN: 'Forbidden access.',
+    ACCOUNT_INACTIVE: 'Account is inactive.',
+    USER_NOT_FOUND: 'User not found.',
+    ME_SUCCESS: 'User details retrieved successfully.',
+    AUTHENTICATION_REQUIRED: 'Authentication required.',
+    INVALID_TOKEN: 'Invalid token.',
+    INVALID_OR_EXPIRED_TOKEN: 'Invalid or expired token.',
+
+    REFRESH_SUCCESS: 'Access token refreshed successfully.',
+    INVALID_REFRESH_TOKEN: 'Invalid or expired refresh token. Please log in again.',
+    SESSION_COMPROMISED: 'This session was used from an unexpected source and has been revoked for your safety. Please log in again.',
+    LOGOUT_ALL_SUCCESS: 'Logged out of all devices successfully.',
+
+    RESET_LINK_SENT: 'If that email is registered, a password reset link has been sent.',
+    RESET_TOKEN_INVALID_OR_EXPIRED: 'This password reset link is invalid or has expired. Request a new one.',
+    PASSWORD_RESET_SUCCESS: 'Password reset successfully. You can now log in with your new password.',
+
+    MFA_LOGIN_REQUIRED: 'Enter the code from your authenticator app to finish logging in.',
+    MFA_ENROLLMENT_STARTED: 'Scan the QR code with your authenticator app, then enter the 6-digit code to confirm.',
+    MFA_ENROLLMENT_NOT_STARTED: 'Start MFA enrollment first before confirming a code.',
+    MFA_ENABLED: 'Two-factor authentication is now enabled. Save your backup codes somewhere safe — they will not be shown again.',
+    MFA_DISABLED: 'Two-factor authentication has been disabled.',
+    MFA_NOT_ENABLED: 'Two-factor authentication is not enabled on this account.',
+    MFA_ALREADY_ENABLED: 'Two-factor authentication is already enabled. Disable it first if you need to re-enroll a new device.',
+    MFA_INVALID_CODE: 'That code is invalid or has expired.',
+    MFA_CHALLENGE_INVALID_OR_EXPIRED: 'This login attempt has expired. Please log in again.',
+    MFA_BACKUP_CODES_REGENERATED: 'New backup codes generated. Your old backup codes no longer work.',
+};

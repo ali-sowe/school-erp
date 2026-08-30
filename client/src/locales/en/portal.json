@@ -1,0 +1,69 @@
+{
+  "appName": "School Portal",
+  "student": {
+    "greeting": "Hi, {{name}}",
+    "subtitle": "Your attendance, grades, library, and announcements.",
+    "profile": {
+      "admissionNumber": "Admission number",
+      "status": "Status",
+      "admissionDate": "Admission date"
+    },
+    "tabs": {
+      "attendance": "Attendance",
+      "grades": "Grades",
+      "library": "Library",
+      "announcements": "Announcements"
+    },
+    "attendance": {
+      "empty": "No attendance records yet.",
+      "dateHeader": "Date",
+      "statusHeader": "Status",
+      "remarksHeader": "Remarks"
+    },
+    "grades": {
+      "empty": "No exam results yet.",
+      "examHeader": "Exam",
+      "subjectHeader": "Subject",
+      "scoreHeader": "Score",
+      "remarksHeader": "Remarks"
+    },
+    "library": {
+      "empty": "No borrowed books yet.",
+      "bookHeader": "Book",
+      "borrowedHeader": "Borrowed",
+      "dueHeader": "Due",
+      "statusHeader": "Status",
+      "overdue": "Overdue"
+    },
+    "announcements": {
+      "empty": "No announcements yet.",
+      "readButton": "Mark as read",
+      "markedRead": "Marked as read."
+    }
+  },
+  "parent": {
+    "title": "Your children",
+    "subtitle": "Select a child to view their attendance, grades, invoices, library, and announcements.",
+    "empty": {
+      "title": "No children linked",
+      "description": "No students are linked to your account yet. Contact the school office if this looks wrong."
+    },
+    "primaryContact": "Primary contact",
+    "backToChildren": "Back to children",
+    "tabs": {
+      "attendance": "Attendance",
+      "grades": "Grades",
+      "invoices": "Invoices",
+      "library": "Library",
+      "announcements": "Announcements"
+    },
+    "invoices": {
+      "empty": "No invoices yet.",
+      "descriptionHeader": "Description",
+      "dueDateHeader": "Due date",
+      "amountDueHeader": "Amount due",
+      "amountPaidHeader": "Amount paid",
+      "statusHeader": "Status"
+    }
+  }
+}
